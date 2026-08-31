@@ -1,0 +1,11 @@
+===================================
+Configuration Memory information
+===================================
+File Format        MCS
+Interface          SPIX4
+Size               128M
+Start Address      0x00000000
+End Address        0x07FFFFFF
+
+Addr1         Addr2         Date                    File(s)
+0x00000000    0x0021728B    Aug 30 13:32:25 2026    E:/cygwin64/home/taylo/wildbits-cores/wildbits_jr2_6809_v8_rc6.bit

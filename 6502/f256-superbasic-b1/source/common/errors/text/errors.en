@@ -1,0 +1,42 @@
+# *******************************************************************************************
+# *******************************************************************************************
+#
+#		Name : 		errors.en
+#		Purpose :	Error messages (English)
+#		Date :		19th September 2022
+#		Author : 	Paul Robson (paul@robsons.org.uk)
+#
+# *******************************************************************************************
+# *******************************************************************************************
+#
+#		Generates ERRID_<xxxx> 		Identifiers (counting from 1)
+#		Generates .error_<xxxx> 	Macro
+#		When Prefixed by ! generates a jump target <xxxx>Error
+#
+Break: 		Break
+!Syntax:  	Syntax error
+DivZero: 	Division by zero
+!Range:		Out of Range
+!Type:		Type mismatch
+Memory:		Out of memory
+!Argument:	Illegal argument
+Stop:		Stop
+String:		String too long
+Assert:		Assertion failed
+Data:		Out of data
+!NotDone: 	Unimplemented
+Line: 		No such line number
+Gosub: 		Return without Gosub
+Repeat:		Until without Repeat
+While:		Wend without While
+For: 		Next without For
+Stack: 		BASIC Stack full
+Struct:		Open Structure
+Proc:		EndProc without call
+Redefine:	Array already defined
+ArraySize:	Array size 
+ArrayIdx:	Bad array index
+ArrayDec:	Array not declared
+NotFound:	File not found
+DriveIO:	Storage error		
+Verify: 	Verify failed

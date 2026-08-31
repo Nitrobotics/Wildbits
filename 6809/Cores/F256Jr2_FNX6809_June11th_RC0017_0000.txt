@@ -1,0 +1,11 @@
+The Cyber Mistress — 9:52 PM
+
+Okay, wonderful Nitros-9 People, this is a new version that covers your Wishlist, so it is a big one. Refer to the google document for reference.
+
+It has not been tested, so when you manage to get the text going please go through your usual tests to confirm that the foundation portion is good to go!
+
+Now, the only thing I changed in your Request is the fact the the look up table will be @ $5300 and $5340 as opposed to $52C0 and $5300 respectively. <<< SO be aware.
+
+You also have now full access to write back the onboard flash if you so desire.
+
+Also, just to make sure everybody is on the same page, the WIFI high-speed is now 921600 instead of 2Mbits, you should not loose data anymore when you read the FIFO.

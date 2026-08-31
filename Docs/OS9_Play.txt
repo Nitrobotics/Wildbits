@@ -1,0 +1,48 @@
+I'll try to get this documented elsewhere but for the time being here are some tips for the Play command:
+--
+
+NitrOS-9 Play
+v12 Music Player by Roger Taylor
+December 7, 2025
+
+Play currently outputs to the best device on the host computer depending on the file format.
+The F256K2 and Jr2 will use the SAM2695 MIDI chip and the dual SID chips, while
+the Tandy Color Computer might use the Game Master Cartridge or 6-bit DAC for supported scores.
+
+ 8+ voice Lyra scores
+ 4-voice Musica II scores to the best
+ Raw SID dump files
+
+Examples of usage:
+ play song1.mus song2.lyr song3.lyr
+ play song4.lyr rock3.map song1.lyr song2.lyr
+ play song1.mus song2.lyr song3.lyr
+ play game.rsd
+ play -z=playlist file
+ play -z<playlist path
+ play -z<playlist path&  (play in the background)
+ play -z=playlist file&  (play in the background)
+
+Simple 2-file playlist:
+ frosty.mus
+ winterw.lyr
+
+An optional MIDI .map file is a list of 16 instrument codes separated by commas or spaces.
+MIDI maps are applied to all future songs on the current command or playlist line.
+Each new line in a play command or playlist clears mapping.
+
+Example of someband.map:
+ 0,44,28,21,23,25,32,72,0,0,0,0,0,0,0,118
+
+Example playlist where MIDI mapping is used:
+ (The last line uses the map included in that file)
+
+ xmas.map silverb.lyr letit.lyr
+ piano.map ocome.lyr
+ rock3.map lucidity.lyr dustwind.lyr
+ jinglex3.lyr
+
+
+Here is the F256/NitrOS-9 demo drive image.  Navigate to /dd/music to explore:
+https://drive.google.com/file/d/1g4tDrWQP7nXuQChmTs-qDarAervpaiOk/view?usp=drive_link
+

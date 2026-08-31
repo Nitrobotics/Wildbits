@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WildBits 64K Memory Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F6F8F9; --panel:#FFFFFF; --ink:#1B2328; --ink-soft:#4E5C64; --line:#D4DCE1;
+  --mmu:#E4EAEE; --mmu-edge:#9FB2BE; --mmu-ink:#3C4C57;
+  --io:#38607F; --io-soft:#E2EBF2; --io-edge:#7C9CB4;
+  --amber:#A8690F; --amber-soft:#F6ECD9; --amber-edge:#C9963F;
+  --regs:#4A4658; --regs-soft:#E9E7F0; --regs-edge:#948FAD;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
+    --mmu:#232E36; --mmu-edge:#48606F; --mmu-ink:#AEBFC9;
+    --io:#7FB0D6; --io-soft:#1E2E3B; --io-edge:#3E637F;
+    --amber:#E0A64F; --amber-soft:#33291A; --amber-edge:#8A6A2E;
+    --regs:#B0A8CE; --regs-soft:#272433; --regs-edge:#575072;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
+  --mmu:#232E36; --mmu-edge:#48606F; --mmu-ink:#AEBFC9;
+  --io:#7FB0D6; --io-soft:#1E2E3B; --io-edge:#3E637F;
+  --amber:#E0A64F; --amber-soft:#33291A; --amber-edge:#8A6A2E;
+  --regs:#B0A8CE; --regs-soft:#272433; --regs-edge:#575072;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Atkinson Hyperlegible',system-ui,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
+header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:30px}
+.eyebrow{font:600 12px/1 'Saira Semi Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+h1{font:700 40px/1.05 'Saira Semi Condensed',sans-serif;margin:8px 0 10px;text-wrap:balance}
+.sub{max-width:62ch;color:var(--ink-soft);margin:0}
+.sub code, p code, li code, td code{font:500 .92em var(--mono);color:var(--ink)}
+h2{font:600 22px/1.2 'Saira Semi Condensed',sans-serif;margin:38px 0 10px;text-wrap:balance}
+h3{font:600 17px/1.25 'Saira Semi Condensed',sans-serif;margin:22px 0 8px}
+p,li{max-width:68ch}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.mapcol{position:sticky;top:16px}
+@media (max-width:860px){.mapcol{position:static}}
+
+/* --- memory map diagram --- */
+.map{display:grid;grid-template-columns:1fr 22px 1fr;gap:0}
+.stack{display:flex;flex-direction:column-reverse;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.seg{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-top:1px solid var(--line);min-height:40px}
+.stack .seg:last-child{border-top:none}
+.seg .nm{font:600 12.5px/1.15 'Saira Semi Condensed',sans-serif;letter-spacing:.02em}
+.seg .ad{font:500 10.5px/1.3 var(--mono);color:var(--ink-soft);text-align:right;white-space:nowrap}
+.seg.mmu{background:var(--mmu);color:var(--mmu-ink)}
+.seg.io{background:var(--io-soft)}.seg.io .nm{color:var(--io)}
+.seg.const{background:var(--amber-soft)}.seg.const .nm{color:var(--amber)}
+.seg.regs{background:var(--regs-soft)}.seg.regs .nm{color:var(--regs)}
+.seg.carve{outline:2px dashed var(--amber-edge);outline-offset:-3px}
+.zoomlink{position:relative}
+.zoomlink::before,.zoomlink::after{content:"";position:absolute;left:0;width:100%;border-top:1.5px dashed var(--ink-soft)}
+.zoomlink::before{top:8%}.zoomlink::after{bottom:0}
+.maplegend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:14px;font-size:12.5px}
+.maplegend span{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft)}
+.sw{width:13px;height:13px;border-radius:3px;border:1px solid var(--line);flex:none}
+.sw.mmu{background:var(--mmu);border-color:var(--mmu-edge)}
+.sw.io{background:var(--io-soft);border-color:var(--io-edge)}
+.sw.const{background:var(--amber-soft);border-color:var(--amber-edge)}
+.sw.regs{background:var(--regs-soft);border-color:var(--regs-edge)}
+.mapcap{font-size:12.5px;color:var(--ink-soft);margin-top:8px;max-width:none}
+
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+th{font:600 11.5px/1.3 'Saira Semi Condensed',sans-serif;letter-spacing:.09em;text-transform:uppercase;text-align:left;color:var(--ink-soft);padding:9px 12px;border-bottom:1.5px solid var(--line)}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.addr{font:500 13px var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font:600 10.5px/1 'Saira Semi Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:3px;white-space:nowrap}
+.chip.io{background:var(--io-soft);color:var(--io);border:1px solid var(--io-edge)}
+.chip.const{background:var(--amber-soft);color:var(--amber);border:1px solid var(--amber-edge)}
+.chip.regs{background:var(--regs-soft);color:var(--regs);border:1px solid var(--regs-edge)}
+.chip.mmu{background:var(--mmu);color:var(--mmu-ink);border:1px solid var(--mmu-edge)}
+.callout{background:var(--amber-soft);border:1px solid var(--amber-edge);border-radius:6px;padding:14px 16px;margin:16px 0}
+.callout h3{margin-top:0;color:var(--amber)}
+.callout p:last-child{margin-bottom:0}
+.src{font-size:12.5px;color:var(--ink-soft)}
+.src code{font-size:.95em}
+footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference</div>
+  <h1>WildBits 64K Memory Map</h1>
+  <p class="sub">Which CPU addresses pass through the MMU, and which are hard-wired &mdash; including the two
+  <strong>constant-RAM</strong> pages that sit outside MMU translation entirely. Derived from the shipping
+  RTL decode logic, not documentation.</p>
+</header>
+
+<div class="grid">
+<div class="mapcol">
+  <div class="map">
+    <!-- left: full 64K, bottom = $0000 -->
+    <div class="stack" aria-label="Full 64K space">
+      <div class="seg mmu"><span class="nm">Slot 0</span><span class="ad">$0000&ndash;$1FFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 1</span><span class="ad">$2000&ndash;$3FFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 2</span><span class="ad">$4000&ndash;$5FFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 3</span><span class="ad">$6000&ndash;$7FFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 4</span><span class="ad">$8000&ndash;$9FFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 5</span><span class="ad">$A000&ndash;$BFFF</span></div>
+      <div class="seg mmu"><span class="nm">Slot 6</span><span class="ad">$C000&ndash;$DFFF</span></div>
+      <div class="seg mmu carve" style="min-height:74px"><span class="nm">Slot 7<br><span style="font-weight:500;font-size:11px">top carved out &rarr;</span></span><span class="ad">$E000&ndash;$FFFF</span></div>
+    </div>
+    <div class="zoomlink" role="presentation"></div>
+    <!-- right: zoom of $FD00-$FFFF, bottom = $FD00 -->
+    <div class="stack" aria-label="Zoom of FD00 to FFFF">
+      <div class="seg const" style="min-height:52px"><span class="nm">Constant RAM<br><span style="font-weight:500;font-size:11px">switchable &middot; $FFA1 bit 0</span></span><span class="ad">$FD00&ndash;$FDFF</span></div>
+      <div class="seg io" style="min-height:52px"><span class="nm">Fixed I/O</span><span class="ad">$FE00&ndash;$FEFF</span></div>
+      <div class="seg io"><span class="nm">Fixed I/O</span><span class="ad">$FF00&ndash;$FF9F</span></div>
+      <div class="seg regs"><span class="nm">MMU registers</span><span class="ad">$FFA0&ndash;$FFAF</span></div>
+      <div class="seg io"><span class="nm">Fixed I/O</span><span class="ad">$FFB0&ndash;$FFEF</span></div>
+      <div class="seg const"><span class="nm">Constant RAM &middot; vectors<br><span style="font-weight:500;font-size:11px">switchable &middot; $FFA1 bit 1</span></span><span class="ad">$FFF0&ndash;$FFFF</span></div>
+    </div>
+  </div>
+  <div class="maplegend">
+    <span><i class="sw mmu"></i>MMU-translated (8K slots)</span>
+    <span><i class="sw io"></i>Fixed I/O (always)</span>
+    <span><i class="sw const"></i>Constant RAM (switchable)</span>
+    <span><i class="sw regs"></i>MMU register window</span>
+  </div>
+  <p class="mapcap">Low addresses at the bottom, datasheet-style. The right column expands the top 768 bytes
+  of slot 7; $E000&ndash;$FCFF below the carve-outs is ordinary MMU-translated space.</p>
+</div>
+
+<div>
+<h2>How the split works</h2>
+<p>The CPU&rsquo;s 64K space is divided into eight 8K slots, each translated through an MMU look-up entry.
+A single inhibit term overrides that translation for the top pages:</p>
+<div class="tblwrap"><table>
+<tr><th>Region</th><th>Class</th><th>Behavior</th></tr>
+<tr><td class="addr">$0000&ndash;$FCFF</td><td><span class="chip mmu">MMU</span></td><td>Translated through the active LUT entry for its slot. The entry&rsquo;s high bits pick the physical target (see encoding below).</td></tr>
+<tr><td class="addr">$FD00&ndash;$FDFF</td><td><span class="chip const">Constant RAM</span></td><td>When <code>$FFA1</code> bit&nbsp;0 = 1, a dedicated internal RAM page supersedes whatever the MMU maps there. Bit&nbsp;0 = 0 (the reset state): ordinary MMU space.</td></tr>
+<tr><td class="addr">$FE00&ndash;$FEFF</td><td><span class="chip io">Fixed I/O</span></td><td>Always the fixed I/O page &mdash; never RAM, regardless of MMU contents.</td></tr>
+<tr><td class="addr">$FF00&ndash;$FF9F</td><td><span class="chip io">Fixed I/O</span></td><td>Always fixed I/O.</td></tr>
+<tr><td class="addr">$FFA0&ndash;$FFAF</td><td><span class="chip regs">MMU regs</span></td><td>The MMU&rsquo;s own control and slot registers (decoded as <code>$FFAx</code>).</td></tr>
+<tr><td class="addr">$FFB0&ndash;$FFEF</td><td><span class="chip io">Fixed I/O</span></td><td>Always fixed I/O (includes the text controller at <code>$FFC0</code>).</td></tr>
+<tr><td class="addr">$FFF0&ndash;$FFFF</td><td><span class="chip const">Constant RAM</span></td><td>The 6809 interrupt-vector page. When <code>$FFA1</code> bit&nbsp;1 = 1, a dedicated internal RAM page supersedes MMU RAM/flash. Bit&nbsp;1 = 0 (reset state): vectors come from MMU space (RAM or flash).</td></tr>
+</table></div>
+
+<div class="callout">
+<h3>The constant-RAM pages &mdash; what makes them special</h3>
+<p>Both switchable pages (<code>$FD00&ndash;$FDFF</code> and <code>$FFF0&ndash;$FFFF</code>) are physically
+separate internal RAM, <em>not</em> part of the MMU-managed block RAM. Three properties follow:</p>
+<p>&bull;&nbsp; While enabled, they are visible at the same addresses in <strong>every task and every LUT</strong> &mdash;
+remapping slots never moves or hides them. That is what makes the vector page usable for interrupt
+dispatch across task switches.<br>
+&bull;&nbsp; RESET clears both enable bits, so the pages <em>disappear</em> from the map after a reset until
+software sets <code>$FFA1</code> again &mdash; but their <strong>contents are retained until power-off</strong>.
+Values written before a reset are still there when the page is re-enabled.<br>
+&bull;&nbsp; They supersede reads <em>and</em> writes: with a page enabled, nothing behind it (MMU RAM or flash)
+can be touched at those addresses.</p>
+</div>
+
+<h2>MMU machinery</h2>
+<div class="tblwrap"><table>
+<tr><th>Register</th><th>Address</th><th>Function</th></tr>
+<tr><td>MMU_MEM_CTRL</td><td class="addr">$FFA0</td><td>Bits 1:0 select the <em>active</em> LUT (0&ndash;3); bits 5:4 select the LUT being <em>edited</em> through the slot registers.</td></tr>
+<tr><td>MMU_IO_CTRL</td><td class="addr">$FFA1</td><td>Bit 0 enables constant RAM at $FD00&ndash;$FDFF; bit 1 enables constant RAM at $FFF0&ndash;$FFFF.</td></tr>
+<tr><td>MMU_SLOT_0&ndash;7</td><td class="addr">$FFA8&ndash;$FFAF</td><td>One LUT entry per 8K slot ($FFA8 &rarr; $0000&ndash;$1FFF &hellip; $FFAF &rarr; $E000&ndash;$FFFF).</td></tr>
+</table></div>
+
+<h3>Slot-entry encoding (physical target select)</h3>
+<div class="tblwrap"><table>
+<tr><th>Entry bits</th><th>Target</th><th>Notes</th></tr>
+<tr><td class="addr">00xx xxxx</td><td>System RAM</td><td>8K block number in the low bits.</td></tr>
+<tr><td class="addr">01xx xxxx</td><td>Parallel flash</td><td>Blocks $40&ndash;$7F &mdash; the /f0 and /f1 flash drives live here.</td></tr>
+<tr><td class="addr">100x xxxx</td><td>Expansion RAM</td><td>256K window at physical $10_0000&ndash;$13_FFFF.</td></tr>
+<tr><td class="addr">1100 0xxx</td><td>Sectored I/O page</td><td>The relocatable I/O pages ($C0-family blocks).</td></tr>
+</table></div>
+
+<h2>What lives in the fixed I/O pages</h2>
+<div class="tblwrap"><table>
+<tr><th>Address</th><th>Device</th></tr>
+<tr><td class="addr">$FE00&ndash;$FE03</td><td>SYS0/SYS1 system control, RST0/RST1</td></tr>
+<tr><td class="addr">$FE20&ndash;$FE2F</td><td>Interrupt controller (pending / polarity / edge / mask)</td></tr>
+<tr><td class="addr">$FE50&ndash;$FE54</td><td>PS/2 keyboard and mouse</td></tr>
+<tr><td class="addr">$FE60&ndash;$FE67</td><td>16750 UART (DriveWire)</td></tr>
+<tr><td class="addr">$FE70</td><td>WM8776 codec control</td></tr>
+<tr><td class="addr">$FE90</td><td>SD card controller</td></tr>
+<tr><td class="addr">$FEB0</td><td>VIA0</td></tr>
+<tr><td class="addr">$FEC0</td><td>DMA controller</td></tr>
+<tr><td class="addr">$FF30</td><td>SAM2695 MIDI synth FIFO</td></tr>
+<tr><td class="addr">$FFC0</td><td>Text controller (TXT.Base)</td></tr>
+</table></div>
+
+<h2>Where this comes from</h2>
+<p class="src">Decode logic traced in the shipping cores (both machines share these files):<br>
+&bull;&nbsp;<code>TyVKy2K2turbo_MMU_FNX6809.v:167&ndash;181</code> &mdash; page decodes ($FDxx / $FExx / refined $FF00&ndash;$FF9F + $FFB0&ndash;$FFEF / $FFFx) and the $FFAx MMU-register select.<br>
+&bull;&nbsp;<code>TyVKy2K2x1_MMU_Register.v:61&ndash;89</code> &mdash; <code>RAM_Access_Inhibit</code> (the master &ldquo;not subject to the MMU&rdquo; term), slot-entry target encoding, and the two $FFA1 enable bits.<br>
+&bull;&nbsp;<code>defs/wildbits.d:131&ndash;199, 156&ndash;166</code> &mdash; register names, device addresses, and the constant-RAM retention note.<br>
+One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; when the hardware debugger owns the bus, these carve-outs are bypassed.</p>
+
+<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-08-30 from RTL at rc4/rc5 source level.</footer>
+</div>
+</div>
+
+</body>
+</html>

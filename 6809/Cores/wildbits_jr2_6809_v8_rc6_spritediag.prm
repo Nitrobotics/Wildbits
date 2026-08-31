@@ -1,0 +1,11 @@
+===================================
+Configuration Memory information
+===================================
+File Format        MCS
+Interface          SPIX4
+Size               16M
+Start Address      0x00000000
+End Address        0x00FFFFFF
+
+Addr1         Addr2         Date                    File(s)
+0x00000000    0x0021728B    Aug 30 21:23:28 2026    E:/cygwin64/home/taylo/fpga-6809-cores-staging/FNX6809_Jr2_Core2X/JR2_6809_Core2x.runs/impl_1/CFP95139AJR2_Top.bit

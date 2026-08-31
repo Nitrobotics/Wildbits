@@ -1,0 +1,60 @@
+1 '
+2 ' "Simple PNG Game. Testing the BASICs :)"
+3 '
+4 cls:bitmap on:sprites on
+5 drawScreen()
+6 score = 0:refreshScore(score)
+7 ballx = 160:bally = 120:ballyi = random(2)*8-4:ballxi = 4:baty = 140
+8 rate = 2
+9 repeat
+10 if event(ballEvent,rate) then moveBall()
+11 if event(batEvent,rate) then moveBat()
+12 until ballx < 10
+13 end
+14 '
+15 ' "Move the ball"
+16 '
+17 proc moveBall()
+18 sprite 0 image 0 to ballx,bally
+19 ballx = ballx + ballxi
+20 bally = bally + ballyi
+21 if ballx > 312:ballxi = -ballxi:endif
+22 if bally > 232 | bally < 32 then ballyi = -ballyi
+23 if ballx < 32 & ballx >= 26 & abs(baty-bally) < 16 then bounce()
+24 endproc
+25 '
+26 ' "Move the bat"
+27 '
+28 proc moveBat()
+29 sprite 1 image 1 to 32,baty
+30 baty = baty + joyy(0) * 4
+31 if baty < 40 then baty = 40
+32 if baty >= 210 then baty = 210
+33 endproc
+34 '
+35 ' "Bounce the ball off the bat"
+36 '
+37 proc bounce()
+38 ballyi = abs(baty-bally) \ 4 + 1
+39 if baty > bally then ballyi = -ballyi
+40 ballxi = abs(ballxi)
+41 score = score+1:refreshScore(score)
+42 endproc
+43 '
+44 ' "Refresh the score"
+45 '
+46 proc refreshScore(n)
+47 local s$:s$ = right$("00"+str$(n),3)
+48 text s$ dim 2 colour $FC,4 to 10,3 : ' "Sets mode bit 2, which draws the background forcing overwrite $FC is yellow."
+49 endproc
+50 '
+51 ' "Draw frame"
+52 '
+53 proc drawScreen()
+54 bitmap clear 0
+55 rect solid colour $F0 0,20 to 319,24
+56 rect 0,236 to 319,239
+57 rect 316,20 to 319,239
+58 endproc
+ÿÿÿÿ
+

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WildBits 512K Physical Map</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F6F8F9; --panel:#FFFFFF; --ink:#1B2328; --ink-soft:#4E5C64; --line:#D4DCE1;
+  --ram:#F6ECD9; --ram-edge:#C9963F; --ram-ink:#A8690F;
+  --sys:#4A4658; --sys-soft:#E9E7F0; --sys-edge:#948FAD;
+  --flash:#E2EBF2; --flash-edge:#7C9CB4; --flash-ink:#38607F;
+  --ex:#E2F0E6; --ex-edge:#7FAE8E; --ex-ink:#2F6B44;
+  --io:#EDE4EE; --io-edge:#B08BB4; --io-ink:#6E3E74;
+  --void:#EDF0F2; --void-ink:#8A98A1;
+  --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
+    --ram:#33291A; --ram-edge:#8A6A2E; --ram-ink:#E0A64F;
+    --sys:#B0A8CE; --sys-soft:#272433; --sys-edge:#575072;
+    --flash:#1E2E3B; --flash-edge:#3E637F; --flash-ink:#7FB0D6;
+    --ex:#1C2E22; --ex-edge:#3E6B4E; --ex-ink:#8CC79E;
+    --io:#2C2230; --io-edge:#6E4E74; --io-ink:#CD9BD2;
+    --void:#1A2126; --void-ink:#5E6E78;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
+  --ram:#33291A; --ram-edge:#8A6A2E; --ram-ink:#E0A64F;
+  --sys:#B0A8CE; --sys-soft:#272433; --sys-edge:#575072;
+  --flash:#1E2E3B; --flash-edge:#3E637F; --flash-ink:#7FB0D6;
+  --ex:#1C2E22; --ex-edge:#3E6B4E; --ex-ink:#8CC79E;
+  --io:#2C2230; --io-edge:#6E4E74; --io-ink:#CD9BD2;
+  --void:#1A2126; --void-ink:#5E6E78;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 'Atkinson Hyperlegible',system-ui,sans-serif}
+.wrap{max-width:1060px;margin:0 auto;padding:40px 24px 72px}
+header{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:30px}
+.eyebrow{font:600 12px/1 'Saira Semi Condensed',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+h1{font:700 40px/1.05 'Saira Semi Condensed',sans-serif;margin:8px 0 10px;text-wrap:balance}
+.sub{max-width:62ch;color:var(--ink-soft);margin:0}
+.sub code,p code,li code,td code{font:500 .92em var(--mono);color:var(--ink)}
+h2{font:600 22px/1.2 'Saira Semi Condensed',sans-serif;margin:38px 0 10px;text-wrap:balance}
+h3{font:600 17px/1.25 'Saira Semi Condensed',sans-serif;margin:22px 0 8px}
+p,li{max-width:68ch}
+.grid{display:grid;grid-template-columns:400px 1fr;gap:36px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.mapcol{position:sticky;top:16px}
+@media (max-width:860px){.mapcol{position:static}}
+.map{display:grid;grid-template-columns:1fr 22px 1fr;gap:0}
+.stack{display:flex;flex-direction:column-reverse;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden}
+.seg{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border-top:1px solid var(--line);min-height:40px}
+.stack .seg:last-child{border-top:none}
+.seg .nm{font:600 12.5px/1.15 'Saira Semi Condensed',sans-serif;letter-spacing:.02em}
+.seg .nm small{font-weight:500;font-size:10.5px;display:block}
+.seg .ad{font:500 10.5px/1.3 var(--mono);color:var(--ink-soft);text-align:right;white-space:nowrap}
+.seg.ram{background:var(--ram)}.seg.ram .nm{color:var(--ram-ink)}
+.seg.sys{background:var(--sys-soft)}.seg.sys .nm{color:var(--sys)}
+.seg.flash{background:var(--flash)}.seg.flash .nm{color:var(--flash-ink)}
+.seg.ex{background:var(--ex)}.seg.ex .nm{color:var(--ex-ink)}
+.seg.io{background:var(--io)}.seg.io .nm{color:var(--io-ink)}
+.seg.void{background:var(--void)}.seg.void .nm{color:var(--void-ink)}
+.seg.zoomed{outline:2px dashed var(--ram-edge);outline-offset:-3px}
+.zoomlink{position:relative}
+.zoomlink::before,.zoomlink::after{content:"";position:absolute;left:0;width:100%;border-top:1.5px dashed var(--ink-soft)}
+.zoomlink::before{top:0}.zoomlink::after{bottom:36%}
+.maplegend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:14px;font-size:12.5px}
+.maplegend span{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft)}
+.sw{width:13px;height:13px;border-radius:3px;border:1px solid var(--line);flex:none}
+.sw.ram{background:var(--ram);border-color:var(--ram-edge)}
+.sw.sys{background:var(--sys-soft);border-color:var(--sys-edge)}
+.sw.flash{background:var(--flash);border-color:var(--flash-edge)}
+.sw.ex{background:var(--ex);border-color:var(--ex-edge)}
+.sw.io{background:var(--io);border-color:var(--io-edge)}
+.mapcap{font-size:12.5px;color:var(--ink-soft);margin-top:8px;max-width:none}
+table{border-collapse:collapse;width:100%;font-size:14px}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+th{font:600 11.5px/1.3 'Saira Semi Condensed',sans-serif;letter-spacing:.09em;text-transform:uppercase;text-align:left;color:var(--ink-soft);padding:9px 12px;border-bottom:1.5px solid var(--line)}
+td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td.addr{font:500 13px var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.callout{background:var(--ram);border:1px solid var(--ram-edge);border-radius:6px;padding:14px 16px;margin:16px 0}
+.callout h3{margin-top:0;color:var(--ram-ink)}
+.callout p:last-child{margin-bottom:0}
+ol.chain{counter-reset:st;list-style:none;padding-left:0}
+ol.chain li{counter-increment:st;position:relative;padding-left:40px;margin:10px 0}
+ol.chain li::before{content:counter(st);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--sys-soft);color:var(--sys);border:1px solid var(--sys-edge);font:600 13px/26px 'Saira Semi Condensed',sans-serif;text-align:center}
+.src{font-size:12.5px;color:var(--ink-soft)}
+footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 64K Memory Map</div>
+  <h1>WildBits 512K Physical Map</h1>
+  <p class="sub">The physical 8K blocks behind the MMU: where system RAM, the flash drives, the FEU,
+  the boot trampoline, and the cartridge live &mdash; and which blocks OS-9 actually owns at run time.
+  Block numbers are the values written to the MMU slot registers.</p>
+</header>
+
+<div class="grid">
+<div class="mapcol">
+  <div class="map">
+    <!-- left: full physical block space $00-$FF, bottom = $00 -->
+    <div class="stack" aria-label="Full physical block space">
+      <div class="seg ram zoomed" style="min-height:96px"><span class="nm">System RAM 512K<br><small>64 blocks &middot; zoomed &rarr;</small></span><span class="ad">$00&ndash;$3F</span></div>
+      <div class="seg flash" style="min-height:56px"><span class="nm">/f1 flash drive<br><small>448K user flash</small></span><span class="ad">$40&ndash;$77</span></div>
+      <div class="seg flash"><span class="nm">/f0 &middot; FEU system<br><small>40K</small></span><span class="ad">$78&ndash;$7C</span></div>
+      <div class="seg flash"><span class="nm">Booter<br><small>24K</small></span><span class="ad">$7D&ndash;$7F</span></div>
+      <div class="seg ex" style="min-height:52px"><span class="nm">EXRAM / cartridge<br><small>K2: 256K exp. RAM &middot; Jr2: /c0 /c1 cart</small></span><span class="ad">$80&ndash;$9F</span></div>
+      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$A0&ndash;$BF</span></div>
+      <div class="seg io"><span class="nm">Sectored I/O pages<br><small>VICKY blocks</small></span><span class="ad">$C0&ndash;$C7</span></div>
+      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$C8&ndash;$FF</span></div>
+    </div>
+    <div class="zoomlink" role="presentation"></div>
+    <!-- right: zoom of RAM $00-$3F, bottom = $00 -->
+    <div class="stack" aria-label="Zoom of system RAM">
+      <div class="seg sys" style="min-height:58px"><span class="nm">Block 0 &middot; system<br><small>D.* globals, block map, dispatch, trampoline</small></span><span class="ad">$00</span></div>
+      <div class="seg ram"><span class="nm">Free pool</span><span class="ad">$01&ndash;$03</span></div>
+      <div class="seg sys" style="min-height:66px"><span class="nm">OS9Boot + kernel<br><small>blocks (8&minus;n)&hellip;7, n&asymp;4</small></span><span class="ad">$04&ndash;$07</span></div>
+      <div class="seg ram" style="min-height:96px"><span class="nm">Free pool<br><small>processes, buffers, framebuffers, rbmem cache</small></span><span class="ad">$08&ndash;$3F</span></div>
+    </div>
+  </div>
+  <div class="maplegend">
+    <span><i class="sw ram"></i>RAM (OS-9 pool)</span>
+    <span><i class="sw sys"></i>RAM (reserved)</span>
+    <span><i class="sw flash"></i>Flash</span>
+    <span><i class="sw ex"></i>EXRAM / cart</span>
+    <span><i class="sw io"></i>I/O pages</span>
+  </div>
+  <p class="mapcap">Low block numbers at the bottom. The MMU slot-entry high bits select the region:
+  <code>00</code>=RAM, <code>01</code>=flash, <code>100</code>=EXRAM, <code>11000</code>=I/O page.</p>
+</div>
+
+<div>
+<h2>System RAM &mdash; who owns what at run time</h2>
+<div class="tblwrap"><table>
+<tr><th>Blocks</th><th>Owner</th><th>Contents</th></tr>
+<tr><td class="addr">$00</td><td>Kernel (permanent)</td><td>The system block: D.* globals page, the 8K-block allocation map at $0200 (one byte per physical block, up to 2MB), system/user dispatch tables, kernel data &mdash; and the boot <em>trampoline</em> at $0600 (below). Marked used by the memory-sizing routine itself.</td></tr>
+<tr><td class="addr">$01&ndash;$03</td><td>Free pool</td><td>General allocation. (Block 1 doubles as <code>bootos9</code>&rsquo;s temporary MMU copy window during a re-boot, then returns to the pool.)</td></tr>
+<tr><td class="addr">$04&ndash;$07</td><td>Boot modules</td><td>OS9Boot is loaded into the blocks just below block 8 &mdash; blocks (8&minus;n)&hellip;7 for an n-block bootfile (currently n=4, so $04&ndash;$07). The kernel (last module in the merge) lands in the top block and is marked used; the rest hold the boot module directory contents.</td></tr>
+<tr><td class="addr">$08&ndash;$3F</td><td>Free pool (448K)</td><td>Process address spaces, RBF/SCF buffers, bitmap framebuffers (VICKY fetches these over its RAM port &mdash; the layers you see in <code>view</code>/<code>shellbg</code> live here), and rbmem&rsquo;s 8K flash-write cache (one block via <code>F$AllRAM</code> at Init).</td></tr>
+</table></div>
+
+<p>Memory sizing is a ghost test, not a table: the kernel writes a marker through successively doubled
+block numbers (8, 16, 32, 64&hellip;) until the write aliases back to block 0 &mdash; on these machines that
+stops at <strong>64 blocks = 512K</strong>, recorded in <code>D.MemSz</code>. Nothing about the pool is
+hard-coded; more RAM would be found the same way.</p>
+
+<div class="callout">
+<h3>The trampoline</h3>
+<p>When <code>bootos9</code> (re)boots the system, running code is about to yank the MMU out from under
+itself. The escape: it copies a tiny relocatable stub to <code>$0600</code> in block 0
+(<code>RELOC_ADDR</code>), jumps to it, and the stub &mdash; running from an address that stays mapped &mdash;
+resets MMU slots 0&ndash;7 to identity (blocks 0&ndash;7), then jumps to the kernel entry point found in the
+freshly-loaded bootfile. The same staging is used by the FEU&rsquo;s <code>os9boot</code>. That stub, plus
+the block $04&ndash;$07 staging area, is the entire hand-off mechanism between boot stages.</p>
+</div>
+
+<h2>The boot chain, block by block</h2>
+<ol class="chain">
+<li><strong>Power-on &rarr; Booter</strong> (flash $7D&ndash;$7F, the top 24K of the chip &mdash; the three <code>booter_*.bin</code> pieces fnxmgr installs).</li>
+<li><strong>Booter &rarr; FEU OS-9</strong>: loads the mini system from /f0 (flash $78&ndash;$7C, the five <code>f0_*.bin</code> pieces, 40K). FEU = &ldquo;First Executable Unit&rdquo; &mdash; a self-contained Level 2 OS-9 living entirely in flash.</li>
+<li><strong>FEU startup &rarr; <code>bootos9 /s0/OS9Boot</code></strong>: the FEU&rsquo;s startup script chains to the real system &mdash; bootos9 reads the SD card&rsquo;s OS9Boot into RAM blocks (8&minus;n)&hellip;7 through the block-1 copy window.</li>
+<li><strong>Trampoline</strong>: stub at $0600, MMU identity map, jump to kernel &mdash; full OS-9 running from SD-loaded RAM. The FEU&rsquo;s flash blocks return to being just the /f0 drive.</li>
+</ol>
+
+<h2>Flash &mdash; one chip, three tenants</h2>
+<div class="tblwrap"><table>
+<tr><th>Blocks</th><th>Size</th><th>Role</th></tr>
+<tr><td class="addr">$40&ndash;$77</td><td>448K</td><td><strong>/f1</strong> &mdash; the user flash drive (formattable, writable; rbmem erase/program with DQ6 polling).</td></tr>
+<tr><td class="addr">$78&ndash;$7C</td><td>40K</td><td><strong>/f0</strong> &mdash; the FEU system image; mounted read-only at run time. fnxmgr&rsquo;s <code>bulk.csv</code> flashes these as chip sectors $38&ndash;$3C.</td></tr>
+<tr><td class="addr">$7D&ndash;$7F</td><td>24K</td><td><strong>Booter</strong> &mdash; first code after reset; chip sectors $3D&ndash;$3F.</td></tr>
+</table></div>
+
+<h2>EXRAM / cartridge ($80&ndash;$9F)</h2>
+<p>One decode, different hardware per machine: on the <strong>K2</strong> this is the 256K expansion RAM
+(physical $10_0000&ndash;$13_FFFF). On the <strong>Jr2</strong> the same select reaches the
+<strong>cartridge port</strong>: <code>/c0</code> is based at block $80 and <code>/c1</code> at $90
+(flash cartridges, same SST39 family and driver as onboard flash). This region shares the external
+bus &mdash; and its single write strobe &mdash; with the flash chip and the RTC, which is why the v8_rc6 core&rsquo;s
+strobe policy covers all three.</p>
+
+<h2>Sectored I/O pages ($C0+)</h2>
+<div class="tblwrap"><table>
+<tr><th>Block</th><th>Contents</th></tr>
+<tr><td class="addr">$C0</td><td>Gamma tables, text LUTs, bitmap control (GAMMA_BLK / TEXT_LUT_BLK / BITMAP_BLK)</td></tr>
+<tr><td class="addr">$C1</td><td>Font memory (FONT_BLK)</td></tr>
+<tr><td class="addr">$C2</td><td>Text screen memory (what vtio and the flash-ID debug display map in)</td></tr>
+<tr><td class="addr">$C4</td><td>Sound block &mdash; PSG/SID register window</td></tr>
+</table></div>
+<p>These are VICKY-internal pages, not RAM &mdash; mapping one into a slot windows the device, and the
+MMU entry pattern <code>1100 0xxx</code> routes there instead of to memory.</p>
+
+<h2>Where this comes from</h2>
+<p class="src">
+&bull;&nbsp;<code>level2/modules/kernel/krn.asm:340&ndash;660</code> &mdash; block map at $0200, ghost-test memory
+sizing, block-0 and kernel-block reservation.<br>
+&bull;&nbsp;<code>level1/wildbits/cmds/bootos9.as</code> &mdash; staging blocks (8&minus;n)&hellip;7, the block-1 copy
+window (<code>MMU_COPY_BLOCK</code>), and the $0600 trampoline (<code>RELOC_ADDR</code>/<code>RelocStart</code>).<br>
+&bull;&nbsp;<code>level1/wildbits/feu/os9boot.as</code> &mdash; the FEU-side loader with the same staging math.<br>
+&bull;&nbsp;<code>level1/wildbits/modules/rbmemdesc.asm</code> &mdash; drive base blocks: f1=$40, f0=$78, c0=$80, c1=$90.<br>
+&bull;&nbsp;<code>recipes/&hellip;/bulk.csv</code> &mdash; booter/f0 flash sector layout ($38&ndash;$3F).<br>
+&bull;&nbsp;<code>defs/wildbits.d</code> &mdash; I/O page block numbers, MMU registers; entry encoding per
+<code>TyVKy2K2x1_MMU_Register.v</code> (see the companion 64K Memory Map report).</p>
+
+<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-08-30. Companion: WildBits 64K Memory Map.</footer>
+</div>
+</div>
+
+</body>
+</html>

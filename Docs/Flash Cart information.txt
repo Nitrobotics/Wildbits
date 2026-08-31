@@ -1,0 +1,27 @@
+CartFlasher
+
+Apart from the 256K RAM expansion cartridge there is also 256K flash expansion cartridge for the F256 K/Jr. available from Foenix Retro Systems. This cartridge contains extra flash memory which can be used to store software and data in a non volatile fashion. The extra memory is visible at 24 bit address $100000. The MMU (see Memory Management) can map the 32 8K blocks on the cartridge as blocks $80 to $9F into the 64K base memory.
+
+When booting your Foenix the MicroKernel looks for a Kernel User Program (KUP, see File Formats) to start in the flash cartridge, in the on-board flash memory and (depending on the position of your DIP switches) also in the on-board RAM. In a typical configuration on a system with a flash expansion cartridge the first memory region to be searched is the memory occupied by the cartridge. Or in other words if there is at least one KUP in your flash cartridge the first one found will be started automatically after power on and after each reset. If you want to write data on your flash expansion cartridge then there are two programs which can be used for this purpose:
+
+    F256_FlashCart: https://github.com/Red-Fool/F256_FlashCart
+    fcart: https://github.com/rmsk2/cartflash
+
+Both do run on your Foenix machine. F256_FlashCart is written in BASIC and always erases the whole flash chip before writing new data to it. fcart allows to incrementally write data to a flash cartridge by only erasing the flash blocks which it is told to overwrite. Additionally it can be built in three versions. First as a pgz file (see File Formats) which can be run py Pexec, then as a KUP which expects to be run from on-board flash and finally as a KUP which can be run from the last block of the flash cartridge itself. This allows the cartridge to be self contained in such a way that no additional software is needed to store data on it.
+
+The 256K flash chip in the cartridge is a SST39LF/VF020 by Microchip. Its data sheet can be found here. The data sheet is necessary if one wants to understand what both of the programs linked above actually do. The flash cartridge is also compatible with the K2/JrJr. 
+
+* Added by R Taylor:
+* The SST39LF010/020/040 and SST39VF010/020/040
+* FLASH chips are 128K x8, 256K x8, and 512K x8
+*
+* With A MS -A1 = 0; SST Manufacturer's ID = BFH, is read with A0 = 0,
+* SST39LF/VF010 Device ID = D5H, is read with A0 = 1.
+* SST39LF/VF020 Device ID = D6H, is read with A0 = 1.
+* SST39LF/VF040 Device ID = D7H, is read with A0 = 1.
+*
+* Translation: The value we read from >MMU_WINDOW contains:
+* MSB = Manufacturer's ID = $BF (Microchip Technology - SST)
+* LSB = Device ID = $DF = 128KB
+*                   $D6 = 256KB (Foenix Retro Systems Flash Cart)
+*                   $D7 = 512KB (Foenix Retro Systems Flash Cart)
