@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WildBits Interrupt Groups</title>
+<style>
+  :root {
+    --bg: #f7f6f2;
+    --panel: #ffffff;
+    --ink: #1e2229;
+    --muted: #5c6470;
+    --line: #ddd8cf;
+    --accent: #7a3b12;
+    --ok-bg: #e6f2e6;   --ok-ink: #1e5c22;
+    --miss-bg: #fdf3d7; --miss-ink: #7a5a00;
+    --bad-bg: #fbe3e0;  --bad-ink: #8f1f10;
+    --stale-bg: #ece7f5;--stale-ink: #4a3a7a;
+    --code-bg: #f0ede6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16181d;
+      --panel: #1e2128;
+      --ink: #e4e1da;
+      --muted: #9aa1ab;
+      --line: #363b45;
+      --accent: #e0956a;
+      --ok-bg: #1e3320;   --ok-ink: #8fce93;
+      --miss-bg: #3a3212; --miss-ink: #e5c76a;
+      --bad-bg: #421e19;  --bad-ink: #f09a8c;
+      --stale-bg: #2b2540;--stale-ink: #b9a8e8;
+      --code-bg: #272b33;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2rem 1rem 4rem;
+    background: var(--bg); color: var(--ink);
+    font: 15px/1.55 Georgia, "Times New Roman", serif;
+  }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.7rem; margin: 0 0 .2rem; }
+  h2 { font-size: 1.2rem; margin: 2.2rem 0 .6rem; color: var(--accent); }
+  .sub { color: var(--muted); margin: 0 0 1.6rem; font-size: .95rem; }
+  .regline { font-family: Consolas, "Cascadia Mono", monospace; font-size: .85rem; color: var(--muted); margin: 0 0 .5rem; }
+  table {
+    width: 100%; border-collapse: collapse; background: var(--panel);
+    border: 1px solid var(--line); font-size: .9rem;
+  }
+  .tablewrap { overflow-x: auto; }
+  th, td { padding: .45rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-bottom: 2px solid var(--line); }
+  tr:last-child td { border-bottom: none; }
+  code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: .85em; background: var(--code-bg); padding: .05em .3em; border-radius: 3px; white-space: nowrap; }
+  td.bit { font-family: Consolas, monospace; white-space: nowrap; }
+  .tag { display: inline-block; padding: .1em .5em; border-radius: 3px; font-size: .75rem; font-family: Consolas, monospace; white-space: nowrap; }
+  .ok    { background: var(--ok-bg);    color: var(--ok-ink); }
+  .miss  { background: var(--miss-bg);  color: var(--miss-ink); }
+  .bad   { background: var(--bad-bg);   color: var(--bad-ink); }
+  .stale { background: var(--stale-bg); color: var(--stale-ink); }
+  .note {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    padding: .8rem 1rem; margin: 1rem 0; font-size: .92rem;
+  }
+  ul { padding-left: 1.3rem; }
+  li { margin: .35rem 0; }
+  .src { color: var(--muted); font-size: .8rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>WildBits Interrupt Groups: Hardware vs. wildbits.d</h1>
+  <p class="sub">
+    Hardware truth from <span class="mono">fpga-6809-cores-staging/source/IRQ_Controller_Jr.v</span>
+    (the <span class="mono">lirq0</span> concatenation, line 153&ndash;156) vs. the OS definitions in
+    <span class="mono">nitros9/defs/wildbits.d</span> (lines 206&ndash;251). Registers per group:
+    PENDING <span class="mono">$FE20+n</span>, POLARITY <span class="mono">$FE24+n</span>,
+    EDGE <span class="mono">$FE28+n</span>, MASK <span class="mono">$FE2C+n</span>.
+    Report date 2026-09-01.
+  </p>
+
+  <div class="note">
+    <strong>Headline discrepancies:</strong> wildbits.d marks groups 2 and 3 &ldquo;not used&rdquo; &mdash;
+    group 3 is in fact the busiest group on the K2 (WiFi RX/TX, optical keyboard, MIDI, WizNet).
+    <span class="tag bad">WRONG</span> <code>INT_SDC_INS</code> is defined as bit&nbsp;6, colliding with
+    <code>INT_VIA1</code>; the hardware puts SD-card-insert at bit&nbsp;7.
+    <span class="tag stale">STALE</span> the <code>INT_VIA1</code> &ldquo;K only: local keyboard&rdquo; comment does not
+    apply to the K2, whose optical keyboard interrupts in group&nbsp;3 bit&nbsp;2.
+  </div>
+
+  <h2>Group 0 &mdash; core system (bits 7:0 of lirq)</h2>
+  <p class="regline">PENDING $FE20 &middot; POLARITY $FE24 &middot; EDGE $FE28 &middot; MASK $FE2C</p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>VICKY_INT_Sync[0]</code></td><td>TinyVicky start of frame (60&nbsp;Hz) &mdash; the OS clock tick</td><td><code>INT_VKY_SOF</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[1]</code></td><td>TinyVicky start of line (per raster line)</td><td><code>INT_VKY_SOL</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">2</td><td><code>Keyboard_int_PulSe[3]</code></td><td>PS/2 keyboard event pulse</td><td><code>INT_PS2_KBD</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">3</td><td><code>Mouse_int_PulSe[3]</code></td><td>PS/2 mouse event pulse</td><td><code>INT_PS2_MOUSE</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">4</td><td><code>~Timer0_i</code></td><td>Timer 0 reached target</td><td><code>INT_TIMER_0</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">5</td><td><code>~Timer1_i</code></td><td>Timer 1 reached target</td><td><code>INT_TIMER_1</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6</td><td><code>DMA_INT_i</code></td><td>DMA engine interrupt</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">7</td><td><code>CRT_IRQn_Sync</code></td><td>Cartridge (&ldquo;CRT&rdquo;) IRQ line from the expansion port</td><td><code>INT_CARTRIDGE</code> %10000000</td><td><span class="tag ok">MATCH</span></td></tr>
+  </table></div>
+
+  <h2>Group 1 &mdash; peripherals (bits 15:8)</h2>
+  <p class="regline">PENDING $FE21 &middot; POLARITY $FE25 &middot; EDGE $FE29 &middot; MASK $FE2D</p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>!COM1_int_PulSe[3]</code></td><td>UART (COM1 / 16550) ready</td><td><code>INT_UART</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[2]</code></td><td>TinyVicky interrupt 2</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">2</td><td><code>VICKY_INT_Sync[3]</code></td><td>TinyVicky interrupt 3</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">3</td><td><code>VICKY_INT_Sync[4]</code></td><td>TinyVicky interrupt 4</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">4</td><td><code>RTC_IRQ[2]</code></td><td>Real-time clock chip event</td><td><code>INT_RTC</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">5</td><td><code>VIA0_INT_i</code></td><td>65C22 VIA #0 event</td><td><code>INT_VIA0</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6</td><td><code>VIA1_INT_i</code></td><td>65C22 VIA #1 (F256K mechanical keyboard)</td><td><code>INT_VIA1</code> %01000000 &ldquo;K Only: local keyboard&rdquo;</td><td><span class="tag stale">STALE COMMENT</span></td></tr>
+    <tr><td class="bit">7</td><td><code>SDC_IRQ[2]</code></td><td>SD card inserted</td><td><code>INT_SDC_INS</code> %01000000</td><td><span class="tag bad">WRONG VALUE</span></td></tr>
+  </table></div>
+  <div class="note">
+    <strong><code>INT_SDC_INS</code> is defined as %01000000 (bit&nbsp;6)</strong> &mdash; the same value as
+    <code>INT_VIA1</code>. The hardware drives SD-insert on <strong>bit&nbsp;7</strong> (%10000000). Any code that ever
+    uses this equate will mask/poll the VIA1 bit instead of the SD-card bit. Latent bug: nothing in the tree uses it today.
+    The VIA1 comment is also stale for the K2 &mdash; the K2&rsquo;s optical keyboard is <em>not</em> on VIA1
+    (see group&nbsp;3 bit&nbsp;2 below).
+  </div>
+
+  <h2>Group 2 &mdash; IEC bus + module IRQ pins (bits 23:16)</h2>
+  <p class="regline">PENDING $FE22 &middot; POLARITY $FE26 &middot; EDGE $FE2A &middot; MASK $FE2E &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>IEC_DATA_i_Sync</code></td><td>IEC serial bus DATA in</td><td><code>IEC_DATA_i</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>IEC_CLK_i_Sync</code></td><td>IEC serial bus CLK in</td><td><code>IEC_CLK_i</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">2</td><td><code>IEC_ATN_i_Sync</code></td><td>IEC serial bus ATN in</td><td><code>IEC_ATN_i</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">3</td><td><code>IEC_SREQ_i_Sync</code></td><td>IEC serial bus SREQ in</td><td><code>IEC_SREQ_i</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">4</td><td><code>NET_IRQn_Sync</code></td><td>Ethernet (WizNet module) IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">5</td><td><code>WIFI_IRQn_Sync</code></td><td>WiFi module IRQ pin (the module&rsquo;s own line, not the FIFOs)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">6</td><td><code>HDMI_IRQn_Sync</code></td><td>HDMI encoder IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">7</td><td>constant <code>1'b0</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
+  </table></div>
+  <div class="note">
+    The four IEC bits (group&nbsp;2 bits 0&ndash;3, <code>Interrupt[16..19]</code>) have a second life: when the
+    <code>IEC_NMI_IRQn_i</code> strap is low they also drive the CPU&rsquo;s <strong>NMI</strong>
+    (<span class="mono">IRQ_Controller_Jr.v:427</span>), not just IRQ.
+  </div>
+
+  <h2>Group 3 &mdash; FIFO events: WiFi / keyboard / MIDI / WizNet (bits 31:24)</h2>
+  <p class="regline">PENDING $FE23 &middot; POLARITY $FE27 &middot; EDGE $FE2B &middot; MASK $FE2F &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>NEW_Rx_FIFO_WIFI_Sync</code></td><td>WiFi RX FIFO went non-empty</td><td><code>INT_WIZFI_RX</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>NEW_Rx_FIFO_MIDI_Sync</code></td><td>MIDI RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">2</td><td><code>NEW_Optical_Kbd_Sync</code></td><td><strong>K2 optical keyboard</strong> FIFO went non-empty (latches on every keystroke; Jr2 never wires this)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">3</td><td><code>NEW_WizNet_FIFO_Sync</code></td><td>WizNet (Ethernet) FIFO event</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">4</td><td><code>NEW_Rx_FIFO_MIDI_VS_Sync</code></td><td>MIDI synth (VS) RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">5</td><td><code>NEW_Tx_FIFO_WIFI_Sync</code></td><td>WiFi TX FIFO drained to empty</td><td><code>INT_WIZFI_TX</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6&ndash;7</td><td>constant <code>2'b00</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
+  </table></div>
+  <div class="note">
+    <strong>Group 3 is why K2 keyboard freezes intersected with the WizFi driver.</strong> The optical keyboard&rsquo;s
+    IRQ line is literally the FIFO-empty flag (<span class="mono">OpticalKeyboardScanner.v:46</span>), so bit&nbsp;2
+    latches into PENDING_3 on every keystroke and nothing in the OS ever services or clears it &mdash;
+    <span class="mono">keydrv_k2</span> polls the FIFO off the 60&nbsp;Hz clock and never touches the INT registers.
+    It stays harmless only because MASK_3 resets to all-ones. Meanwhile wizfi&rsquo;s F$IRQ poll entry matches against
+    the <em>same shared register</em>. wildbits.d&rsquo;s &ldquo;not used&rdquo; comment on this group is exactly the
+    documentation gap that let that interaction hide.
+  </div>
+
+  <h2>Controller behavior (applies to all four groups)</h2>
+  <ul>
+    <li><strong>Reset defaults:</strong> POLARITY = $00 (falling edge), EDGE = $FF (edge mode), MASK = $FF (all masked), PENDING = $00. These reset only on FPGA reset &mdash; <strong>a soft reboot preserves them</strong>, so mask bits a driver unmasked (e.g. wizfi&rsquo;s group-3 bits) survive into the next OS boot.</li>
+    <li><strong>PENDING latches unconditionally:</strong> <span class="mono">pending &lt;= pending | irq_event</span> &mdash; the mask gates only the CPU IRQ output (<span class="mono">Interrupt[n] = pending[n] &amp; ~mask[n]</span>), never the latch.</li>
+    <li><strong>PENDING is write-1-to-clear;</strong> reads are side-effect-free. MASK is a plain read/write register.</li>
+    <li><strong>OS init gap:</strong> the clock module clears/masks only groups 0 and 1 at init (and with a read-modify-write on MASK_0 on the campaign branches &mdash; the committed freeze fix on <span class="mono">wb/sd_dw</span> makes it an absolute store). Groups 2 and 3 are never initialized by the OS.</li>
+  </ul>
+
+  <h2>Recommended wildbits.d patch</h2>
+  <ul>
+    <li>Delete the &ldquo;not used&rdquo; comments on the group 2/3 register equates.</li>
+    <li>Fix <code>INT_SDC_INS</code> to %10000000.</li>
+    <li>Group 0: add <code>INT_DMA</code> %01000000.</li>
+    <li>Group 2: add equates for NET (%00010000), WiFi module pin (%00100000), HDMI (%01000000).</li>
+    <li>Group 3: add <code>INT_MIDI_RX</code> %00000010, <code>INT_OPT_KBD</code> %00000100, <code>INT_WIZNET</code> %00001000, <code>INT_MIDI_VS_RX</code> %00010000; note K2-only on the keyboard bit.</li>
+    <li>Correct the <code>INT_VIA1</code> comment: F256K mechanical keyboard only &mdash; the K2 optical keyboard is group&nbsp;3 bit&nbsp;2.</li>
+  </ul>
+
+  <p class="src">Sources: IRQ_Controller_Jr.v lines 153&ndash;156 (input latch), 172&ndash;190 (trigger/edge logic), 383&ndash;427 (output/NMI), reset block (pol/edgen/mask/pending defaults); OpticalKeyboardScanner.v:46; TinyVKY2K2_IO_Page0_Devices.v:2117/2354 (K2-only keyboard wiring); wildbits.d:206&ndash;251; keydrv_k2.asm (no INT register access); clock.asm init (groups 0/1 only).</p>
+</main>
+</body>
+</html>
