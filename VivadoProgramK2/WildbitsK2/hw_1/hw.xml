@@ -24,7 +24,7 @@
     <Object name="xc7a200t_0" gui_info="">
       <Properties Property="FULL_PROBES.FILE" value=""/>
       <Properties Property="PROBES.FILE" value=""/>
-      <Properties Property="PROGRAM.HW_BITSTREAM" value="E:/cygwin64/home/taylo/wildbits-cores/wildbits_k2_6809_v8_rc6.bit"/>
+      <Properties Property="PROGRAM.HW_BITSTREAM" value="E:/cygwin64/home/taylo/fpga-6809-cores-staging/bitstreams/wildbits_k2_6809_v8_rc9.bit"/>
       <Properties Property="PROGRAM.HW_CFGMEM_PART" value=""/>
       <Properties Property="SLR.COUNT" value="1"/>
     </Object>

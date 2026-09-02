@@ -149,3 +149,26 @@ strobe its timing actually requires.
   cores: `wildbits_jr2_6809_v8_rc6` and `wildbits_k2_6809_v8_rc6`**
   (the K2's flash behavior is unchanged since rc3; rc6 simply builds
   both machines from the same source level).
+
+## Defect 5 (system, both machines): the sector window shared slot 2 with the kernel (2026-09-02)
+
+rbmem maps every flash or RAM-disk sector block into **system slot 2**
+(`MMU_SLOT equ 2`, window `$4000`) for the 256-byte copy, and its flash
+command path (`InitCmd`/`SendCmd`) calls subroutines *while a flash block
+is mapped there*. That is safe only if nothing the CPU is using lives in
+slot 2. On Level 2 the kernel's `F$SRqMem` grows the system map downward
+into $4000–$5FFF once about 17 pages are in use — four WizFi listeners is
+enough — and process descriptors, whose second page is the process's
+system stack, land inside the window. A flash access from such a process
+then pushes its return addresses **into the flash chip**: the pushes are
+swallowed, the pulls read array data, and the driver returns nonsense or
+the CPU wanders. This is the mechanism behind the K2's "lost /f0 and /f1
+to error 241" incidents.
+
+Fix: the wildbits kernel now reserves pages $40–$5F at boot so slot 2
+belongs to the drivers alone (see `wildbits-mmu-slot-safety.md`); rbmem
+is unchanged and its window is safe by construction. Verified on the K2
+with `dir /f0` / `dir /f1` while four remote shells were up. rbmem's
+`TfrSect` and `SendCmd` still use the stack inside the window; cleaning
+that up to the vtio discipline (statics, no cross-block stack traffic) is
+recommended but no longer load-bearing.

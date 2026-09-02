@@ -115,3 +115,103 @@ desync cascade.
   Timer0 remains free for other uses.
 - lwasm gotcha: the `os9` macro breaks `@`-local label scope — loop
   labels that cross an `os9` call must be global.
+
+## WizCon4 — four packet-mode connections (2026-08-31 … 2026-09-02)
+
+The `$E1BEA2` driver handled one remote shell. WizCon4 makes `/wz0`–`/wz3`
+four independent packet-mode channels behind the module's `AT+CIPMUX=1`
+server (`AT+CIPSERVERMAXCONN=4`), each with its own `tsmon`. What changed,
+in the order the field forced it:
+
+### One shared parser, not four
+
+The module delivers one byte stream. With per-device parser state, four
+readers popping the same FIFO fragmented `+IPD` headers across each other.
+The `+IPD` state machine now lives once in the shared stat page
+(`wzp_*`, offsets $A0+), advanced by whichever context pops a byte
+(any device's reader, or a writer's `HsPop` during a CIPSEND handshake).
+Payload for another channel is parked in that channel's 32-byte ring
+(`ParkOther`); a reader always drains its own ring before touching the
+FIFO.
+
+### The stat-page pointer collided with the K2 keyboard (the wedge)
+
+`D.WZStatTbl` was `D.SWPage` (DP $03) — a one-byte os9.d slot inside the
+K2's `D.RowState` ($00–$08), which `keydrv_k2` rewrites on every keyboard
+event. The first keystroke after a listener started zeroed the pointer
+and the readers used page $0000 (the kernel DP) as their queue page.
+Moved to `D.DbgMem` ($0A–$0B, unused on wildbits). Verify with `9E 0A`
+present / `9E 03` absent in the module.
+
+### No interrupt plumbing on the K2
+
+An every-tick `F$VIRQ` opens the clock's poll gate so IOMan walks the
+whole IRQ poll table 60×/s — a path an idle K2 never runs, and one it
+cannot tolerate (bisect-proven). The driver installs no edge or tick
+entries; blocked readers are the TX flush motor instead: every reader
+wake (`Sleep1`, ~2 ticks) drains all registered rings (`DrainAll` over
+the `wzp_devs` registry). Raw `/wz` still drains per byte in Write.
+
+### Link-gated delivery and hangup emulation
+
+The module's unsolicited `n,CONNECT` / `n,CLOSED` lines are tracked by a
+line scanner (`LineWatch`) into `wzp_link` and `wzp_hup` bits. A
+packet-mode reader hands bytes to its caller only while its channel is
+linked (so `0,CONNECT` can no longer fork logins on `/wz1`–`/wz3`), and a
+blocked reader whose channel has a pending hangup returns `E$HangUp`
+through the DCD-lost path, so login/shell exit and `tsmon` re-arms —
+the connection lifecycle belongs to the driver, not to scripts.
+
+### The first-connection miss
+
+Two causes, both fixed:
+
+1. `LineWatch` only matched at line start; a `> ` prompt or other text
+   ahead of the digit made it skip the line. It now matches
+   `n,CONNECT`/`n,CLOSED` anywhere in a line.
+2. Raw pops (`modem /wz`) bypassed the parser entirely, and the module
+   keeps its TCP sessions across a K2 reboot — so a client already
+   attached announced `0,CONNECT` while `wiz4up` was still in raw mode,
+   nobody set the link bit, and the client's first bytes were dropped.
+   The raw pop path now feeds `LineWatch` too (only the line scanner,
+   never the `+IPD` framing). Stale prompt/line evidence latched this way
+   is harmless: `HsFlags` clears both before each handshake.
+
+Script gotcha found on the way: `modem -t0 /wz` is *wait forever for the
+next line* (wizlog1's connect-banner wait). At the end of `wiz4up` it
+stalled the script until the first client connected, ate the banner and
+the client's first Enter raw, and only then forked the listeners.
+Removed from `wiz4up`.
+
+### The remaining "freeze" was not this driver
+
+With four listeners up, the next fork froze the machine after one
+character on every driver variant, including `$E1BEA2`. That was the MMU
+slot-2 map-window fault in vtio/krn — see `wildbits-mmu-slot-safety.md`.
+
+### Scripts
+
+`wiz4up` (bring-up: CIPMUX=1 server on port 23, four listeners),
+`wiz4down`, `wiz4stat` (raw `AT+CIPSTATUS` — only while channels are
+quiet), `wiz4mix` (concurrent output stress). They ship on the disks from
+`level1/wildbits/scripts`. Do not read `/wz` raw while connections are
+active: raw pops bypass the `+IPD` framing.
+
+### Module lineage (continued)
+
+| Bytes / CRC | Revision |
+|---|---|
+| 56,737-byte source, zlib CRC32 `9FF7A3D5` | the `$E1BEA2` driver re-fingerprinted (the old label came from a different tool) |
+| WizCon4L | shared parser + queues, no interrupt plumbing, reader-driven flush |
+| + `D.DbgMem` | the K2 keystroke wedge fix |
+| WizCon4n | link-gated delivery, hangup emulation, `GetDevChan` null-pointer fix |
+| WizCon4p | `LineWatch` matches mid-line |
+| WizCon4u — 1,903 bytes, `ident` CRC `$C13ED6` | raw pops feed `LineWatch` — **field-verified: four remote shells, first-connection login** |
+
+### Known cost
+
+Interactive latency. Every output burst — even a single echoed
+keystroke — is a full `AT+CIPSEND=n,len` → `>` → data → `SEND OK`
+handshake, and rings are flushed on reader wakes. Bulk output streams
+fine; a shell feels sluggish. Levers: coalesce flushes, or transparent
+mode (`CIPMODE=1`, `wizsv1`/`wizlog1`) for single-connection use.

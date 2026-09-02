@@ -149,9 +149,13 @@ healthy signature.
 
 ## Deployment pairing
 
-Disks built from this branch require the BAUDCE-fixed cores
-(`wildbits_k2_6809_v8_rc3`+ / `wildbits_jr2_6809_v8_rc3`+). Driver
-hardening itself has no core dependency beyond that pairing.
+Disks built from this branch require the BAUDCE-fixed cores —
+minimum `wildbits_k2_6809_v8_rc3` / `wildbits_jr2_6809_v8_rc3`.
+**Recommended: the current cores, `wildbits_k2_6809_v8_rc6` and
+`wildbits_jr2_6809_v8_rc6`**, which add the WizNet ethernet fixes
+(K2) and the turbo-safe flash/cartridge/RTC write strobes (Jr2) on
+top of the baud fix. Driver hardening itself has no core dependency
+beyond the rc3 baud pairing.
 Module fingerprints for `mdir -e` verification: `dwio_serial` = $37A,
 `rbdw` = $252 (current: retry purge + trailing-byte check + abort
 long-listen), $211 (FIFO reset + long purge), $20C (no FIFO reset),
