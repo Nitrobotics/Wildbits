@@ -9,25 +9,26 @@
 <body>
 <div style="background:#1e2229;color:#f5f2ea;padding:18px 24px;margin:0 0 8px 0;font-family:Georgia,serif;font-size:28px;font-weight:bold;text-align:center;border-bottom:4px solid #7a3b12;">Wildbits 6809 K2 and Jr2 Resources</div>
 <div style="background:transparent;color:#e8e4da;padding:12px 24px;margin:0 0 8px 0;font-family:Georgia,serif;font-size:15px;">
-<table style="border-collapse:collapse;margin:8px auto 4px auto;width:90%;font-size:14px;table-layout:fixed;">
+<table style="border-collapse:collapse;margin:8px auto 12px auto;width:80%;table-layout:fixed;">
+<colgroup><col style="width:46%"><col style="width:54%"></colgroup>
+<tr><td style="padding:6px 14px 6px 6px;vertical-align:top;"><div style="font-size:13px;color:#d8d2c6;line-height:1.45;"><b>Features Sneak Peak:</b> the <code>.dsk</code> images in these kits are built from <a href="https://github.com/nitros9project/nitros9/tree/main" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">main</code></a>, which since 2026-09-03 includes:<div style="margin:3px 0 3px 28px;">&bull; merged <code style="color:inherit;background:none;border:none;">wb/fixes_bundle</code> &mdash; MMU slot-2 map-window fix that cures the &ldquo;one character then freeze&rdquo; crash under load and the /f0,/f1 error-241 losses; interrupt-controller hygiene</div><div style="margin:3px 0 3px 28px;">&bull; merged <code style="color:inherit;background:none;border:none;">wb/wizcon4</code> &mdash; WizCon4: four independent packet-mode WiFi channels /wz0&ndash;/wz3 with link gating and hangup emulation</div><div style="margin:3px 0 3px 28px;">&bull; merged <code style="color:inherit;background:none;border:none;">wb/wildspeed</code> &mdash; command update &mdash; Speed Benchmarking Command with per-bus-cycle-class MHz with a perceived-speed blend</div><div style="margin-top:4px;">with the still-pending work laid over the tree at build time:</div><div style="margin:3px 0 3px 28px;">&bull; <a href="https://github.com/nitros9project/nitros9/tree/wb/drivewire_hardening" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/drivewire_hardening</code></a> PR &mdash; Aggressive error-handling and exact 230400 baud for the BAUDCE cores</div><div style="margin:3px 0 3px 28px;">&bull; <a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/k2_core_typematic_support</code></a> branch &mdash; K2 hardware-typematic keyboard support: interrupt-driven keydrv with core key repeat</div><div style="margin:3px 0 3px 28px;">&bull; <a href="https://github.com/nitros9project/nitros9/tree/wb/mouse_hide_unhide" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/mouse_hide_unhide</code></a> branch &mdash; the mouse cursor returns to where you left it after an auto-hide, instead of reappearing at the right border</div><div style="margin:3px 0 3px 28px;">&bull; <code style="color:inherit;background:none;border:none;">wb/defs_updates</code> &mdash; hardware definitions brought in line with the shipping cores: corrected MIDI register map, documented WizFi and MIDI FIFO counters, core feature notes</div><div style="margin-top:4px;">Booting a kit disk therefore exercises every pending PR or new feature branch on real hardware.</div></div></td><td style="padding:6px;vertical-align:bottom;text-align:center;"><img src="Pictures/k2andjr2.png" alt="Wildbits K2 and Jr2 side by side, both booted into NitrOS-9 Level 2" style="height:250px;width:auto;max-width:100%;object-fit:contain;border:1px solid #454b56;"><div style="margin-top:4px;font-size:13px;color:#d8d2c6;">K2 and Jr2</div></td></tr>
+</table>
+<div style="height:1.45em;"></div>
+<table style="border-collapse:collapse;margin:8px auto 4px auto;width:80%;font-size:14px;table-layout:fixed;">
 <colgroup><col style="width:46%"><col style="width:27%"><col style="width:27%"></colgroup>
 <tr><td style="padding:6px 10px;border-bottom:none;"></td><td colspan="2" style="padding:6px 10px;text-align:center;color:#f0d9c8;font-size:15px;font-weight:bold;border-bottom:none;">Latest parity kits built by Roger Taylor</td></tr>
-<tr><th style="padding:6px 10px;text-align:left;vertical-align:middle;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-transform:none;letter-spacing:normal;">Features (Since Core2x work started)</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="FoenixMgrWin/parity_wildbits_k2_v8_rc9.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_k2_6809_v8_rc9</code></a><br>K2 &middot; built 2026-09-01</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="FoenixMgrWin/parity_wildbits_jr2_v8_rc7.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_jr2_6809_v8_rc7</code></a><br>Jr2 &middot; built 2026-08-31</th></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Sprite engine fixes</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><th style="padding:6px 10px;text-align:left;vertical-align:middle;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-transform:none;letter-spacing:normal;">Current core features</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="downloads/parity_wildbits_k2_v8_rc10.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_k2_6809_v8_rc10</code></a><br>K2 &middot; core built 2026-09-03<br>parity kit built 2026-09-04 17:28</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="downloads/parity_wildbits_jr2_v8_rc10.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_jr2_6809_v8_rc10</code></a><br>Jr2 &middot; core built 2026-09-04<br>parity kit built 2026-09-04 17:29</th></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Sprite engine fixed</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">DIP-switchable turbo stretch mode (~1.4x, reads-fast frames)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">WizFi RX/TX interrupts</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Exact DriveWire baud (BAUDCE)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">DMA</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Shared write-strobe policy (flash/cart/RTC)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Turbo-safe flash and cartridge writes (shaped WE)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Turbo fast RAM writes (24-tick write frames, full-length E)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">OS-9 friendly font and palette are built in (saving over 2K of bootfile space if needed)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Hardware key-repeat (typematic) engine</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">W6100 ethernet bus fix</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Stable video/sprite fetch timing (K2: repaired via constraint overhaul; Jr2: never affected)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Turbo-safe flash and cartridge writes (shaped WE)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span><span style="color:#c9a86a;font-size:11px;"> new</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Shared write-strobe policy (flash/cart/RTC)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span><span style="color:#c9a86a;font-size:11px;"> new</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
-</table>
-<div style="width:90%;margin:8px auto 0 auto;font-size:13px;color:#d8d2c6;line-height:1.45;"><b>Features Sneak Peak:</b> the <code>.dsk</code> images in these kits are built from <a href="https://github.com/nitros9project/nitros9/tree/main" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">main</code></a> with the pending work laid over the tree at build time (nothing merged yet): the <a href="https://github.com/nitros9project/nitros9/tree/wb/fixes_bundle" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/fixes_bundle</code></a> PR (MMU slot-2 map-window fix that cures the &ldquo;one character then freeze&rdquo; crash under load and the /f0,/f1 error-241 losses; interrupt-controller hygiene), the <a href="https://github.com/nitros9project/nitros9/tree/wb/drivewire_hardening" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/drivewire_hardening</code></a> PR (exact 230400 DriveWire baud for the BAUDCE cores), the <a href="https://github.com/nitros9project/nitros9/tree/wb/wizfi_tx_packets" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/wizfi_tx_packets</code></a> PR (WizCon4: four independent packet-mode WiFi channels /wz0&ndash;/wz3 with link gating and hangup emulation), and the <a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/k2_core_typematic_support</code></a> branch (K2 hardware-typematic keyboard support: interrupt-driven keydrv with core key repeat). Booting a kit disk therefore exercises every pending PR or new feature branch on real hardware &mdash; if DriveWire (<code>/x0</code>), the flash drives, the console, four WiFi shells (<code>wizi</code> then <code>wiz4up</code>) and key repeat behave, the fixes work as submitted.</div>
-<table style="border-collapse:collapse;margin:14px auto 4px auto;width:90%;table-layout:fixed;">
-<colgroup><col style="width:46%"><col style="width:54%"></colgroup>
-<tr><td style="padding:6px;vertical-align:top;text-align:center;"><img src="Pictures/k2.png" alt="the K2" style="height:250px;width:auto;max-width:100%;object-fit:contain;border:1px solid #454b56;"><div style="margin-top:4px;font-size:13px;color:#d8d2c6;">the K2</div></td><td style="padding:6px;vertical-align:top;text-align:center;"><img src="Pictures/k2andjr2.png" alt="Wildbits K2 and Jr2 side by side, both booted into NitrOS-9 Level 2" style="height:250px;width:auto;max-width:100%;object-fit:contain;border:1px solid #454b56;"><div style="margin-top:4px;font-size:13px;color:#d8d2c6;">K2 and Jr2</div></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">W6100 ethernet bus fixed</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td></tr>
 </table>
 </div>
 
@@ -342,7 +343,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <h2><span class="no">4</span>The fixed I/O page, $FE00&ndash;$FEFF</h2>
 
 <p class="sub" style="max-width:none">Every register the $FE page carries, reported the way the 512K map is: the block stack on the left, one table per block on the right, bits listed under their register.</p>
-<div class="grid">
+<div class="grid" style="grid-template-columns:250px 1fr;gap:28px">
 <div class="mapcol">
   <div class="map" style="grid-template-columns:1fr">
     <div class="stack" aria-label="Fixed I/O page blocks">
@@ -536,7 +537,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <h2><span class="no">5</span>The system page, $FF00&ndash;$FFFF</h2>
 
 <p class="sub" style="max-width:none">The $FF page: peripherals with FIFOs, the MMU, VICKY&rsquo;s master registers, the float unit and the CPU vectors, in the same report layout.</p>
-<div class="grid">
+<div class="grid" style="grid-template-columns:250px 1fr;gap:28px">
 <div class="mapcol">
   <div class="map" style="grid-template-columns:1fr">
     <div class="stack" aria-label="System page blocks">
@@ -1193,7 +1194,7 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
     background: var(--bg); color: var(--ink);
     font: 15px/1.55 Georgia, "Times New Roman", serif;
   }
-  main { max-width: 860px; margin: 0 auto; }
+  main { max-width: 1400px; margin: 0 auto; }   /* matches .wrap (site-wide override) so the section is as wide as the 64K Memory Map */
   h1 { font-size: 1.7rem; margin: 0 0 .2rem; }
   h2 { font-size: 1.2rem; margin: 2.2rem 0 .6rem; color: var(--accent); }
   .sub { color: var(--muted); margin: 0 0 1.6rem; font-size: .95rem; }
@@ -1338,170 +1339,21 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
   <p class="src">Sources: IRQ_Controller_Jr.v lines 153&ndash;156 (input latch), 172&ndash;190 (trigger/edge logic), 383&ndash;427 (output/NMI), reset block (pol/edgen/mask/pending defaults); OpticalKeyboardScanner.v:46; TinyVKY2K2_IO_Page0_Devices.v:2117/2354 (K2-only keyboard wiring); wildbits.d:206&ndash;251; keydrv_k2.asm (no INT register access); clock.asm init (groups 0/1 only).</p>
 </main>
 <br><br><br><br><br>
-<!-- ===== WildBits_Sprite_Engine.htm ===== -->
-<style>
-:root{
-  --paper:#F4F5F2; --ink:#1D2126; --ink-soft:#4A5158; --ink-faint:#8A9199;
-  --accent:#3D6EA5; --accent-soft:#E3EAF2; --pixel:#B0407A; --pixel-soft:#F2E1EA;
-  --warn:#A8651E; --warn-soft:#F5EAD9; --ok:#3E7A4E; --ok-soft:#E2EEE4;
-  --card:#FFFFFF; --line:#D8DCDF; --code-bg:#22262B; --code-ink:#D8DEE4; --code-accent:#8FB4DC;
-  --thead:#EBEEEA;
-}
-:root:not([data-theme="light"]){}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#15181C; --ink:#DDE2E7; --ink-soft:#A6AEB7; --ink-faint:#6C757F;
-    --accent:#6E9ECF; --accent-soft:#1F2C3B; --pixel:#D06A9E; --pixel-soft:#38222E;
-    --warn:#D0924D; --warn-soft:#332818; --ok:#6FAE7F; --ok-soft:#1C2B20;
-    --card:#1C2025; --line:#31373E; --code-bg:#101318; --code-ink:#C9D1D9; --code-accent:#7FA8D4;
-    --thead:#22272D;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#15181C; --ink:#DDE2E7; --ink-soft:#A6AEB7; --ink-faint:#6C757F;
-  --accent:#6E9ECF; --accent-soft:#1F2C3B; --pixel:#D06A9E; --pixel-soft:#38222E;
-  --warn:#D0924D; --warn-soft:#332818; --ok:#6FAE7F; --ok-soft:#1C2B20;
-  --card:#1C2025; --line:#31373E; --code-bg:#101318; --code-ink:#C9D1D9; --code-accent:#7FA8D4;
-  --thead:#22272D;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 "IBM Plex Sans",system-ui,sans-serif}
-.wrap{max-width:880px;margin:0 auto;padding:40px 24px 80px}
-h1,h2,h3{font-family:"Chakra Petch","IBM Plex Sans",sans-serif;text-wrap:balance;line-height:1.2}
-h1{font-size:2.3rem;font-weight:700;margin:.2em 0 .1em}
-h2{font-size:1.35rem;font-weight:600;margin:2.6em 0 .6em;padding-top:.9em;border-top:2px solid var(--line)}
-h3{font-size:1.05rem;font-weight:600;margin:1.6em 0 .4em}
-p{margin:.6em 0;max-width:70ch}
-.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.sub{color:var(--ink-soft);font-size:1.02rem;max-width:72ch}
-.meta{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-faint);margin-top:10px}
-code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.88em}
-p code, li code, td code{background:var(--accent-soft);padding:.08em .34em;border-radius:3px;white-space:nowrap}
-table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.92rem;font-variant-numeric:tabular-nums}
-.tblwrap{overflow-x:auto}
-th{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;text-align:left;background:var(--thead);color:var(--ink-soft)}
-th,td{border:1px solid var(--line);padding:7px 11px;vertical-align:top}
-td.mono,th.mono{font-family:"IBM Plex Mono",monospace;font-size:.86rem;white-space:nowrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 22px;margin:1.2em 0}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:1.4em 0}
-.fact{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 16px}
-.fact b{display:block;font-family:"Chakra Petch",sans-serif;font-size:1.25rem;color:var(--accent)}
-.fact span{font-size:.83rem;color:var(--ink-soft)}
-pre.term{background:var(--code-bg);color:var(--code-ink);border-radius:6px;padding:16px 20px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:.86rem;line-height:1.55;margin:.9em 0}
-pre.term .c{color:var(--ink-faint)}
-pre.term .a{color:var(--code-accent)}
-.lanes{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:1em 0;min-width:640px}
-.lanewrap{overflow-x:auto}
-.lane{border:1px solid var(--line);border-radius:4px;background:var(--card);padding:8px 6px;text-align:center}
-.lane .b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.8rem;color:var(--pixel)}
-.lane .n{font-family:"Chakra Petch",sans-serif;font-size:.82rem;font-weight:600;margin:2px 0}
-.lane .d{font-size:.72rem;color:var(--ink-soft);line-height:1.3}
-.callout{border-left:4px solid var(--warn);background:var(--warn-soft);border-radius:0 6px 6px 0;padding:12px 18px;margin:1.2em 0}
-.callout.ok{border-left-color:var(--ok);background:var(--ok-soft)}
-.callout.blue{border-left-color:var(--accent);background:var(--accent-soft)}
-.chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;letter-spacing:.06em;padding:2px 10px;border-radius:20px;margin-right:6px}
-.chip.ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
-.chip.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
-.chip.open{background:var(--pixel-soft);color:var(--pixel);border:1px solid var(--pixel)}
-ul,ol{max-width:74ch}
-li{margin:.35em 0}
-.screen{margin:1.2em 0;overflow-x:auto}
-.small{font-size:.85rem;color:var(--ink-soft)}
-.steps{counter-reset:st;list-style:none;padding:0}
-.steps>li{counter-increment:st;position:relative;padding-left:44px;margin:1.1em 0}
-.steps>li::before{content:counter(st);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:4px;background:var(--accent);color:var(--paper);font-family:"Chakra Petch",sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95rem}
-a{color:var(--accent)}
-footer{margin-top:60px;border-top:2px solid var(--line);padding-top:16px;font-size:.8rem;color:var(--ink-faint);font-family:"IBM Plex Mono",monospace}
-@media (prefers-reduced-motion: no-preference){ .fact{transition:border-color .15s} .fact:hover{border-color:var(--accent)} }
-</style>
-<style>
-:root{
-  --paper:#F4F5F2; --ink:#1D2126; --ink-soft:#4A5158; --ink-faint:#8A9199;
-  --accent:#3D6EA5; --accent-soft:#E3EAF2; --pixel:#B0407A; --pixel-soft:#F2E1EA;
-  --warn:#A8651E; --warn-soft:#F5EAD9; --ok:#3E7A4E; --ok-soft:#E2EEE4;
-  --card:#FFFFFF; --line:#D8DCDF; --code-bg:#22262B; --code-ink:#D8DEE4; --code-accent:#8FB4DC;
-  --thead:#EBEEEA;
-}
-:root:not([data-theme="light"]){}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#15181C; --ink:#DDE2E7; --ink-soft:#A6AEB7; --ink-faint:#6C757F;
-    --accent:#6E9ECF; --accent-soft:#1F2C3B; --pixel:#D06A9E; --pixel-soft:#38222E;
-    --warn:#D0924D; --warn-soft:#332818; --ok:#6FAE7F; --ok-soft:#1C2B20;
-    --card:#1C2025; --line:#31373E; --code-bg:#101318; --code-ink:#C9D1D9; --code-accent:#7FA8D4;
-    --thead:#22272D;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#15181C; --ink:#DDE2E7; --ink-soft:#A6AEB7; --ink-faint:#6C757F;
-  --accent:#6E9ECF; --accent-soft:#1F2C3B; --pixel:#D06A9E; --pixel-soft:#38222E;
-  --warn:#D0924D; --warn-soft:#332818; --ok:#6FAE7F; --ok-soft:#1C2B20;
-  --card:#1C2025; --line:#31373E; --code-bg:#101318; --code-ink:#C9D1D9; --code-accent:#7FA8D4;
-  --thead:#22272D;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.6 "IBM Plex Sans",system-ui,sans-serif}
-.wrap{max-width:880px;margin:0 auto;padding:40px 24px 80px}
-h1,h2,h3{font-family:"Chakra Petch","IBM Plex Sans",sans-serif;text-wrap:balance;line-height:1.2}
-h1{font-size:2.3rem;font-weight:700;margin:.2em 0 .1em}
-h2{font-size:1.35rem;font-weight:600;margin:2.6em 0 .6em;padding-top:.9em;border-top:2px solid var(--line)}
-h3{font-size:1.05rem;font-weight:600;margin:1.6em 0 .4em}
-p{margin:.6em 0;max-width:70ch}
-.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.sub{color:var(--ink-soft);font-size:1.02rem;max-width:72ch}
-.meta{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-faint);margin-top:10px}
-code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.88em}
-p code, li code, td code{background:var(--accent-soft);padding:.08em .34em;border-radius:3px;white-space:nowrap}
-table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.92rem;font-variant-numeric:tabular-nums}
-.tblwrap{overflow-x:auto}
-th{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;text-align:left;background:var(--thead);color:var(--ink-soft)}
-th,td{border:1px solid var(--line);padding:7px 11px;vertical-align:top}
-td.mono,th.mono{font-family:"IBM Plex Mono",monospace;font-size:.86rem;white-space:nowrap}
-.card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 22px;margin:1.2em 0}
-.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:1.4em 0}
-.fact{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:12px 16px}
-.fact b{display:block;font-family:"Chakra Petch",sans-serif;font-size:1.25rem;color:var(--accent)}
-.fact span{font-size:.83rem;color:var(--ink-soft)}
-pre.term{background:var(--code-bg);color:var(--code-ink);border-radius:6px;padding:16px 20px;overflow-x:auto;font-family:"IBM Plex Mono",monospace;font-size:.86rem;line-height:1.55;margin:.9em 0}
-pre.term .c{color:var(--ink-faint)}
-pre.term .a{color:var(--code-accent)}
-.lanes{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin:1em 0;min-width:640px}
-.lanewrap{overflow-x:auto}
-.lane{border:1px solid var(--line);border-radius:4px;background:var(--card);padding:8px 6px;text-align:center}
-.lane .b{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:.8rem;color:var(--pixel)}
-.lane .n{font-family:"Chakra Petch",sans-serif;font-size:.82rem;font-weight:600;margin:2px 0}
-.lane .d{font-size:.72rem;color:var(--ink-soft);line-height:1.3}
-.callout{border-left:4px solid var(--warn);background:var(--warn-soft);border-radius:0 6px 6px 0;padding:12px 18px;margin:1.2em 0}
-.callout.ok{border-left-color:var(--ok);background:var(--ok-soft)}
-.callout.blue{border-left-color:var(--accent);background:var(--accent-soft)}
-.chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.72rem;font-weight:600;letter-spacing:.06em;padding:2px 10px;border-radius:20px;margin-right:6px}
-.chip.ok{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
-.chip.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
-.chip.open{background:var(--pixel-soft);color:var(--pixel);border:1px solid var(--pixel)}
-ul,ol{max-width:74ch}
-li{margin:.35em 0}
-.screen{margin:1.2em 0;overflow-x:auto}
-.small{font-size:.85rem;color:var(--ink-soft)}
-.steps{counter-reset:st;list-style:none;padding:0}
-.steps>li{counter-increment:st;position:relative;padding-left:44px;margin:1.1em 0}
-.steps>li::before{content:counter(st);position:absolute;left:0;top:2px;width:28px;height:28px;border-radius:4px;background:var(--accent);color:var(--paper);font-family:"Chakra Petch",sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95rem}
-a{color:var(--accent)}
-footer{margin-top:60px;border-top:2px solid var(--line);padding-top:16px;font-size:.8rem;color:var(--ink-faint);font-family:"IBM Plex Mono",monospace}
-@media (prefers-reduced-motion: no-preference){ .fact{transition:border-color .15s} .fact:hover{border-color:var(--accent)} }
-</style>
-
-<div class="wrap">
-<div class="eyebrow">WildBits F256 K2 / Jr2 &middot; TinyVicky Video Engine</div>
-<h1>WildBits Sprite Engine</h1>
+<!-- ===== WildBits_Sprite_Engine.htm (restyled 2026-09-03 to match the 64K Memory Map section; its private style blocks were removed) ===== -->
+<div class="wrap" style="padding-left:0;padding-right:0">
+<header>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 64K Memory Map</div>
+  <h1>WildBits Sprite Engine</h1>
 <p class="sub">Hardware reference for the 128-sprite engine in the 6809 cores: register map, attribute format, coordinate system, the minimum programming recipe for putting a sprite on screen &mdash; and the resolution of the missing-sprites investigation (rc7, both machines verified).</p>
-<div class="meta">Sources: Sprite_State_Machine.v &middot; TinyVickyCoreModule.v &middot; TinyVKY2K2_IO_Page0_Devices.v &middot; wildbits.d &nbsp;|&nbsp; 2026-08-31</div>
+</header>
 
-<div class="facts">
-  <div class="fact"><b>128</b><span>hardware sprites, scanned 127 &rarr; 0 each line pair (sprite 0 composites on top)</span></div>
-  <div class="fact"><b>4 sizes</b><span>32&times;32, 24&times;24, 16&times;16, 8&times;8 &mdash; per-sprite, 2 control bits</span></div>
-  <div class="fact"><b>8 bpp</b><span>indexed color through one of 4 graphics CLUTs; index 0 = transparent</span></div>
-  <div class="fact"><b>320&times;240</b><span>coordinate space, origin offset +32: screen top-left is (32,32)</span></div>
-</div>
+<div class="tblwrap"><table>
+<tr><th>At a glance</th><th>Detail</th></tr>
+<tr><td class="addr">128</td><td>hardware sprites, scanned 127 &rarr; 0 each line pair (sprite 0 composites on top)</td></tr>
+<tr><td class="addr">4 sizes</td><td>32&times;32, 24&times;24, 16&times;16, 8&times;8 &mdash; per-sprite, 2 control bits</td></tr>
+<tr><td class="addr">8 bpp</td><td>indexed color through one of 4 graphics CLUTs; index 0 = transparent</td></tr>
+<tr><td class="addr">320&times;240</td><td>coordinate space, origin offset +32: screen top-left is (32,32)</td></tr>
+</table></div>
 
 <h2>How the engine works</h2>
 <p>Sprites are <b>line-buffered</b>, not framebuffered. The display runs 640&times;480 with every 320&times;240 pixel doubled, so the engine only needs each sprite line once per <em>pair</em> of scanlines. On every <b>odd</b> scanline, during horizontal blanking, the master video scheduler enters its sprite phase (<code>DoSpriteHere</code>), hands VRAM channel&nbsp;3 to the sprite state machine, and fires it.</p>
@@ -1511,82 +1363,83 @@ footer{margin-top:60px;border-top:2px solid var(--line);padding-top:16px;font-si
 <h3>The scan pipeline, per line pair</h3>
 <div class="tblwrap"><table>
 <tr><th>Stage</th><th>State(s)</th><th>What happens</th></tr>
-<tr><td class="mono">Arm</td><td class="mono">SP_IDLE &rarr; SP_PRESTATE</td><td><code>Sprite_Effect_On</code> raised by the master scheduler on odd-line blanking; channel select preloaded to sprite 127.</td></tr>
-<tr><td class="mono">Probe</td><td class="mono">SP_STATE0 &rarr; SP_STATE1</td><td>One clock of BRAM latency, then the 64-bit attribute record is valid. Disabled &rarr; <code>NEXTCHANNEL</code>.</td></tr>
-<tr><td class="mono">Line hit</td><td class="mono">ENABLED</td><td>Hit when <code>Y &le; line/2+32 &lt; Y+height</code>. Miss &rarr; <code>NEXTCHANNEL</code>.</td></tr>
-<tr><td class="mono">Fetch</td><td class="mono">SP_GET_DATA_VRAM0..1, SP_WRITE_ATTRIB0..2</td><td>Line-buffer write pointer set to X+64; VRAM counter loaded with start/stop = base + row&times;width (+width); pixels stream on each <code>VRAM_Data_Valid</code> until the counter reaches stop.</td></tr>
-<tr><td class="mono">Next / done</td><td class="mono">NEXTCHANNEL &rarr; &hellip; &rarr; SP_TRF_DONE</td><td>Decrement sprite select; after sprite 0, signal done &mdash; the master scheduler moves on to bitmap/tile slots.</td></tr>
+<tr><td class="addr">Arm</td><td class="addr">SP_IDLE &rarr; SP_PRESTATE</td><td><code>Sprite_Effect_On</code> raised by the master scheduler on odd-line blanking; channel select preloaded to sprite 127.</td></tr>
+<tr><td class="addr">Probe</td><td class="addr">SP_STATE0 &rarr; SP_STATE1</td><td>One clock of BRAM latency, then the 64-bit attribute record is valid. Disabled &rarr; <code>NEXTCHANNEL</code>.</td></tr>
+<tr><td class="addr">Line hit</td><td class="addr">ENABLED</td><td>Hit when <code>Y &le; line/2+32 &lt; Y+height</code>. Miss &rarr; <code>NEXTCHANNEL</code>.</td></tr>
+<tr><td class="addr">Fetch</td><td class="addr">SP_GET_DATA_VRAM0..1, SP_WRITE_ATTRIB0..2</td><td>Line-buffer write pointer set to X+64; VRAM counter loaded with start/stop = base + row&times;width (+width); pixels stream on each <code>VRAM_Data_Valid</code> until the counter reaches stop.</td></tr>
+<tr><td class="addr">Next / done</td><td class="addr">NEXTCHANNEL &rarr; &hellip; &rarr; SP_TRF_DONE</td><td>Decrement sprite select; after sprite 0, signal done &mdash; the master scheduler moves on to bitmap/tile slots.</td></tr>
 </table></div>
 
 <h2>Register map</h2>
 
 <h3>Master control &mdash; $FFC0 (fixed I/O, visible in every map)</h3>
 <div class="tblwrap"><table>
-<tr><th>Bit</th><th class="mono">Mask</th><th>Name</th><th>Function</th></tr>
-<tr><td>0</td><td class="mono">$01</td><td class="mono">Text_Mode_En</td><td>Text layer on</td></tr>
-<tr><td>1</td><td class="mono">$02</td><td class="mono">Text_Overlay</td><td>Text floats over graphics (text background transparent)</td></tr>
-<tr><td>2</td><td class="mono">$04</td><td class="mono">Graph_Mode_En</td><td>Graphics pipeline on &mdash; <b>required for sprites</b></td></tr>
-<tr><td>3</td><td class="mono">$08</td><td class="mono">Bitmap_En</td><td>Bitmap layer on</td></tr>
-<tr><td>4</td><td class="mono">$10</td><td class="mono">TileMap_En</td><td>Tile layer on</td></tr>
-<tr><td>5</td><td class="mono">$20</td><td class="mono">Sprite_En</td><td><b>Sprite layer on</b></td></tr>
-<tr><td>6</td><td class="mono">$40</td><td class="mono">GAMMA_En</td><td>Gamma correction</td></tr>
-<tr><td>7</td><td class="mono">$80</td><td class="mono">Disable_Vid</td><td>Stop video scanning (CPU gets full bandwidth)</td></tr>
+<tr><th>Bit</th><th>Mask</th><th>Name</th><th>Function</th></tr>
+<tr><td>0</td><td class="addr">$01</td><td class="addr">Text_Mode_En</td><td>Text layer on</td></tr>
+<tr><td>1</td><td class="addr">$02</td><td class="addr">Text_Overlay</td><td>Text floats over graphics (text background transparent)</td></tr>
+<tr><td>2</td><td class="addr">$04</td><td class="addr">Graph_Mode_En</td><td>Graphics pipeline on &mdash; <b>required for sprites</b></td></tr>
+<tr><td>3</td><td class="addr">$08</td><td class="addr">Bitmap_En</td><td>Bitmap layer on</td></tr>
+<tr><td>4</td><td class="addr">$10</td><td class="addr">TileMap_En</td><td>Tile layer on</td></tr>
+<tr><td>5</td><td class="addr">$20</td><td class="addr">Sprite_En</td><td><b>Sprite layer on</b></td></tr>
+<tr><td>6</td><td class="addr">$40</td><td class="addr">GAMMA_En</td><td>Gamma correction</td></tr>
+<tr><td>7</td><td class="addr">$80</td><td class="addr">Disable_Vid</td><td>Stop video scanning (CPU gets full bandwidth)</td></tr>
 </table></div>
 <p>Text + overlay + graphics + sprites = <code>$27</code>. Add bitmap for <code>$2F</code>.</p>
 
 <h3>Sprite attribute block &mdash; VICKY page $C0, offsets $1300&ndash;$16FF</h3>
 <p>The 128 attribute records live in a dual-port BRAM inside I/O page <code>$C0</code> (the same page as the bitmap/gamma registers). Map the page into a CPU slot to reach it &mdash; e.g. write <code>$C0</code> to <code>MMU_SLOT_2</code> (<code>$FFAA</code>) and the block appears at <code>$4000&ndash;$5FFF</code>. Each sprite owns 8 bytes:</p>
 <div class="tblwrap"><table>
-<tr><th>Sprites</th><th class="mono">Page offset</th><th class="mono">CPU addr (slot 2)</th><th>Record n at</th></tr>
-<tr><td>0 &ndash; 31</td><td class="mono">$1300&ndash;$13FF</td><td class="mono">$5300&ndash;$53FF</td><td class="mono">$5300 + 8&times;n</td></tr>
-<tr><td>32 &ndash; 63</td><td class="mono">$1400&ndash;$14FF</td><td class="mono">$5400&ndash;$54FF</td><td class="mono">$5400 + 8&times;(n&minus;32)</td></tr>
-<tr><td>64 &ndash; 95</td><td class="mono">$1500&ndash;$15FF</td><td class="mono">$5500&ndash;$55FF</td><td class="mono">$5500 + 8&times;(n&minus;64)</td></tr>
-<tr><td>96 &ndash; 127</td><td class="mono">$1600&ndash;$16FF</td><td class="mono">$5600&ndash;$56FF</td><td class="mono">$5600 + 8&times;(n&minus;96)</td></tr>
+<tr><th>Sprites</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Record n at</th></tr>
+<tr><td>0 &ndash; 31</td><td class="addr">$1300&ndash;$13FF</td><td class="addr">$5300&ndash;$53FF</td><td class="addr">$5300 + 8&times;n</td></tr>
+<tr><td>32 &ndash; 63</td><td class="addr">$1400&ndash;$14FF</td><td class="addr">$5400&ndash;$54FF</td><td class="addr">$5400 + 8&times;(n&minus;32)</td></tr>
+<tr><td>64 &ndash; 95</td><td class="addr">$1500&ndash;$15FF</td><td class="addr">$5500&ndash;$55FF</td><td class="addr">$5500 + 8&times;(n&minus;64)</td></tr>
+<tr><td>96 &ndash; 127</td><td class="addr">$1600&ndash;$16FF</td><td class="addr">$5600&ndash;$56FF</td><td class="addr">$5600 + 8&times;(n&minus;96)</td></tr>
 </table></div>
-<p class="small">The RTL rotates the page index (<code>RecodedAddy</code>) so that page $13 lands on BRAM rows 0&ndash;31 &mdash; the table above is the net effect; sprite 0 really is the first 8 bytes of $1300.</p>
+<p class="src">The RTL rotates the page index (<code>RecodedAddy</code>) so that page $13 lands on BRAM rows 0&ndash;31 &mdash; the table above is the net effect; sprite 0 really is the first 8 bytes of $1300.</p>
 
 <h3>The 8-byte attribute record</h3>
 <p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly):</p>
-<div class="lanewrap"><div class="lanes">
-<div class="lane"><div class="b">+0</div><div class="n">CTRL</div><div class="d">bit0 enable<br>bits2:1 LUT<br>bits4:3 depth<br>bits6:5 size</div></div>
-<div class="lane"><div class="b">+1</div><div class="n">ADDR hi</div><div class="d">pixel data<br>bits 23:16</div></div>
-<div class="lane"><div class="b">+2</div><div class="n">ADDR mid</div><div class="d">pixel data<br>bits 15:8</div></div>
-<div class="lane"><div class="b">+3</div><div class="n">ADDR lo</div><div class="d">pixel data<br>bits 7:0</div></div>
-<div class="lane"><div class="b">+4</div><div class="n">X hi</div><div class="d">position<br>bits 15:8</div></div>
-<div class="lane"><div class="b">+5</div><div class="n">X lo</div><div class="d">position<br>bits 7:0</div></div>
-<div class="lane"><div class="b">+6</div><div class="n">Y hi</div><div class="d">position<br>bits 15:8</div></div>
-<div class="lane"><div class="b">+7</div><div class="n">Y lo</div><div class="d">position<br>bits 7:0</div></div>
-</div></div>
 <div class="tblwrap"><table>
-<tr><th class="mono">CTRL bits 6:5</th><th>Size</th><th class="mono">Example CTRL (enable, LUT0)</th></tr>
-<tr><td class="mono">00</td><td>32 &times; 32</td><td class="mono">$01</td></tr>
-<tr><td class="mono">01</td><td>24 &times; 24</td><td class="mono">$21</td></tr>
-<tr><td class="mono">10</td><td>16 &times; 16</td><td class="mono">$41</td></tr>
-<tr><td class="mono">11</td><td>8 &times; 8</td><td class="mono">$61</td></tr>
+<tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
+<tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 enable &middot; bits 2:1 LUT &middot; bits 4:3 depth &middot; bits 6:5 size</td></tr>
+<tr><td class="addr">+1</td><td>ADDR hi</td><td>pixel data address bits 23:16</td></tr>
+<tr><td class="addr">+2</td><td>ADDR mid</td><td>pixel data address bits 15:8</td></tr>
+<tr><td class="addr">+3</td><td>ADDR lo</td><td>pixel data address bits 7:0</td></tr>
+<tr><td class="addr">+4</td><td>X hi</td><td>position bits 15:8</td></tr>
+<tr><td class="addr">+5</td><td>X lo</td><td>position bits 7:0</td></tr>
+<tr><td class="addr">+6</td><td>Y hi</td><td>position bits 15:8</td></tr>
+<tr><td class="addr">+7</td><td>Y lo</td><td>position bits 7:0</td></tr>
+</table></div>
+<div class="tblwrap"><table>
+<tr><th>CTRL bits 6:5</th><th>Size</th><th>Example CTRL (enable, LUT0)</th></tr>
+<tr><td class="addr">00</td><td>32 &times; 32</td><td class="addr">$01</td></tr>
+<tr><td class="addr">01</td><td>24 &times; 24</td><td class="addr">$21</td></tr>
+<tr><td class="addr">10</td><td>16 &times; 16</td><td class="addr">$41</td></tr>
+<tr><td class="addr">11</td><td>8 &times; 8</td><td class="addr">$61</td></tr>
 </table></div>
 <p>The pixel-data address is a <b>physical</b> address in the 512K RAM (block &times; $2000 + offset), pixels stored row-major, one byte per pixel, rows packed at the sprite&rsquo;s width. Keep depth = <code>00</code> (8 bpp).</p>
 
 <h3>Graphics CLUTs &mdash; VICKY page $C1, offsets $1000&ndash;$1FFF</h3>
 <p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$C1</code> with the font (font at $0000&ndash;$0FFF, CLUTs above it). Each CLUT is 256 entries &times; 4 bytes, ordered <b>B, G, R, A</b>:</p>
 <div class="tblwrap"><table>
-<tr><th>CLUT</th><th class="mono">Page offset</th><th class="mono">CPU addr (slot 2)</th><th class="mono">Entry i at</th></tr>
-<tr><td class="mono">LUT0</td><td class="mono">$1000&ndash;$13FF</td><td class="mono">$5000&ndash;$53FF</td><td class="mono">$5000 + 4&times;i</td></tr>
-<tr><td class="mono">LUT1</td><td class="mono">$1400&ndash;$17FF</td><td class="mono">$5400&ndash;$57FF</td><td class="mono">$5400 + 4&times;i</td></tr>
-<tr><td class="mono">LUT2</td><td class="mono">$1800&ndash;$1BFF</td><td class="mono">$5800&ndash;$5BFF</td><td class="mono">$5800 + 4&times;i</td></tr>
-<tr><td class="mono">LUT3</td><td class="mono">$1C00&ndash;$1FFF</td><td class="mono">$5C00&ndash;$5FFF</td><td class="mono">$5C00 + 4&times;i</td></tr>
+<tr><th>CLUT</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Entry i at</th></tr>
+<tr><td class="addr">LUT0</td><td class="addr">$1000&ndash;$13FF</td><td class="addr">$5000&ndash;$53FF</td><td class="addr">$5000 + 4&times;i</td></tr>
+<tr><td class="addr">LUT1</td><td class="addr">$1400&ndash;$17FF</td><td class="addr">$5400&ndash;$57FF</td><td class="addr">$5400 + 4&times;i</td></tr>
+<tr><td class="addr">LUT2</td><td class="addr">$1800&ndash;$1BFF</td><td class="addr">$5800&ndash;$5BFF</td><td class="addr">$5800 + 4&times;i</td></tr>
+<tr><td class="addr">LUT3</td><td class="addr">$1C00&ndash;$1FFF</td><td class="addr">$5C00&ndash;$5FFF</td><td class="addr">$5C00 + 4&times;i</td></tr>
 </table></div>
 
 <h2>Coordinates</h2>
 <p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320&times;240 area spans sprite coordinates (32,32) to (351,271):</p>
-<div class="screen">
+<div style="margin:16px 0;overflow-x:auto">
 <svg viewBox="0 0 460 330" width="460" role="img" aria-label="Sprite coordinate plane" style="max-width:100%">
-  <rect x="20" y="20" width="416" height="296" fill="none" stroke="var(--ink-faint)" stroke-dasharray="4 4"/>
-  <rect x="52" y="52" width="352" height="264" fill="var(--accent-soft)" stroke="var(--accent)"/>
-  <rect x="392" y="52" width="12" height="12" fill="var(--pixel)"/>
-  <text x="24" y="14" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-faint)">(0,0) off-screen margin</text>
-  <text x="58" y="70" font-family="IBM Plex Mono" font-size="11" fill="var(--accent)">(32,32) screen top-left</text>
-  <text x="252" y="308" font-family="IBM Plex Mono" font-size="11" fill="var(--accent)">(351,271) bottom-right</text>
-  <text x="268" y="46" font-family="IBM Plex Mono" font-size="11" fill="var(--pixel)">8&times;8 @ (344,32) = ($0158,$0020)</text>
+  <rect x="20" y="20" width="416" height="296" fill="none" stroke="var(--ink-soft)" stroke-dasharray="4 4"/>
+  <rect x="52" y="52" width="352" height="264" fill="var(--io-soft)" stroke="var(--io)"/>
+  <rect x="392" y="52" width="12" height="12" fill="var(--amber)"/>
+  <text x="24" y="14" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">(0,0) off-screen margin</text>
+  <text x="58" y="70" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(32,32) screen top-left</text>
+  <text x="252" y="308" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(351,271) bottom-right</text>
+  <text x="268" y="46" font-family="IBM Plex Mono" font-size="11" fill="var(--amber)">8&times;8 @ (344,32) = ($0158,$0020)</text>
   <text x="180" y="180" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-soft)">visible 320 &times; 240</text>
 </svg>
 </div>
@@ -1594,28 +1447,38 @@ footer{margin-top:60px;border-top:2px solid var(--line);padding-top:16px;font-si
 
 
 <h2>Minimum recipe &mdash; a green 8&times;8 sprite at screen center</h2>
+<div class="callout">
+<h3>Read this first</h3>
 <p>Five register groups, one interrupt-masked window. Verified end-to-end by <code>sprtest</code> on both machines. This is the direct-MLUT method: until the kernel&rsquo;s <code>F$MapBlk</code> fix lands, user-mode code must program the MLUT itself, because the kernel rewrites the slot registers from its own map images on every task switch &mdash; an unprotected mapping evaporates within one timeslice (which is also why <code>debug</code> pokes can never do this).</p>
+</div>
 
-<ol class="steps">
-<li><b>Prepare pixel data</b> <span class="small">(no masking needed)</span> &mdash; fill a 64-byte buffer in RAM you own with <code>$01</code> (pixel index 1) and compute its <b>physical</b> address: block# &times; $2000 + offset. The buffer must outlive the sprite &mdash; a process&rsquo;s pages are recycled at exit, so stay resident or use memory you keep.</li>
+<ol>
+<li><b>Prepare pixel data</b> <span class="src">(no masking needed)</span> &mdash; fill a 64-byte buffer in RAM you own with <code>$01</code> (pixel index 1) and compute its <b>physical</b> address: block# &times; $2000 + offset. The buffer must outlive the sprite &mdash; a process&rsquo;s pages are recycled at exit, so stay resident or use memory you keep.</li>
 <li><b>Enter the masked window</b> &mdash; <code>orcc #IntMasks</code>. Everything touching $FFA0, the slot registers, or the mapped window sits inside one masked stretch.</li>
 <li><b>MLUT setup</b> &mdash; read <code>$FFA0</code>, save it, write it back with bits [5:4] (EDIT map) copied from bits [1:0] (ACTIVE map) &mdash; otherwise slot writes edit somebody else&rsquo;s map. Save slot 5 (<code>$FFAD</code>, window at $A000) and write <code>$C1</code> into it.</li>
 <li><b>Palette (page $C1)</b> &mdash; LUT0 entry 1 at window+$1004: write <code>$00, $FF, $00, $00</code> (B, G, R, A) &mdash; pure green.</li>
 <li><b>Sprite record (page $C0)</b> &mdash; write <code>$C0</code> to $FFAD; sprite 0&rsquo;s record is at window+$1300, eight bytes, big-endian fields:
 <div class="tblwrap"><table>
-<tr><th class="mono">Offset</th><th class="mono">Value</th><th>Meaning</th></tr>
-<tr><td class="mono">+0</td><td class="mono">$61</td><td>enable + 8&times;8 (size 11) + LUT0 + depth 0</td></tr>
-<tr><td class="mono">+1..+3</td><td class="mono">addr hi, mid, lo</td><td>physical address of the pixel buffer</td></tr>
-<tr><td class="mono">+4, +5</td><td class="mono">$00, $BC</td><td>X = 188 &nbsp;(center: 32 + (320&minus;8)/2)</td></tr>
-<tr><td class="mono">+6, +7</td><td class="mono">$00, $94</td><td>Y = 148 &nbsp;(center: 32 + (240&minus;8)/2)</td></tr>
+<tr><th>Offset</th><th>Value</th><th>Meaning</th></tr>
+<tr><td class="addr">+0</td><td class="addr">$61</td><td>enable + 8&times;8 (size 11) + LUT0 + depth 0</td></tr>
+<tr><td class="addr">+1..+3</td><td class="addr">addr hi, mid, lo</td><td>physical address of the pixel buffer</td></tr>
+<tr><td class="addr">+4, +5</td><td class="addr">$00, $BC</td><td>X = 188 &nbsp;(center: 32 + (320&minus;8)/2)</td></tr>
+<tr><td class="addr">+6, +7</td><td class="addr">$00, $94</td><td>Y = 148 &nbsp;(center: 32 + (240&minus;8)/2)</td></tr>
 </table></div>
-<span class="small">If the other 127 records can&rsquo;t be trusted (power-on garbage can carry stray enable bits), zero $1300&ndash;$16FF first.</span></li>
+<span class="src">If the other 127 records can&rsquo;t be trusted (power-on garbage can carry stray enable bits), zero $1300&ndash;$16FF first.</span></li>
 <li><b>Leave the window</b> &mdash; restore $FFAD, restore $FFA0, <code>andcc #^IntMasks</code>. Total masked time: microseconds.</li>
 <li><b>Enable the layer</b> &mdash; <code>$FFC0</code> is fixed I/O: no mapping, no masking, any map, any time. Read it, OR in <code>$26</code> (graphics $04 + overlay $02 + sprite $20, preserving the text bit), write it back. The green square appears at center.</li>
 </ol>
-<p class="small">To hide the sprite later: clear bit 5 of $FFC0 (no mapping needed), or clear the record&rsquo;s enable bit (needs the mapped window again). The complete working implementation of this recipe is the <code>sprtest</code> command source: <code>level1/wildbits/cmds/sprtest.asm</code>.</p>
+<p class="src">To hide the sprite later: clear bit 5 of $FFC0 (no mapping needed), or clear the record&rsquo;s enable bit (needs the mapped window again). The complete working implementation of this recipe is the <code>sprtest</code> command source: <code>level1/wildbits/cmds/sprtest.asm</code>.</p>
 
-<footer>WildBits 6809 cores &middot; fpga-6809-cores-staging &middot; companion to the 64K Memory Map and 512K Physical Map reports</footer>
+<h2>Where this comes from</h2>
+<p class="src">RTL and definitions read for this reference:<br>
+&bull;&nbsp;<code>Sprite_State_Machine.v</code> &mdash; the per-line-pair scan, line-hit test and VRAM fetch.<br>
+&bull;&nbsp;<code>TinyVickyCoreModule.v</code> &mdash; master video scheduler and compositor.<br>
+&bull;&nbsp;<code>TinyVKY2K2_IO_Page0_Devices.v</code> &mdash; attribute BRAM, page rotation (<code>RecodedAddy</code>), CLUTs.<br>
+&bull;&nbsp;<code>defs/wildbits.d</code> &mdash; register names and addresses.</p>
+
+<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-08-31 &middot; companion to the 64K Memory Map and 512K Physical Map reports.</footer>
 </div>
 </body>
 </html>
