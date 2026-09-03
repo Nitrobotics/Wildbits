@@ -9,7 +9,8 @@
 <body>
 <div style="background:#1e2229;color:#f5f2ea;padding:18px 24px;margin:0 0 8px 0;font-family:Georgia,serif;font-size:28px;font-weight:bold;text-align:center;border-bottom:4px solid #7a3b12;">Wildbits 6809 K2 and Jr2 Resources</div>
 <div style="background:transparent;color:#e8e4da;padding:12px 24px;margin:0 0 8px 0;font-family:Georgia,serif;font-size:15px;">
-<table style="border-collapse:collapse;margin:8px auto 4px auto;width:75%;font-size:14px;">
+<table style="border-collapse:collapse;margin:8px auto 4px auto;width:90%;font-size:14px;table-layout:fixed;">
+<colgroup><col style="width:46%"><col style="width:27%"><col style="width:27%"></colgroup>
 <tr><td style="padding:6px 10px;border-bottom:none;"></td><td colspan="2" style="padding:6px 10px;text-align:center;color:#f0d9c8;font-size:15px;font-weight:bold;border-bottom:none;">Latest parity kits built by Roger Taylor</td></tr>
 <tr><th style="padding:6px 10px;text-align:left;vertical-align:middle;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-transform:none;letter-spacing:normal;">Features (Since Core2x work started)</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="FoenixMgrWin/parity_wildbits_k2_v8_rc9.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_k2_6809_v8_rc9</code></a><br>K2 &middot; built 2026-09-01</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><a href="FoenixMgrWin/parity_wildbits_jr2_v8_rc7.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full parity package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">wildbits_jr2_6809_v8_rc7</code></a><br>Jr2 &middot; built 2026-08-31</th></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Sprite engine fixes</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
@@ -23,7 +24,11 @@
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Turbo-safe flash and cartridge writes (shaped WE)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span><span style="color:#c9a86a;font-size:11px;"> new</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Shared write-strobe policy (flash/cart/RTC)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span><span style="color:#c9a86a;font-size:11px;"> new</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 </table>
-<div style="width:75%;margin:8px auto 0 auto;font-size:13px;color:#d8d2c6;line-height:1.45;"><b>Try-before-approve:</b> the <code>.dsk</code> images in these kits are built from <a href="https://github.com/nitros9project/nitros9/tree/main" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">main</code></a> with the pending work laid over the tree at build time (nothing merged yet): the <a href="https://github.com/nitros9project/nitros9/tree/wb/fixes_bundle" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/fixes_bundle</code></a> PR (MMU slot-2 map-window fix that cures the &ldquo;one character then freeze&rdquo; crash under load and the /f0,/f1 error-241 losses; interrupt-controller hygiene), the <a href="https://github.com/nitros9project/nitros9/tree/wb/drivewire_hardening" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/drivewire_hardening</code></a> PR (exact 230400 DriveWire baud for the BAUDCE cores), the <a href="https://github.com/nitros9project/nitros9/tree/wb/wizfi_tx_packets" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/wizfi_tx_packets</code></a> PR (WizCon4: four independent packet-mode WiFi channels /wz0&ndash;/wz3 with link gating and hangup emulation), and the <a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/k2_core_typematic_support</code></a> branch (K2 hardware-typematic keyboard support: interrupt-driven keydrv with core key repeat). Booting a kit disk therefore exercises every pending PR or new feature branch on real hardware &mdash; if DriveWire (<code>/x0</code>), the flash drives, the console, four WiFi shells (<code>wizi</code> then <code>wiz4up</code>) and key repeat behave, the fixes work as submitted.</div>
+<div style="width:90%;margin:8px auto 0 auto;font-size:13px;color:#d8d2c6;line-height:1.45;"><b>Features Sneak Peak:</b> the <code>.dsk</code> images in these kits are built from <a href="https://github.com/nitros9project/nitros9/tree/main" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">main</code></a> with the pending work laid over the tree at build time (nothing merged yet): the <a href="https://github.com/nitros9project/nitros9/tree/wb/fixes_bundle" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/fixes_bundle</code></a> PR (MMU slot-2 map-window fix that cures the &ldquo;one character then freeze&rdquo; crash under load and the /f0,/f1 error-241 losses; interrupt-controller hygiene), the <a href="https://github.com/nitros9project/nitros9/tree/wb/drivewire_hardening" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/drivewire_hardening</code></a> PR (exact 230400 DriveWire baud for the BAUDCE cores), the <a href="https://github.com/nitros9project/nitros9/tree/wb/wizfi_tx_packets" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/wizfi_tx_packets</code></a> PR (WizCon4: four independent packet-mode WiFi channels /wz0&ndash;/wz3 with link gating and hangup emulation), and the <a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code style="color:inherit;background:none;border:none;">wb/k2_core_typematic_support</code></a> branch (K2 hardware-typematic keyboard support: interrupt-driven keydrv with core key repeat). Booting a kit disk therefore exercises every pending PR or new feature branch on real hardware &mdash; if DriveWire (<code>/x0</code>), the flash drives, the console, four WiFi shells (<code>wizi</code> then <code>wiz4up</code>) and key repeat behave, the fixes work as submitted.</div>
+<table style="border-collapse:collapse;margin:14px auto 4px auto;width:90%;table-layout:fixed;">
+<colgroup><col style="width:46%"><col style="width:54%"></colgroup>
+<tr><td style="padding:6px;vertical-align:top;text-align:center;"><img src="Pictures/k2.png" alt="the K2" style="height:250px;width:auto;max-width:100%;object-fit:contain;border:1px solid #454b56;"><div style="margin-top:4px;font-size:13px;color:#d8d2c6;">the K2</div></td><td style="padding:6px;vertical-align:top;text-align:center;"><img src="Pictures/k2andjr2.png" alt="Wildbits K2 and Jr2 side by side, both booted into NitrOS-9 Level 2" style="height:250px;width:auto;max-width:100%;object-fit:contain;border:1px solid #454b56;"><div style="margin-top:4px;font-size:13px;color:#d8d2c6;">K2 and Jr2</div></td></tr>
+</table>
 </div>
 
 <!-- ===== Wildbits K2 Memory Atlas.htm ===== -->
@@ -335,22 +340,383 @@ is common, the process&rsquo;s data/code blocks fill the middle, and the fixed I
 switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub trampolines.</p>
 
 <h2><span class="no">4</span>The fixed I/O page, $FE00&ndash;$FEFF</h2>
-<div class="scroll"><table>
-  <tr><th class="m">base</th><th>device</th><th>the registers that keep coming up</th></tr>
-  <tr><td class="m">$FE00</td><td>System control</td><td class="m">$FE00 LED/buzzer gates (read returns SD pins in b7:6!) &middot; $FE06 RGB enable &middot; $FE07 machine ID ($16 = K2) &middot; $FE07&ndash;0F LED colors</td></tr>
-  <tr><td class="m">$FE10</td><td>K2 keyboard</td><td>optical keyboard interface</td></tr>
-  <tr><td class="m">$FE20</td><td>Interrupt controller</td><td class="m">$FE20&ndash;23 pending 0&ndash;3 (W1C) &middot; $FE24&ndash;27 polarity &middot; $FE28&ndash;2B edge &middot; $FE2C&ndash;2F masks (1 = masked; resets all-masked)</td></tr>
-  <tr><td class="m">$FE30</td><td>Timers</td><td class="m">T0_VAL/T0_CTR/T0_CMP_CTR &mdash; wizfi Timer0 polling lives here</td></tr>
-  <tr><td class="m">$FE40</td><td>RTC</td><td class="m">RTC_CTRL (UTI latch) + BCD time regs &mdash; wildspeed&rsquo;s timebase</td></tr>
-  <tr><td class="m">$FE50</td><td>PS/2</td><td>mouse / Jr2 keyboard</td></tr>
-  <tr><td class="m">$FE60</td><td>UART</td><td>16550-compatible</td></tr>
-  <tr><td class="m">$FE70</td><td>CODEC</td><td>audio</td></tr>
-  <tr><td class="m">$FE80</td><td>IEC</td><td>serial bus</td></tr>
+
+<p class="sub" style="max-width:none">Every register the $FE page carries, reported the way the 512K map is: the block stack on the left, one table per block on the right, bits listed under their register.</p>
+<div class="grid">
+<div class="mapcol">
+  <div class="map" style="grid-template-columns:1fr">
+    <div class="stack" aria-label="Fixed I/O page blocks">
+      <div class="seg io"><span class="nm">Math coprocessor<br><small>10 registers</small></span><span class="ad">$FEE0&ndash;$FEFB</span></div>
+      <div class="seg io"><span class="nm">DMA engine<br><small>7 registers</small></span><span class="ad">$FEC0&ndash;$FED7</span></div>
+      <div class="seg io"><span class="nm">VIA0 (W65C22)<br><small>10 registers</small></span><span class="ad">$FEB0&ndash;$FEBF</span></div>
+      <div class="seg io"><span class="nm">Mouse pointer<br><small>4 registers</small></span><span class="ad">$FEA0&ndash;$FEA8</span></div>
+      <div class="seg io"><span class="nm">SD card 0 (SPI)<br><small>2 registers</small></span><span class="ad">$FE90&ndash;$FE91</span></div>
+      <div class="seg io"><span class="nm">IEC serial bus<br><small>1 register</small></span><span class="ad">$FE80&ndash;$FE8F</span></div>
+      <div class="seg io"><span class="nm">CODEC<br><small>2 registers</small></span><span class="ad">$FE70&ndash;$FE72</span></div>
+      <div class="seg io"><span class="nm">UART (DriveWire)<br><small>8 registers</small></span><span class="ad">$FE60&ndash;$FE67</span></div>
+      <div class="seg io"><span class="nm">PS/2 ports<br><small>5 registers</small></span><span class="ad">$FE50&ndash;$FE54</span></div>
+      <div class="seg io"><span class="nm">Real-time clock<br><small>11 registers</small></span><span class="ad">$FE40&ndash;$FE4F</span></div>
+      <div class="seg io"><span class="nm">Timers 0 / 1<br><small>4 registers</small></span><span class="ad">$FE30&ndash;$FE3F</span></div>
+      <div class="seg io"><span class="nm">Interrupt controller<br><small>8 registers</small></span><span class="ad">$FE20&ndash;$FE2F</span></div>
+      <div class="seg io"><span class="nm">K2 optical keyboard<br><small>6 registers</small></span><span class="ad">$FE10&ndash;$FE16</span></div>
+      <div class="seg io"><span class="nm">System control<br><small>7 registers</small></span><span class="ad">$FE00&ndash;$FE0F</span></div>
+    </div>
+  </div>
+  <div class="maplegend"><span><i class="sw io"></i>fixed I/O block</span></div>
+  <p class="mapcap">The $FE page is decoded identically in every MMU map; the stack shows its blocks low-to-high.</p>
+</div>
+<div>
+<h3>$FE00&ndash;$FE0F &middot; System control</h3>
+<p class="src">used by: krn scrub, wbreset, wbinfo, feu</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE00</td><td>SYS0 write:<br><span class="bit">b7 hardware reset</span><br><span class="bit">b5 caps-lock LED enable</span><br><span class="bit">b4 buzzer</span><br><span class="bit">b3/b2 LED1/LED0</span><br><span class="bit">b1 SD LED</span><br><span class="bit">b0 power LED</span></td></tr>
+<tr><td class="addr">$FE00 (read)</td><td>returns the SD card pins instead:<br><span class="bit">b7 write-protect</span><br><span class="bit">b6 card-detect</span></td></tr>
+<tr><td class="addr">$FE01</td><td>SYS1:<br><span class="bit">b7:6 LED1 blink rate</span><br><span class="bit">b5:4 LED0 blink rate</span><br><span class="bit">b3 SID stereo</span><br><span class="bit">b2 PSG stereo</span><br><span class="bit">b1/b0 LED1/LED0 manual mode</span></td></tr>
+<tr><td class="addr">$FE02/$FE03</td><td>RST0/RST1 reset sentinels: write $DE, $AD to arm the SYS0 b7 hardware reset (what <b>wbreset</b> does)</td></tr>
+<tr><td class="addr">$FE06</td><td>RGB keyboard-LED enable</td></tr>
+<tr><td class="addr">$FE07</td><td>machine ID: $16 = K2, $02 = Jr, $1A = Jr2</td></tr>
+<tr><td class="addr">$FE07&ndash;$FE0F</td><td>keyboard LED colours</td></tr>
 </table></div>
+<h3>$FE10&ndash;$FE16 &middot; K2 optical keyboard</h3>
+<p class="src">used by: keydrv_k2 (F$IRQ on INT_PENDING_3 b2)</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE10</td><td>key data (FIFO head)</td></tr>
+<tr><td class="addr">$FE11</td><td>status:<br><span class="bit">b7 = 1 mechanical / 0 optical</span><br><span class="bit">b0 = 1 FIFO empty</span></td></tr>
+<tr><td class="addr">$FE12/$FE13</td><td>FIFO count lo / hi</td></tr>
+<tr><td class="addr">$FE14</td><td>typematic initial delay in 60&nbsp;Hz frames (reset 30 = 500&nbsp;ms) &mdash; rc8+ cores</td></tr>
+<tr><td class="addr">$FE15</td><td>typematic repeat period in frames (reset 5 = 12&nbsp;cps)</td></tr>
+<tr><td class="addr">$FE16</td><td>b0 = 1 enables hardware key repeat (reset 0 = off, so older disks see stock behavior)</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">all three typematic registers read back; write-then-readback of $FE14 is keydrv&rsquo;s core probe; a hardware reset clears $FE16, a software restart does not</td></tr>
+</table></div>
+<h3>$FE20&ndash;$FE2F &middot; Interrupt controller</h3>
+<p class="src">used by: krn, clock (SOF), keydrv, wizfi, mousedrv</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE20&ndash;$FE23</td><td>pending, groups 0&ndash;3 (write 1 to clear)</td></tr>
+<tr><td class="addr">$FE24&ndash;$FE27</td><td>polarity, groups 0&ndash;3</td></tr>
+<tr><td class="addr">$FE28&ndash;$FE2B</td><td>edge select, groups 0&ndash;3</td></tr>
+<tr><td class="addr">$FE2C&ndash;$FE2F</td><td>mask, groups 0&ndash;3 (1 = masked; reset = all masked)</td></tr>
+<tr><td class="addr">group 0</td><td><br><span class="bit">b0 VICKY start-of-frame</span><br><span class="bit">b1 start-of-line</span><br><span class="bit">b2 PS/2 keyboard</span><br><span class="bit">b3 PS/2 mouse</span><br><span class="bit">b4 timer 0</span><br><span class="bit">b5 timer 1</span><br><span class="bit">b7 cartridge</span></td></tr>
+<tr><td class="addr">group 1</td><td><br><span class="bit">b0 UART</span><br><span class="bit">b4 RTC</span><br><span class="bit">b5 VIA0</span><br><span class="bit">b6 VIA1 / SD insert</span></td></tr>
+<tr><td class="addr">group 2</td><td><br><span class="bit">b0 IEC data</span><br><span class="bit">b1 IEC clock</span><br><span class="bit">b2 IEC ATN</span><br><span class="bit">b3 IEC SREQ</span></td></tr>
+<tr><td class="addr">group 3</td><td><br><span class="bit">b0 WiFi RX</span><br><span class="bit">b1 MIDI RX</span><br><span class="bit">b2 K2 keyboard FIFO</span><br><span class="bit">b3 WizNet</span><br><span class="bit">b4 MIDI synth RX</span><br><span class="bit">b5 WiFi TX empty (all edge)</span></td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">not reset by a software restart: krn cold start writes $FF to all four masks and pendings</td></tr>
+</table></div>
+<h3>$FE30&ndash;$FE3F &middot; Timers 0 / 1</h3>
+<p class="src">used by: wizfi Timer0 polling</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE30 / $FE38</td><td>write: counter control (clear, load, count up/down); read: status</td></tr>
+<tr><td class="addr">$FE31&ndash;$FE33 / $FE39&ndash;$FE3B</td><td>24-bit counter value</td></tr>
+<tr><td class="addr">$FE34 / $FE3C</td><td>compare control (reload on match)</td></tr>
+<tr><td class="addr">$FE35&ndash;$FE37 / $FE3D&ndash;$FE3F</td><td>24-bit compare value; a match raises INT group 0<br><span class="bit">b4 / b5</span></td></tr>
+</table></div>
+<h3>$FE40&ndash;$FE4F &middot; Real-time clock</h3>
+<p class="src">used by: clock2, wildspeed timebase</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE40 / $FE41</td><td>seconds / seconds alarm (BCD)</td></tr>
+<tr><td class="addr">$FE42 / $FE43</td><td>minutes / minutes alarm</td></tr>
+<tr><td class="addr">$FE44 / $FE45</td><td>hours / hours alarm</td></tr>
+<tr><td class="addr">$FE46 / $FE47</td><td>day / day alarm</td></tr>
+<tr><td class="addr">$FE48</td><td>day of week</td></tr>
+<tr><td class="addr">$FE49 / $FE4A</td><td>month / year</td></tr>
+<tr><td class="addr">$FE4B</td><td>rates</td></tr>
+<tr><td class="addr">$FE4C</td><td>enables</td></tr>
+<tr><td class="addr">$FE4D</td><td>flags</td></tr>
+<tr><td class="addr">$FE4E</td><td>control:<br><span class="bit">b1 24-hour mode</span><br><span class="bit">b2 run on battery</span><br><span class="bit">b3 UTI update-transfer inhibit (latch before reading)</span></td></tr>
+<tr><td class="addr">$FE4F</td><td>century</td></tr>
+</table></div>
+<h3>$FE50&ndash;$FE54 &middot; PS/2 ports</h3>
+<p class="src">used by: mousedrv, keydrv_ps2 (Jr2)</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE50</td><td>control:<br><span class="bit">b5 mouse FIFO clear</span><br><span class="bit">b4 keyboard FIFO clear</span><br><span class="bit">b3 mouse write</span><br><span class="bit">b1 keyboard write</span></td></tr>
+<tr><td class="addr">$FE51</td><td>byte to send</td></tr>
+<tr><td class="addr">$FE52</td><td>keyboard input</td></tr>
+<tr><td class="addr">$FE53</td><td>mouse input</td></tr>
+<tr><td class="addr">$FE54</td><td>status:<br><span class="bit">b7/b6 keyboard ack/nak</span><br><span class="bit">b5/b4 mouse ack/nak</span><br><span class="bit">b1 mouse FIFO empty</span><br><span class="bit">b0 keyboard FIFO empty</span></td></tr>
+</table></div>
+<h3>$FE60&ndash;$FE67 &middot; UART (DriveWire)</h3>
+<p class="src">used by: dwinit / dwread / dwwrite</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE60</td><td>RX / TX data (divisor low when DLAB set)</td></tr>
+<tr><td class="addr">$FE61</td><td>interrupt enable (divisor high when DLAB set)</td></tr>
+<tr><td class="addr">$FE62</td><td>interrupt ID (read) / FIFO control (write)</td></tr>
+<tr><td class="addr">$FE63</td><td>line control (b7 = DLAB)</td></tr>
+<tr><td class="addr">$FE64</td><td>modem control</td></tr>
+<tr><td class="addr">$FE65</td><td>line status</td></tr>
+<tr><td class="addr">$FE66</td><td>modem status</td></tr>
+<tr><td class="addr">$FE67</td><td>scratch</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">baud = 22.1184&nbsp;MHz / (16 &times; (divisor + 1)) on BAUDCE-fixed cores: 230400 = divisor 5, 115200 = 11</td></tr>
+</table></div>
+<h3>$FE70&ndash;$FE72 &middot; CODEC</h3>
+<p class="src">used by: audio setup</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE70 / $FE71</td><td>command lo / hi</td></tr>
+<tr><td class="addr">$FE72</td><td>status (read) / control (write)</td></tr>
+</table></div>
+<h3>$FE80&ndash;$FE8F &middot; IEC serial bus</h3>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE80&ndash;$FE8F</td><td>data / clock / ATN / SREQ line control and sense</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">input edges arrive on INT group 2<br><span class="bit">b0&ndash;b3</span></td></tr>
+</table></div>
+<h3>$FE90&ndash;$FE91 &middot; SD card 0 (SPI)</h3>
+<p class="src">used by: llwbsd (/s0, /s1)</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FE90</td><td>status / control:<br><span class="bit">b7 SPI busy</span><br><span class="bit">b1 clock</span><br><span class="bit">b0 chip-select enable</span></td></tr>
+<tr><td class="addr">$FE91</td><td>data: write a byte to shift it out, read the byte shifted in</td></tr>
+</table></div>
+<h3>$FEA0&ndash;$FEA8 &middot; Mouse pointer</h3>
+<p class="src">used by: mousedrv</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FEA0</td><td><br><span class="bit">b0 show pointer</span><br><span class="bit">b1 mode (0 = OS computes X/Y, 1 = hardware decodes PS/2 packets)</span></td></tr>
+<tr><td class="addr">$FEA2 / $FEA3</td><td>X position hi / lo</td></tr>
+<tr><td class="addr">$FEA4 / $FEA5</td><td>Y position hi / lo</td></tr>
+<tr><td class="addr">$FEA6&ndash;$FEA8</td><td>raw PS/2 packet bytes 0&ndash;2</td></tr>
+</table></div>
+<h3>$FEB0&ndash;$FEBF &middot; VIA0 (W65C22)</h3>
+<p class="src">used by: joystick readers</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FEB0 / $FEB1</td><td>port B / port A data</td></tr>
+<tr><td class="addr">$FEB2 / $FEB3</td><td>DDRB / DDRA</td></tr>
+<tr><td class="addr">$FEB4&ndash;$FEB7</td><td>timer 1 counter lo/hi, latch lo/hi</td></tr>
+<tr><td class="addr">$FEB8 / $FEB9</td><td>timer 2 counter lo / hi</td></tr>
+<tr><td class="addr">$FEBA</td><td>shift register</td></tr>
+<tr><td class="addr">$FEBB</td><td>auxiliary control (ACR)</td></tr>
+<tr><td class="addr">$FEBC</td><td>peripheral control (PCR)</td></tr>
+<tr><td class="addr">$FEBD</td><td>interrupt flags (IFR)</td></tr>
+<tr><td class="addr">$FEBE</td><td>interrupt enable (IER)</td></tr>
+<tr><td class="addr">$FEBF</td><td>port A, no handshake</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">the joystick ports hang off this VIA</td></tr>
+</table></div>
+<h3>$FEC0&ndash;$FED7 &middot; DMA engine</h3>
+<p class="src">used by: wild, VDMA users</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FEC0</td><td>control:<br><span class="bit">b0 enable</span><br><span class="bit">b1 2D mode</span><br><span class="bit">b2 fill</span><br><span class="bit">b3 interrupt enable</span><br><span class="bit">b7 start transfer</span></td></tr>
+<tr><td class="addr">$FEC1</td><td>status (read: b7 transfer in progress) / fill byte (write)</td></tr>
+<tr><td class="addr">$FEC4&ndash;$FEC6</td><td>source address hi / mid / lo</td></tr>
+<tr><td class="addr">$FEC8&ndash;$FECA</td><td>destination address hi / mid / lo</td></tr>
+<tr><td class="addr">$FECD&ndash;$FECF</td><td>1D size hi / mid / lo</td></tr>
+<tr><td class="addr">$FED0&ndash;$FED3</td><td>2D size X hi/lo, Y hi/lo</td></tr>
+<tr><td class="addr">$FED4&ndash;$FED7</td><td>2D source stride hi/lo, destination stride hi/lo</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">enabled in v8 cores; DMA_RDY holds the CPU while a transfer runs</td></tr>
+</table></div>
+<h3>$FEE0&ndash;$FEFB &middot; Math coprocessor</h3>
+<p class="src">used by: wild (sprites, CLUT math)</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FEE0 / $FEE1</td><td>unsigned multiply operand A (16-bit)</td></tr>
+<tr><td class="addr">$FEE2 / $FEE3</td><td>multiply operand B</td></tr>
+<tr><td class="addr">$FEE4 / $FEE5</td><td>divisor</td></tr>
+<tr><td class="addr">$FEE6 / $FEE7</td><td>dividend</td></tr>
+<tr><td class="addr">$FEE8&ndash;$FEEB</td><td>32-bit add operand A</td></tr>
+<tr><td class="addr">$FEEC&ndash;$FEEF</td><td>32-bit add operand B</td></tr>
+<tr><td class="addr">$FEF0&ndash;$FEF3</td><td>32-bit product (read)</td></tr>
+<tr><td class="addr">$FEF4 / $FEF5</td><td>quotient (read)</td></tr>
+<tr><td class="addr">$FEF6 / $FEF7</td><td>remainder (read)</td></tr>
+<tr><td class="addr">$FEF8&ndash;$FEFB</td><td>32-bit sum (read)</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">F256 math-block layout at base $FEE0; results are ready on the next read; <b>wild</b> also parks scratch pointers in the add registers</td></tr>
+</table></div>
+</div>
+</div>
 <p class="note">Fixed I/O decodes identically in every map &mdash; which is why LED probes and
 <span class="m">wildspeed</span> work from user mode without touching the MMU.</p>
 
-<h2><span class="no">5</span>Boot: from reset to shell</h2>
+
+<h2><span class="no">5</span>The system page, $FF00&ndash;$FFFF</h2>
+
+<p class="sub" style="max-width:none">The $FF page: peripherals with FIFOs, the MMU, VICKY&rsquo;s master registers, the float unit and the CPU vectors, in the same report layout.</p>
+<div class="grid">
+<div class="mapcol">
+  <div class="map" style="grid-template-columns:1fr">
+    <div class="stack" aria-label="System page blocks">
+      <div class="seg io"><span class="nm">6809 vectors<br><small>8 registers</small></span><span class="ad">$FFF0&ndash;$FFFF</span></div>
+      <div class="seg io"><span class="nm">Floating-point unit<br><small>8 registers</small></span><span class="ad">$FFE0&ndash;$FFEF</span></div>
+      <div class="seg io"><span class="nm">VICKY master control<br><small>12 registers</small></span><span class="ad">$FFC0&ndash;$FFDF</span></div>
+      <div class="seg io"><span class="nm">VIA1 (W65C22)<br><small>1 register</small></span><span class="ad">$FFB0&ndash;$FFBF</span></div>
+      <div class="seg io"><span class="nm">MMU (TinyVicky)<br><small>3 registers</small></span><span class="ad">$FFA0&ndash;$FFAF</span></div>
+      <div class="seg io"><span class="nm">DIP switches<br><small>1 register</small></span><span class="ad">$FF90</span></div>
+      <div class="seg io"><span class="nm">NES / SNES pads<br><small>2 registers</small></span><span class="ad">$FF80&ndash;$FF8F</span></div>
+      <div class="seg io"><span class="nm">F256K LCD (SPI)<br><small>4 registers</small></span><span class="ad">$FF70&ndash;$FF74</span></div>
+      <div class="seg io"><span class="nm">I2C master (HDMI)<br><small>1 register</small></span><span class="ad">$FF60&ndash;$FF6F</span></div>
+      <div class="seg io"><span class="nm">VS1053b audio codec<br><small>2 registers</small></span><span class="ad">$FF50&ndash;$FF5F</span></div>
+      <div class="seg io"><span class="nm">WizNet W5100S ethernet<br><small>7 registers</small></span><span class="ad">$FF40&ndash;$FF48</span></div>
+      <div class="seg io"><span class="nm">SAM2695 MIDI synth<br><small>4 registers</small></span><span class="ad">$FF30&ndash;$FF35</span></div>
+      <div class="seg io"><span class="nm">WizFi360 WiFi UART<br><small>6 registers</small></span><span class="ad">$FF20&ndash;$FF29</span></div>
+      <div class="seg io"><span class="nm">Splash / SPI flash DMA<br><small>6 registers</small></span><span class="ad">$FF10&ndash;$FF18</span></div>
+      <div class="seg io"><span class="nm">SD card 1 (SPI)<br><small>2 registers</small></span><span class="ad">$FF00&ndash;$FF01</span></div>
+    </div>
+  </div>
+  <div class="maplegend"><span><i class="sw io"></i>fixed I/O block</span></div>
+  <p class="mapcap">Like the $FE page, $FF00&ndash;$FFFF is always mapped. The MMU registers at $FFA0 are the only ones the kernel writes with interrupts masked.</p>
+</div>
+<div>
+<h3>$FF00&ndash;$FF01 &middot; SD card 1 (SPI)</h3>
+<p class="src">used by: second SD slot (SDC1); /s0 uses $FE90</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF00</td><td>status / control:<br><span class="bit">b7 SPI busy</span><br><span class="bit">b1 clock</span><br><span class="bit">b0 chip-select enable</span></td></tr>
+<tr><td class="addr">$FF01</td><td>data: write a byte to shift it out, read the byte shifted in</td></tr>
+</table></div>
+<h3>$FF10&ndash;$FF18 &middot; Splash / SPI flash DMA</h3>
+<p class="src">used by: splash loader, flash utilities</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF10</td><td>control: read<br><span class="bit">b7 busy</span><br><span class="bit">b6 FIFO empty</span><br><span class="bit">b5:0 control bits</span></td></tr>
+<tr><td class="addr">$FF11</td><td>command byte for the flash</td></tr>
+<tr><td class="addr">$FF12/$FF13</td><td>read: bytes waiting in the receive FIFO lo / hi (12-bit)</td></tr>
+<tr><td class="addr">$FF14&ndash;$FF16</td><td>flash source address (24-bit)</td></tr>
+<tr><td class="addr">$FF17</td><td>transfer size / control</td></tr>
+<tr><td class="addr">$FF18</td><td>FIFO data port (read pops one byte)</td></tr>
+</table></div>
+<h3>$FF20&ndash;$FF29 &middot; WizFi360 WiFi UART</h3>
+<p class="src">used by: wizfi (WizCon4), wizi, ntptime</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF20</td><td>control:<br><span class="bit">b0 rate (0 = 115200, 1 = 921600)</span><br><span class="bit">b1 FIFO reset (write 1 then 0; wired to the module reset)</span><br><span class="bit">b2 RX FIFO empty (read)</span><br><span class="bit">b3 TX FIFO empty (read)</span></td></tr>
+<tr><td class="addr">$FF21</td><td>data: write pushes to the 2K TX FIFO, read pops the 2K RX FIFO</td></tr>
+<tr><td class="addr">$FF22/$FF23</td><td>RX FIFO read count (16-bit)</td></tr>
+<tr><td class="addr">$FF24/$FF25</td><td>RX FIFO write count</td></tr>
+<tr><td class="addr">$FF26/$FF27</td><td>TX FIFO read count</td></tr>
+<tr><td class="addr">$FF28/$FF29</td><td>TX FIFO write count</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">RX non-empty and TX drained edges arrive on INT group 3<br><span class="bit">b0 / b5</span></td></tr>
+</table></div>
+<h3>$FF30&ndash;$FF35 &middot; SAM2695 MIDI synth</h3>
+<p class="src">used by: MIDI tools</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF30</td><td>status:<br><span class="bit">b1 RX empty</span><br><span class="bit">b2 TX empty</span></td></tr>
+<tr><td class="addr">$FF31</td><td>FIFO data port (read / write)</td></tr>
+<tr><td class="addr">$FF32/$FF33</td><td>RX count lo / hi (hi: low 4 bits valid)</td></tr>
+<tr><td class="addr">$FF34/$FF35</td><td>TX count lo / hi (hi: low 4 bits valid)</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">MIDI RX events: INT group 3<br><span class="bit">b1 (UART) and b4 (synth)</span></td></tr>
+</table></div>
+<h3>$FF40&ndash;$FF48 &middot; WizNet W5100S ethernet</h3>
+<p class="src">used by: wiznet drivers (K2 only)</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF40</td><td>control:<br><span class="bit">b0 enable</span><br><span class="bit">b3:1 command</span><br><span class="bit">b4 reset FIFOs</span><br><span class="bit">b5 start transfer</span><br><span class="bit">b6 FIFO empty/full interrupt enable</span><br><span class="bit">b7 transfer in progress (read)</span></td></tr>
+<tr><td class="addr">$FF41</td><td>MR register value (read / write)</td></tr>
+<tr><td class="addr">$FF42</td><td>TX FIFO count (read)</td></tr>
+<tr><td class="addr">$FF43</td><td>single-access port: write a byte to / read a byte from the W5100S</td></tr>
+<tr><td class="addr">$FF44/$FF45</td><td>W5100S address lo / hi</td></tr>
+<tr><td class="addr">$FF46/$FF47</td><td>read: RX FIFO count lo / hi (11-bit); write: transfer size lo / hi</td></tr>
+<tr><td class="addr">$FF48</td><td>FIFO port</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">FIFO events on INT group 3 b3; the 8-bit bus fix shipped in rc6 (K2)</td></tr>
+</table></div>
+<h3>$FF50&ndash;$FF5F &middot; VS1053b audio codec</h3>
+<p class="src">used by: MP3 / audio streaming</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF50</td><td>command / address byte: SCI register 0&ndash;F (low 4 bits), command $03 read, $02 write</td></tr>
+<tr><td class="addr">$FF5x</td><td>16-bit data hi / lo for the selected SCI register (MODE, STATUS, BASS, CLOCKF, DECODE_TIME, AUDATA, WRAM, WRAMADDR, HDAT0/1, AIADDR, VOL, AICTRL0&ndash;3)</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">DREQ flow control handled in hardware; data goes over the XDCS SPI path</td></tr>
+</table></div>
+<h3>$FF60&ndash;$FF6F &middot; I2C master (HDMI)</h3>
+<p class="src">used by: video init, i2c tools</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF60&ndash;$FF6F</td><td>general I2C master controller registers; drives the SiI9022 HDMI transmitter setup at reset and is available to user code afterwards</td></tr>
+</table></div>
+<h3>$FF70&ndash;$FF74 &middot; F256K LCD (SPI)</h3>
+<p class="src">used by: case LCD tools</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF70</td><td>data byte</td></tr>
+<tr><td class="addr">$FF71</td><td>command byte</td></tr>
+<tr><td class="addr">$FF72/$FF73</td><td>pixel lo / hi (16-bit colour)</td></tr>
+<tr><td class="addr">$FF74</td><td>control: reset value $30; read back<br><span class="bit">b7 busy</span><br><span class="bit">b6 tearing-effect input</span><br><span class="bit">b5:0 control (backlight, reset, DC)</span></td></tr>
+</table></div>
+<h3>$FF80&ndash;$FF8F &middot; NES / SNES pads</h3>
+<p class="src">used by: game pads</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF80</td><td>control:<br><span class="bit">b0 enable the serial pad scanner</span><br><span class="bit">b2 pad type (0 = SNES, 1 = NES)</span><br><span class="bit">b7 start fetch (self-clearing)</span></td></tr>
+<tr><td class="addr">$FF81&ndash;$FF8F</td><td>latched button words for the pads (read after a fetch)</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">the plain joystick ports are read through VIA1</td></tr>
+</table></div>
+<h3>$FF90 &middot; DIP switches</h3>
+<p class="src">used by: wildspeed, wbinfo, feu</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FF90</td><td>read-only:<br><span class="bit">b7 gamma on</span><br><span class="bit">b6:4 user 2..0</span><br><span class="bit">b3:0 boot mode 3..0</span><br><span class="bit">b0 (SW_BOOT_MODE0) is the <b>turbo gate</b> on v8 cores: 1 = stretch turbo allowed, live-flippable</span></td></tr>
+</table></div>
+<h3>$FFA0&ndash;$FFAF &middot; MMU (TinyVicky)</h3>
+<p class="src">used by: krn, F$Link/VModul (slots 0&ndash;1 window), vtio/rbmem/mousedrv (slot 2), bootos9</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FFA0</td><td>memory control:<br><span class="bit">b5:4 which LUT edits write</span><br><span class="bit">b1:0 active LUT (reset 0)</span></td></tr>
+<tr><td class="addr">$FFA1</td><td>I/O control:<br><span class="bit">b0 internal RAM at $FD00&ndash;$FDFF</span><br><span class="bit">b1 internal RAM at $FFF0&ndash;$FFFF (vectors); both cleared by reset</span></td></tr>
+<tr><td class="addr">$FFA8&ndash;$FFAF</td><td>slot 0&ndash;7 block registers of the LUT selected for editing (8K slots at $0000, $2000 &hellip; $E000); reset = identity 0&ndash;7 with slot 7 on flash block $7F in boot mode; writes are captured on the 25&nbsp;MHz side during the CPU&rsquo;s data-valid window</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">reads of $FFA0&ndash;$FFAF return the register copies (used by pmap, the crash dump, F$SetTsk)</td></tr>
+</table></div>
+<h3>$FFB0&ndash;$FFBF &middot; VIA1 (W65C22)</h3>
+<p class="src">used by: joystick / expansion</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FFB0&ndash;$FFBF</td><td>same layout as VIA0: port B, port A, DDRB, DDRA, T1 counter/latch, T2, SR, ACR, PCR, IFR, IER, port A no-handshake</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">external device on the K2; its interrupt is INT group 1 b6</td></tr>
+</table></div>
+<h3>$FFC0&ndash;$FFDF &middot; VICKY master control</h3>
+<p class="src">used by: vtio (banner, cursor, palette), SOLdrv, scfg</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FFC0/$FFC1</td><td>master control lo / hi:<br><span class="bit">b0 text mode</span><br><span class="bit">b1 text overlay</span><br><span class="bit">b2 graphics</span><br><span class="bit">b3 bitmap</span><br><span class="bit">b4 tiles</span><br><span class="bit">b5 sprites</span><br><span class="bit">b6 gamma</span></td></tr>
+<tr><td class="addr">$FFC2/$FFC3</td><td>layer control 0 / 1 (which bitmap/tile layers draw where)</td></tr>
+<tr><td class="addr">$FFC4</td><td>border:<br><span class="bit">b0 enable</span><br><span class="bit">b6:4 X scroll offset</span></td></tr>
+<tr><td class="addr">$FFC5&ndash;$FFC7</td><td>border colour B / G / R</td></tr>
+<tr><td class="addr">$FFC8/$FFC9</td><td>border X / Y size (0&ndash;32, default 32)</td></tr>
+<tr><td class="addr">$FFCD&ndash;$FFCF</td><td>background colour B / G / R (graphics mode, pixel value 0)</td></tr>
+<tr><td class="addr">$FFD0</td><td>cursor control: b0 text-cursor enable</td></tr>
+<tr><td class="addr">$FFD1</td><td>text buffer start offset</td></tr>
+<tr><td class="addr">$FFD2/$FFD3</td><td>cursor character / colour</td></tr>
+<tr><td class="addr">$FFD4&ndash;$FFD7</td><td>cursor X hi/lo, Y hi/lo</td></tr>
+<tr><td class="addr">$FFD8</td><td>line-interrupt control: b0 enable (write-only)</td></tr>
+<tr><td class="addr">$FFD9/$FFDA</td><td>line compare hi / lo (write); reads return the current pixel X / raster Y position</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">SOL line interrupt arrives on INT group 0 b1</td></tr>
+</table></div>
+<h3>$FFE0&ndash;$FFEF &middot; Floating-point unit</h3>
+<p class="src">used by: float-math demos</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FFE0</td><td>control 0:<br><span class="bit">b0/b1 route input A/B through the fixed&rarr;float converter</span><br><span class="bit">b3 add/subtract select</span><br><span class="bit">b5:4 and b7:6 operand routing</span></td></tr>
+<tr><td class="addr">$FFE1</td><td>control 1: b1:0 result select</td></tr>
+<tr><td class="addr">$FFE2/$FFE3</td><td>control 2/3: input valid strobes</td></tr>
+<tr><td class="addr">$FFE8&ndash;$FFEB</td><td>input A (32-bit, big-endian; 20.12 fixed or IEEE float)</td></tr>
+<tr><td class="addr">$FFEC&ndash;$FFEF</td><td>input B</td></tr>
+<tr><td class="addr">$FFE4&ndash;$FFE7 (read)</td><td>status: multiply, divide (b3 divide-by-zero), add/sub, float&rarr;int converter; each has a result-valid bit plus zero/underflow/overflow flags</td></tr>
+<tr><td class="addr">$FFE8&ndash;$FFEB (read)</td><td>add/sub result</td></tr>
+<tr><td class="addr">$FFEC&ndash;$FFEF (read)</td><td>fixed-point converter result</td></tr>
+</table></div>
+<h3>$FFF0&ndash;$FFFF &middot; 6809 vectors</h3>
+<p class="src">used by: krn (DisTable), feu</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">$FFF0</td><td>reserved (6309 illegal-opcode trap)</td></tr>
+<tr><td class="addr">$FFF2</td><td>SWI3</td></tr>
+<tr><td class="addr">$FFF4</td><td>SWI2 &mdash; every OS-9 system call</td></tr>
+<tr><td class="addr">$FFF6</td><td>FIRQ</td></tr>
+<tr><td class="addr">$FFF8</td><td>IRQ</td></tr>
+<tr><td class="addr">$FFFA</td><td>SWI</td></tr>
+<tr><td class="addr">$FFFC</td><td>NMI</td></tr>
+<tr><td class="addr">$FFFE</td><td>RESET</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">fetched from flash block $7F (the FEU) in boot mode; once $FFA1 b1 is set they come from the internal RAM overlay, which is how krn installs its own vectors (D.XSWI2 etc.)</td></tr>
+</table></div>
+</div>
+</div>
+<p class="note">Like the $FE page, $FF00&ndash;$FFFF decodes identically in every map. The MMU registers at $FFA0&ndash;$FFAF are the only ones the kernel writes in system state with interrupts masked; everything else is ordinary I/O.</p>
+
+<h2><span class="no">6</span>Boot: from reset to shell</h2>
 <div class="card">
 <div class="steps">
   <div class="step"><p><b>Reset &mdash; boot mode.</b> The MMU comes up with slots 0&ndash;6 identity-mapped to RAM
@@ -1249,21 +1615,32 @@ footer{margin-top:60px;border-top:2px solid var(--line);padding-top:16px;font-si
 </ol>
 <p class="small">To hide the sprite later: clear bit 5 of $FFC0 (no mapping needed), or clear the record&rsquo;s enable bit (needs the mapped window again). The complete working implementation of this recipe is the <code>sprtest</code> command source: <code>level1/wildbits/cmds/sprtest.asm</code>.</p>
 
-<h2>Resolution &mdash; 2026-08-31, both machines verified on rc7</h2>
-<p><span class="chip ok">CLOSED</span> <b>sprtest v6 shows a solid 32&times;32 sprite at commanded center with a fully intact record readback on the K2 (turbo included) and the Jr2.</b> The invisibility was <b>four stacked defects</b>, each masking the others:</p>
-<ul>
-<li><b>RecodedAddy latch (RTL, the killer):</b> in both machines&rsquo; IO page files, the sprite page recode read <code>case (IO_Sectored_Full_Addy_i[9:0])</code> against 2-bit case items with no default &mdash; never matching at sprite offsets, inferring a glitch-fed <b>latch</b> that steered CPU writes <em>and readbacks</em> of the attribute BRAM into placement-dependent random quarters. Fix: selector <code>[9:8]</code> (rc7). This also caused the lying readback bytes and the sprites&rsquo; junky top rows.</li>
-<li><b>Missing handoff registers (RTL):</b> the 128-sprite rework fed the encoder&rsquo;s 200MHz line-buffer write port from combinational signals; the shipping 65C02 parent (<code>K2C_16bitsRAM_RevB3B</code>) registers data/WE/address through 100MHz flops first. Ported into <code>Sprite_State_Machine.v</code> (rc7), keeping the 6809 big-endian record format.</li>
-<li><b>OS map bug (open):</b> user-mode <code>F$MapBlk</code> mappings never reach the <em>active</em> MLUT map on this port ($FFA0 splits active[1:0]/edit[5:4] &mdash; F256 semantics, not GIME task semantics), so mapped access aliases into plain RAM: reads and writes look consistent while corrupting live buffers &mdash; the source of every phantom &ldquo;junk sprite&rdquo; and false readback in the early investigation. Debug-poked mappings additionally evaporate at the next task switch. <code>sprtest</code> works around it with direct MLUT programming (IRQs masked, edit=active). Kernel fix pending.</li>
-<li><b>Demo record format (open):</b> demos written to the official little-endian F256 layout put sprites at absurd coordinates on the big-endian 6809 rework &mdash; they need migration to the layout in this report.</li>
-</ul>
-<p class="small">Verification tool: <code>sprtest</code> (CMDS on both l2win disks) &mdash; clears all 128 records, draws a solid 32&times;32 at center from its own buffer, prints S0/R/W evidence, stays resident until a keypress. Remaining cosmetics: Jr2 boot-logo junk patches (pre-existing), and the K2&rsquo;s VID&harr;100A crossing still closes by placement luck on rebuilds (bound recommended).</p>
-
-<h2>How the hunt unfolded &mdash; a post-mortem</h2>
-<p>The investigation ran 2026-08-30 through -31 and was misdirected for most of a day because the four defects masked each other &mdash; every experiment&rsquo;s result was the product of several bugs at once. The false trail, in order: debug-poke smoke tests appeared to write sprite records and read them back (in truth the pokes aliased into plain RAM: the MLUT mapping both edited the wrong map and evaporated at the next task switch); a diagnostic core&rsquo;s trace register appeared to read $FF = &ldquo;whole engine firing&rdquo; (in truth the bus default); RAM debris from those very pokes rendered on-screen and was mistaken for sprite output twice. Meanwhile the real latch bug sat in plain sight &mdash; read twice and mentally auto-corrected to its obvious intent.</p>
-<p>What broke the case: byte-level archaeology against the May snapshot and the shipping 65C02 parent cores (which surfaced the missing handoff registers), a self-verifying resident test program (<code>sprtest</code>) replacing all poke-based testing, and finally cold-eyed re-reading of the decode &mdash; the <code>[9:0]</code> selector. Lessons now baked into procedure: lint the suspect block for inferred latches before differential debugging; a simulation that stubs a block proves nothing about that block; on Level 2, register pokes to mapped hardware are meaningless from <code>debug</code>; and a screen photo outranks a plausible theory.</p>
-
 <footer>WildBits 6809 cores &middot; fpga-6809-cores-staging &middot; companion to the 64K Memory Map and 512K Physical Map reports</footer>
 </div>
 </body>
 </html>
+
+<!-- site-wide layout override (2026-09-03): wider page, no clipped table text -->
+<style>
+.wrap{max-width:1400px !important}
+td.m,th.m,td.addr{white-space:normal !important;overflow-wrap:break-word}
+td.m:first-child,th.m:first-child,td.addr:first-child{white-space:nowrap !important;width:1%}
+table.fixedio{table-layout:fixed}
+table.fixedio td:nth-child(1),table.fixedio th:nth-child(1){white-space:nowrap !important}
+table.fixedio td:nth-child(2),table.fixedio th:nth-child(2){white-space:normal !important}
+table.fixedio td:nth-child(3){white-space:normal !important;line-height:1.5}
+.fixedio .bit{display:inline-block;padding-left:2.6em}
+.ladder .d{line-height:1.55}
+.grid .tblwrap{margin:0 0 18px}
+.grid td .bit{display:inline-block;padding-left:2.4em;color:var(--ink-soft)}
+.grid h3{margin:18px 0 4px}
+.grid p.src{margin:0 0 6px}
+.regbits .bit{}
+.ladder .d .m{color:var(--ink);font-weight:600}
+.ladder .d .bit{display:inline-block;padding-left:2.6em}
+.ladder .addr{white-space:nowrap}
+.seg .body .tagv{margin-left:6px;vertical-align:middle}
+table.fixedio td:nth-child(4){white-space:normal !important;color:var(--ink-2)}
+.scroll{overflow-x:auto}
+table{table-layout:auto}
+</style>
