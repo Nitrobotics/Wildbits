@@ -233,10 +233,10 @@ is common, the process&rsquo;s data/code blocks fill the middle, and the fixed I
 switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub trampolines.</p>
 
 <h2><span class="no">4</span>The fixed I/O page, $FE00&ndash;$FEFF</h2>
-<div class="scroll"><table>
+<div class="scroll"><table class="fixedio">
   <tr><th class="m">base</th><th>device</th><th>the registers that keep coming up</th></tr>
   <tr><td class="m">$FE00</td><td>System control</td><td class="m">$FE00 LED/buzzer gates (read returns SD pins in b7:6!) &middot; $FE06 RGB enable &middot; $FE07 machine ID ($16 = K2) &middot; $FE07&ndash;0F LED colors</td></tr>
-  <tr><td class="m">$FE10</td><td>K2 keyboard</td><td>optical keyboard interface</td></tr>
+  <tr><td class="m">$FE10</td><td>K2 keyboard</td><td class="m">$FE10 data (FIFO) &middot; $FE11 status (b7 = 1 mechanical / 0 optical, b0 = 1 FIFO empty) &middot; $FE12&ndash;13 count lo/hi &middot; <b>typematic (rc8+)</b>: $FE14 initial delay, $FE15 repeat period, both in 60&nbsp;Hz frames (reset 30 = 500&nbsp;ms, 5 = 12&nbsp;cps); $FE16 b0 = 1 enables hardware key repeat (reset 0 = off, so older disks see stock behavior); all three read back. Write-then-readback of $FE14 is the core-support probe keydrv uses at Init; a hardware reset (wbreset, button, power) clears $FE16, a software restart does not</td></tr>
   <tr><td class="m">$FE20</td><td>Interrupt controller</td><td class="m">$FE20&ndash;23 pending 0&ndash;3 (W1C) &middot; $FE24&ndash;27 polarity &middot; $FE28&ndash;2B edge &middot; $FE2C&ndash;2F masks (1 = masked; resets all-masked)</td></tr>
   <tr><td class="m">$FE30</td><td>Timers</td><td class="m">T0_VAL/T0_CTR/T0_CMP_CTR &mdash; wizfi Timer0 polling lives here</td></tr>
   <tr><td class="m">$FE40</td><td>RTC</td><td class="m">RTC_CTRL (UTI latch) + BCD time regs &mdash; wildspeed&rsquo;s timebase</td></tr>
