@@ -5,3 +5,6 @@ bounce.s19
 
 # FoenixMgrWin holds the raw parity kits (unzipped cores + 128MB .dsk) - never uploaded; the kit zips in downloads/ are the deliverable (2026-09-03)
 FoenixMgrWin/
+# Vivado hardware-manager projects - local only, never uploaded (2026-09-03)
+VivadoProgramJr2/
+VivadoProgramK2/
