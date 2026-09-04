@@ -41,14 +41,14 @@
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
   --sans:'IBM Plex Sans',system-ui,Segoe UI,sans-serif;
 }
-@media (prefers-color-scheme: dark){
+/* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
     --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
     --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
     --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
   }
-}
+
 :root[data-theme="dark"]{
   --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
   --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
@@ -123,14 +123,14 @@ footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-si
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
   --sans:'IBM Plex Sans',system-ui,Segoe UI,sans-serif;
 }
-@media (prefers-color-scheme: dark){
+/* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
     --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
     --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
     --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
   }
-}
+
 :root[data-theme="dark"]{
   --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
   --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
@@ -762,7 +762,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
   --void:#EDF0F2; --void-ink:#8A98A1;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){
+/* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
     --ram:#33291A; --ram-edge:#8A6A2E; --ram-ink:#E0A64F;
@@ -772,7 +772,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
     --io:#2C2230; --io-edge:#6E4E74; --io-ink:#CD9BD2;
     --void:#1A2126; --void-ink:#5E6E78;
   }
-}
+
 :root[data-theme="dark"]{
   --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
   --ram:#33291A; --ram-edge:#8A6A2E; --ram-ink:#E0A64F;
@@ -967,7 +967,7 @@ window (<code>MMU_COPY_BLOCK</code>), and the $0600 trampoline (<code>RELOC_ADDR
   --regs:#4A4658; --regs-soft:#E9E7F0; --regs-edge:#948FAD;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
 }
-@media (prefers-color-scheme: dark){
+/* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
     --mmu:#232E36; --mmu-edge:#48606F; --mmu-ink:#AEBFC9;
@@ -975,7 +975,7 @@ window (<code>MMU_COPY_BLOCK</code>), and the $0600 trampoline (<code>RELOC_ADDR
     --amber:#E0A64F; --amber-soft:#33291A; --amber-edge:#8A6A2E;
     --regs:#B0A8CE; --regs-soft:#272433; --regs-edge:#575072;
   }
-}
+
 :root[data-theme="dark"]{
   --bg:#141A1E; --panel:#1C242A; --ink:#DEE6EA; --ink-soft:#93A3AC; --line:#31404A;
   --mmu:#232E36; --mmu-edge:#48606F; --mmu-ink:#AEBFC9;
@@ -1172,7 +1172,7 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
     --stale-bg: #ece7f5;--stale-ink: #4a3a7a;
     --code-bg: #f0ede6;
   }
-  @media (prefers-color-scheme: dark) {
+  /* forced dark (was prefers-color-scheme) */
     :root {
       --bg: #16181d;
       --panel: #1e2128;
@@ -1186,7 +1186,7 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
       --stale-bg: #2b2540;--stale-ink: #b9a8e8;
       --code-bg: #272b33;
     }
-  }
+  
   * { box-sizing: border-box; }
   body {
     margin: 0; padding: 2rem 1rem 4rem;
@@ -1644,3 +1644,4 @@ table.fixedio td:nth-child(4){white-space:normal !important;color:var(--ink-2)}
 .scroll{overflow-x:auto}
 table{table-layout:auto}
 </style>
+<style>:root{color-scheme:dark}</style>
