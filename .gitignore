@@ -3,8 +3,10 @@
 kernel.bin
 bounce.s19
 
-# FoenixMgrWin holds the raw parity kits (unzipped cores + 128MB .dsk) - never uploaded; the kit zips in downloads/ are the deliverable (2026-09-03)
-FoenixMgrWin/
+# Only the raw parity kits are excluded (unzipped cores + a 128MB .dsk each) - never uploaded;
+# the kit zips in downloads/ are the deliverable. The FoenixMgr tool itself STAYS TRACKED:
+# ignoring the whole folder (2026-09-03) left it unprotected and 140 files were lost. (2026-09-04)
+FoenixMgrWin/parity_*/
 # Vivado hardware-manager projects - local only, never uploaded (2026-09-03)
 VivadoProgramJr2/
 VivadoProgramK2/
