@@ -7,6 +7,8 @@ bounce.s19
 # the kit zips in downloads/ are the deliverable. The FoenixMgr tool itself STAYS TRACKED:
 # ignoring the whole folder (2026-09-03) left it unprotected and 140 files were lost. (2026-09-04)
 FoenixMgrWin/parity_*/
+# the stock kits (2026-09-08: plain-main disks beside the parity kits) are raw kit folders too - same treatment
+FoenixMgrWin/stock_*/
 # Vivado hardware-manager projects - local only, never uploaded (2026-09-03)
 VivadoProgramJr2/
 VivadoProgramK2/
