@@ -599,14 +599,16 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FF28/$FF29</td><td>TX FIFO write count</td></tr>
 <tr><td class="addr">&mdash;</td><td class="src">RX non-empty and TX drained edges arrive on INT group 3<br><span class="bit">b0 / b5</span></td></tr>
 </table></div>
-<h3>$FF30&ndash;$FF35 &middot; SAM2695 MIDI synth</h3>
+<h3>$FF30&ndash;$FF39 &middot; SAM2695 MIDI synth</h3>
 <p class="src">used by: MIDI tools</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FF30</td><td>status:<br><span class="bit">b1 RX empty</span><br><span class="bit">b2 TX empty</span></td></tr>
-<tr><td class="addr">$FF31</td><td>FIFO data port (read / write)</td></tr>
-<tr><td class="addr">$FF32/$FF33</td><td>RX count lo / hi (hi: low 4 bits valid)</td></tr>
-<tr><td class="addr">$FF34/$FF35</td><td>TX count lo / hi (hi: low 4 bits valid)</td></tr>
+<tr><td class="addr">$FF30</td><td>control / status (register layout ed.2, rc11 and later):<br><span class="bit">read: b3 TX FIFO empty &middot; b2 RX FIFO empty &middot; b7:4 and b1:0 read back the control byte</span><br><span class="bit">write: b1 = 1 holds both FIFOs in reset (FIFO reset only, as on the WizFi; the synth chip is untouched) &middot; b0 unused (no rate select)</span></td></tr>
+<tr><td class="addr">$FF31</td><td>FIFO data port: write = next byte to the synth (TX FIFO), read = next received byte (RX FIFO)</td></tr>
+<tr><td class="addr">$FF32/$FF33</td><td>RX FIFO count hi / lo &mdash; bytes waiting to be read (hi = bits 10:8, 11-bit count)</td></tr>
+<tr><td class="addr">$FF34/$FF35</td><td>RX FIFO write-side count hi / lo (the UART&rsquo;s view of the same FIFO; normally equal to $FF32/$FF33)</td></tr>
+<tr><td class="addr">$FF36/$FF37</td><td>TX FIFO read-side count hi / lo (bytes the UART still has to send, as it drains)</td></tr>
+<tr><td class="addr">$FF38/$FF39</td><td>TX FIFO write-side count hi / lo &mdash; bytes queued by the CPU (hi = bits 10:8)</td></tr>
 <tr><td class="addr">&mdash;</td><td class="src">MIDI RX events: INT group 3<br><span class="bit">b1 (UART) and b4 (synth)</span></td></tr>
 </table></div>
 <h3>$FF40&ndash;$FF48 &middot; WizNet W5100S ethernet</h3>
@@ -949,9 +951,10 @@ strobe policy covers all three.</p>
 <h2>Sectored I/O pages ($C0+)</h2>
 <div class="tblwrap"><table>
 <tr><th>Block</th><th>Contents</th></tr>
-<tr><td class="addr">$C0</td><td>Gamma tables, text LUTs, bitmap control (GAMMA_BLK / TEXT_LUT_BLK / BITMAP_BLK)</td></tr>
-<tr><td class="addr">$C1</td><td>Font memory (FONT_BLK)</td></tr>
+<tr><td class="addr">$C0</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000&ndash;$0BFF gamma tables B / G / R (3 &times; 1 KB, readable)</span><br><span class="bit">$0C00&ndash;$0FFF mouse pointer graphic</span><br><span class="bit">$1000&ndash;$10FF bitmap layer registers &middot; $1100&ndash;$11FF tile registers &middot; $1200&ndash;$12FF memtext registers</span><br><span class="bit">$1300&ndash;$16FF sprite attribute records (128 &times; 8 bytes, see the sprite chapter)</span><br><span class="bit">$1700&ndash;$173F text foreground colour LUT &middot; $1740&ndash;$177F text background colour LUT (16 entries &times; 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable since rc13</b> through shadow copies &mdash; before rc13 the CPU could only write them)</span></td></tr>
+<tr><td class="addr">$C1</td><td>Font memory at $0000&ndash;$0FFF (FONT_BLK); the four graphics CLUTs at $1000&ndash;$1FFF (256 entries &times; 4 bytes each, LUTn at $1000 + $400&times;n; readable; all zero at power-up until a program loads them)</td></tr>
 <tr><td class="addr">$C2</td><td>Text screen memory (what vtio and the flash-ID debug display map in)</td></tr>
+<tr><td class="addr">$C3</td><td>Text colour attribute memory (one byte per character cell: foreground index in the high nibble, background in the low)</td></tr>
 <tr><td class="addr">$C4</td><td>Sound block &mdash; PSG/SID register window</td></tr>
 </table></div>
 <p>These are VICKY-internal pages, not RAM &mdash; mapping one into a slot windows the device, and the
@@ -1435,13 +1438,23 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
 <p>The pixel-data address is a <b>physical</b> address in the 512K RAM (block &times; $2000 + offset), pixels stored row-major, one byte per pixel, rows packed at the sprite&rsquo;s width. Keep depth = <code>00</code> (8 bpp).</p>
 
 <h3>Graphics CLUTs &mdash; VICKY page $C1, offsets $1000&ndash;$1FFF</h3>
-<p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$C1</code> with the font (font at $0000&ndash;$0FFF, CLUTs above it). Each CLUT is 256 entries &times; 4 bytes, ordered <b>B, G, R, A</b>:</p>
+<p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$C1</code> with the font (font at $0000&ndash;$0FFF, CLUTs above it). Each CLUT is 256 entries &times; 4 bytes, ordered <b>B, G, R, A</b>. All four read back (the CPU port of a true dual-port RAM) and hold zeros at power-up: the shell&rsquo;s colours come from the text colour LUTs below, so nothing loads these until a bitmap viewer or a sprite program does.</p>
 <div class="tblwrap"><table>
 <tr><th>CLUT</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Entry i at</th></tr>
 <tr><td class="addr">LUT0</td><td class="addr">$1000&ndash;$13FF</td><td class="addr">$5000&ndash;$53FF</td><td class="addr">$5000 + 4&times;i</td></tr>
 <tr><td class="addr">LUT1</td><td class="addr">$1400&ndash;$17FF</td><td class="addr">$5400&ndash;$57FF</td><td class="addr">$5400 + 4&times;i</td></tr>
 <tr><td class="addr">LUT2</td><td class="addr">$1800&ndash;$1BFF</td><td class="addr">$5800&ndash;$5BFF</td><td class="addr">$5800 + 4&times;i</td></tr>
 <tr><td class="addr">LUT3</td><td class="addr">$1C00&ndash;$1FFF</td><td class="addr">$5C00&ndash;$5FFF</td><td class="addr">$5C00 + 4&times;i</td></tr>
+</table></div>
+
+<h3>Text colour LUTs &mdash; VICKY page $C0, offsets $1700 (foreground) and $1740 (background)</h3>
+<p>Text and the banner font take their colours from two 16-entry tables in page <code>$C0</code>, the sprite-record page: foreground at $1700&ndash;$173F, background at $1740&ndash;$177F, 4 bytes per entry ordered <b>B, G, R, A</b>, indexed by the two nibbles of the character&rsquo;s attribute byte. The core loads both with the OS-9 palette when the bitstream comes up, so they survive a reset; a power cycle restores them. Up to rc12 they were write-only block RAM. <b>Since rc13 the CPU reads them back</b> (each table has a shadow copy written on the same strobe), so a program can save the tables it is about to change and put them back on exit. <code>lutrd</code> on the kit disks dumps both, plus the graphics CLUTs and the gamma tables.</p>
+<div class="tblwrap"><table>
+<tr><th>Table</th><th>Page offset</th><th>Entries</th><th>Access</th></tr>
+<tr><td class="addr">text FG</td><td class="addr">$1700&ndash;$173F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
+<tr><td class="addr">text BG</td><td class="addr">$1740&ndash;$177F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
+<tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 &times; 256 bytes</td><td>read / write</td></tr>
+<tr><td class="addr">graphics LUT0&ndash;3</td><td class="addr">page $C1 $1000 + $400&times;n</td><td>256 &times; B G R A each</td><td>read / write</td></tr>
 </table></div>
 
 <h2>Coordinates</h2>
