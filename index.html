@@ -510,15 +510,37 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <p class="src">used by: wild, VDMA users</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FEC0</td><td>control:<br><span class="bit">b0 enable</span><br><span class="bit">b1 2D mode</span><br><span class="bit">b2 fill</span><br><span class="bit">b3 interrupt enable</span><br><span class="bit">b7 start transfer</span></td></tr>
-<tr><td class="addr">$FEC1</td><td>status (read: b7 transfer in progress) / fill byte (write)</td></tr>
-<tr><td class="addr">$FEC4&ndash;$FEC6</td><td>source address hi / mid / lo</td></tr>
-<tr><td class="addr">$FEC8&ndash;$FECA</td><td>destination address hi / mid / lo</td></tr>
-<tr><td class="addr">$FECD&ndash;$FECF</td><td>1D size hi / mid / lo</td></tr>
-<tr><td class="addr">$FED0&ndash;$FED3</td><td>2D size X hi/lo, Y hi/lo</td></tr>
-<tr><td class="addr">$FED4&ndash;$FED7</td><td>2D source stride hi/lo, destination stride hi/lo</td></tr>
+<tr><td class="addr">$FEC0</td><td>control:<br><span class="bit">b0 enable</span><br><span class="bit">b1 2D mode</span><br><span class="bit">b2 fill</span><br><span class="bit">b3 interrupt enable</span><br><span class="bit">b5:4 byte-lane mask &mdash; either bit set and the transfer completes writing nothing</span><br><span class="bit">b6 double speed, and fill takes the 16-bit word</span><br><span class="bit">b7 start transfer</span></td></tr>
+<tr><td class="addr">$FEC1</td><td>status (read: b7 transfer in progress, b6:0 hardwired 0) / 8-bit fill byte (write)</td></tr>
+<tr><td class="addr">$FEC2 / $FEC3</td><td>16-bit fill word, high / low &mdash; used instead of $FEC1 when control b6 is set</td></tr>
+<tr><td class="addr">$FEC5&ndash;$FEC7</td><td>source address hi / mid / lo</td></tr>
+<tr><td class="addr">$FEC9&ndash;$FECB</td><td>destination address hi / mid / lo</td></tr>
+<tr><td class="addr">$FECC / $FECD</td><td>X size hi / lo</td></tr>
+<tr><td class="addr">$FECE / $FECF</td><td>Y size hi / lo &mdash; 2D only</td></tr>
+<tr><td class="addr">$FED0&ndash;$FED3</td><td>source stride hi/lo, destination stride hi/lo &mdash; 2D only</td></tr>
+<tr><td class="addr">$FED4&ndash;$FED7</td><td>read and write as ordinary bytes but drive nothing</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">the 1D length is <b>not contiguous</b>: bits 23:16 come from $FECF, bits 15:8 from $FECC and bits 7:0 from $FECD. $FECE is ignored in 1D mode</td></tr>
 <tr><td class="addr">&mdash;</td><td class="src">enabled in v8 cores; DMA_RDY holds the CPU while a transfer runs</td></tr>
 </table></div>
+<p class="note"><b>Those are the write addresses, and they are not the read addresses.</b> Every multi-byte
+field is big endian, high byte at the low address. Writes land directly, but the read decode hands back a
+<i>different</i> register for sixteen of the thirty-two bytes: both address quads come back reversed, and all
+four size and stride pairs come back swapped. A driver that reads a register back to check what it wrote will
+not recognise its own values unless that permutation is built in. The <span class="m">tests/dma</span> probe
+writes each address&rsquo;s own low byte into itself and prints what comes back, which identifies whether the
+fitted core matches this decode or a later one.</p>
+<p class="note">The map above was corrected on 2026-09-09 against the core RTL. What was documented before
+that was wrong from $FEC4 down: both address quads were one byte low, and the whole size and stride block
+was four bytes high.</p>
+<p class="note"><b>Driving it.</b> Read out of the core RTL, 2026-09-09.</p>
+<ol class="note">
+<li><b>Start is a rising edge on bit 7</b>, not a level, and bit 0 must already be high when the edge lands. Nothing in the hardware ever clears bit 7, so the CPU has to write it back to 0 before it can start another transfer &mdash; storing $81 twice in a row does one transfer, not two. Set everything up, store the control byte with bit 7 clear, then store it again with bit 7 set.</li>
+<li><b>Completion is a self-clearing level</b> in status bit 7. There is no acknowledge and no write-1-to-clear. Poll until it goes low.</li>
+<li><b>Transfers only run during vertical blanking</b> &mdash; about the first 43 scanlines of each frame, roughly 8% of the time. One started just after the window closes moves no bytes for most of a frame, so a timeout has to be at least two frames, around 40&nbsp;ms, not microseconds.</li>
+<li><b>A fill longer than about 130&nbsp;KB stops early and still reports success.</b> Chunk fills well under 100&nbsp;KB.</li>
+<li><b>The engine goes straight to the SRAM and does not pass through the MMU.</b> Addresses are flat 24-bit physical, and only bits 20:1 reach the memory pins, so the space aliases every 2&nbsp;MB. A logical $xxxx address will land on the wrong page: work out block number &times; 8192 + offset first.</li>
+</ol>
+<div class="warncall"><span class="m">Danger.</span> Starting a transfer halts the CPU and waits for BA and BS to come back together, with no timeout. If that handshake does not complete, the state machine stops there permanently, the status bit stays $80, and the CPU is re-halted every vertical blank for the rest of the session. That state is unrecoverable without a reset. The <span class="m">tests/dma</span> probe on the disk deliberately never starts a transfer for this reason.</div>
 <h3>$FEE0&ndash;$FEFB &middot; Math coprocessor</h3>
 <p class="src">used by: wild (sprites, CLUT math)</p>
 <div class="tblwrap"><table>
@@ -533,8 +555,29 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FEF4 / $FEF5</td><td>quotient (read)</td></tr>
 <tr><td class="addr">$FEF6 / $FEF7</td><td>remainder (read)</td></tr>
 <tr><td class="addr">$FEF8&ndash;$FEFB</td><td>32-bit sum (read)</td></tr>
-<tr><td class="addr">&mdash;</td><td class="src">F256 math-block layout at base $FEE0; results are ready on the next read; <b>wild</b> also parks scratch pointers in the add registers</td></tr>
+<tr><td class="addr">&mdash;</td><td class="src">F256 math-block layout at base $FEE0; <b>wild</b> also parks scratch pointers in the add registers</td></tr>
 </table></div>
+<p class="note">Fixed I/O on both boards, so it needs no MMU work from any task. Everything is big endian,
+which suits the 6809: a 16-bit <code>std</code> or <code>ldd</code> lands the right way round. The
+<code>XYMATH_*</code> block once documented at $D300 does not exist in these cores &mdash; nothing decodes
+that address.</p>
+<p class="note"><b>Write the operands, then read the result, and only write below $FEF0.</b> The write decode
+keys on address bit 3 alone and ignores bit 4, so a write to $FEF0&ndash;$FEF7 lands in the multiply and
+divide operands, and a write to $FEF8&ndash;$FEFF lands in the adder&rsquo;s inputs. Storing to a result
+address silently destroys an operand. Operands read back at their own addresses.</p>
+<p class="note">The multiply is combinational and needs no wait. It is unsigned, 16&times;16, and the full
+32-bit product survives, because 32 bits is the exact width a 16&times;16 product needs &mdash; nothing is
+truncated. FFFF&times;FFFF returns FFFE0001; a signed multiplier would return 00000001. The divider is a
+different matter: it is pipelined with a latency of 12 clocks and both its valid inputs tied high, so it
+re-divides every clock. Allow at least 12 CPU clocks after writing the operands before reading.</p>
+<div class="warncall"><span class="m">The remainder at $FEF6 is wired wrong.</span> The RTL concatenates
+two slices that overlap at bit 8, so a 16-bit value becomes a 17-bit expression and the top bit is silently
+dropped. What reaches the CPU has bit 15 lost, bits 14:8 shifted up one place, and bit 8 duplicated. A
+remainder below 256 therefore reads back exactly right, and 256 or more is wrong &mdash; $0200 comes back as
+$0400. Dividing by a 320 or 640 row pitch lands squarely in the broken range. It is not a precision trade:
+16 bits is already the full width of a remainder, so nothing was bought. The fix belongs in rc14 or later
+and is one character. Until a core carries it, do not trust the remainder above 255. The quotient is
+unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report which core is fitted.</div>
 </div>
 </div>
 <p class="note">Fixed I/O decodes identically in every map &mdash; which is why LED probes and
@@ -716,6 +759,24 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FFE8&ndash;$FFEB (read)</td><td>add/sub result</td></tr>
 <tr><td class="addr">$FFEC&ndash;$FFEF (read)</td><td>fixed-point converter result</td></tr>
 </table></div>
+<p class="note">IEEE-754 single precision, 32 bits, big endian, in fixed I/O on both boards, so like the
+integer block it needs no MMU work. Inside are Xilinx AXI cores: multiply, divide, add/subtract, and two
+converters between 20.12 fixed point and float. Everything is pipelined &mdash; poll the valid bit in the
+matching status register before reading a result. Latencies are 6 clocks for the multiply and both
+converters, 14 for the divide.</p>
+<p class="note"><b>Operands are written to the same sixteen bytes the results are read from.</b> Writes
+always land in the control file; reads return control, status or a result depending on the address. So an
+operand at $FFE8 or $FFEC can never be read back, only the result that replaced it. The input valid signals
+are <i>levels</i> taken from control 2, not pulses: write the operands, then set control 2, then wait for
+the pipe. Both of the adder&rsquo;s input muxes default to input 0, so adding input 0 to input 1 needs
+control 0 bits 7:6 set to 01 &mdash; $40 adds, $48 subtracts.</p>
+<div class="warncall"><span class="m">Two status bits are dead.</span> The multiply&rsquo;s zero flag and the
+divider&rsquo;s divide-by-zero flag are declared in the RTL and never driven &mdash; the only code that ever
+drove them is a commented-out instantiation left at the bottom of the file &mdash; so both synthesize to a
+constant 0. The multiply status bit 3 always reads 0 even when the product is zero, and the divide status
+bit 4 always reads 0. The divider&rsquo;s <i>real</i> divide-by-zero flag is wired to what the map calls its
+zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not &ldquo;result is zero&rdquo;.
+<span class="m">tests/fpu</span> divides 1.0 by 0.0 and reports which bit actually moved.</div>
 <h3>$FFF0&ndash;$FFFF &middot; 6809 vectors</h3>
 <p class="src">used by: krn (DisTable), feu</p>
 <div class="tblwrap"><table>
@@ -1416,7 +1477,11 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
 <p class="src">The RTL rotates the page index (<code>RecodedAddy</code>) so that page $13 lands on BRAM rows 0&ndash;31 &mdash; the table above is the net effect; sprite 0 really is the first 8 bytes of $1300.</p>
 
 <h3>The 8-byte attribute record</h3>
-<p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly):</p>
+<p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly), so a single 16-bit
+<code>STD</code> at the high offset stores X or Y correctly in one instruction:</p>
+<p class="src">Worth knowing if you are reading other documentation: pre-rework cores and the official 65C02
+material describe these fields as little-endian. The 6809 rework changed it, confirmed on rc7 silicon, and
+the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <div class="tblwrap"><table>
 <tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
 <tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 enable &middot; bits 2:1 LUT &middot; bits 4:3 depth &middot; bits 6:5 size</td></tr>
