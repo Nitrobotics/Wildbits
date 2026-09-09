@@ -558,7 +558,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
       <div class="seg io"><span class="nm">Logo LCD (SPI)<br><small>4 registers</small></span><span class="ad">$FF70&ndash;$FF74</span></div>
       <div class="seg io"><span class="nm">I2C master (HDMI)<br><small>1 register</small></span><span class="ad">$FF60&ndash;$FF6F</span></div>
       <div class="seg io"><span class="nm">VS1053b audio codec<br><small>8 registers</small></span><span class="ad">$FF50&ndash;$FF5F</span></div>
-      <div class="seg io"><span class="nm">WizNet W5100S ethernet<br><small>7 registers</small></span><span class="ad">$FF40&ndash;$FF48</span></div>
+      <div class="seg io"><span class="nm">WizNet W6100 ethernet<br><small>7 registers</small></span><span class="ad">$FF40&ndash;$FF48</span></div>
       <div class="seg io"><span class="nm">SAM2695 MIDI synth<br><small>4 registers</small></span><span class="ad">$FF30&ndash;$FF35</span></div>
       <div class="seg io"><span class="nm">WizFi360 WiFi UART<br><small>6 registers</small></span><span class="ad">$FF20&ndash;$FF29</span></div>
       <div class="seg io"><span class="nm">Splash / SPI flash DMA<br><small>6 registers</small></span><span class="ad">$FF10&ndash;$FF18</span></div>
@@ -611,15 +611,15 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FF38/$FF39</td><td>TX FIFO write-side count hi / lo &mdash; bytes queued by the CPU (hi = bits 10:8)</td></tr>
 <tr><td class="addr">&mdash;</td><td class="src">MIDI RX events: INT group 3<br><span class="bit">b1 (UART) and b4 (synth)</span></td></tr>
 </table></div>
-<h3>$FF40&ndash;$FF48 &middot; WizNet W5100S ethernet</h3>
+<h3>$FF40&ndash;$FF48 &middot; WizNet W6100 ethernet</h3>
 <p class="src">used by: wiznet drivers (K2 only)</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
 <tr><td class="addr">$FF40</td><td>control:<br><span class="bit">b0 enable</span><br><span class="bit">b3:1 command</span><br><span class="bit">b4 reset FIFOs</span><br><span class="bit">b5 start transfer</span><br><span class="bit">b6 FIFO empty/full interrupt enable</span><br><span class="bit">b7 transfer in progress (read)</span></td></tr>
 <tr><td class="addr">$FF41</td><td>MR register value (read / write)</td></tr>
 <tr><td class="addr">$FF42</td><td>TX FIFO count (read)</td></tr>
-<tr><td class="addr">$FF43</td><td>single-access port: write a byte to / read a byte from the W5100S</td></tr>
-<tr><td class="addr">$FF44/$FF45</td><td>W5100S address lo / hi</td></tr>
+<tr><td class="addr">$FF43</td><td>single-access port: write a byte to / read a byte from the W6100</td></tr>
+<tr><td class="addr">$FF44/$FF45</td><td>W6100 address lo / hi</td></tr>
 <tr><td class="addr">$FF46/$FF47</td><td>read: RX FIFO count lo / hi (11-bit); write: transfer size lo / hi</td></tr>
 <tr><td class="addr">$FF48</td><td>FIFO port</td></tr>
 <tr><td class="addr">&mdash;</td><td class="src">FIFO events on INT group 3 b3; the 8-bit bus fix shipped in rc6 (K2)</td></tr>
