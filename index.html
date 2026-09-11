@@ -830,6 +830,124 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not &l
 </footer>
 </div>
 <br><br><br><br><br>
+<!-- ===== Wildbits OS-9 Interrupt Groups.html ===== -->
+<main>
+  <h1>WildBits Interrupt Groups: Hardware vs. wildbits.d</h1>
+  <p class="sub">
+    Hardware truth from <span class="mono">fpga-6809-cores-staging/source/IRQ_Controller_Jr.v</span>
+    (the <span class="mono">lirq0</span> concatenation, line 153&ndash;156) vs. the OS definitions in
+    <span class="mono">nitros9/defs/wildbits.d</span> (lines 206&ndash;251). Registers per group:
+    PENDING <span class="mono">$FE20+n</span>, POLARITY <span class="mono">$FE24+n</span>,
+    EDGE <span class="mono">$FE28+n</span>, MASK <span class="mono">$FE2C+n</span>.
+    Report date 2026-09-01.
+  </p>
+
+  <div class="note">
+    <strong>Headline discrepancies:</strong> wildbits.d marks groups 2 and 3 &ldquo;not used&rdquo; &mdash;
+    group 3 is in fact the busiest group on the K2 (WiFi RX/TX, optical keyboard, MIDI, WizNet).
+    <span class="tag bad">WRONG</span> <code>INT_SDC_INS</code> is defined as bit&nbsp;6, colliding with
+    <code>INT_VIA1</code>; the hardware puts SD-card-insert at bit&nbsp;7.
+    <span class="tag stale">STALE</span> the <code>INT_VIA1</code> &ldquo;K only: local keyboard&rdquo; comment does not
+    apply to the K2, whose optical keyboard interrupts in group&nbsp;3 bit&nbsp;2.
+  </div>
+
+  <h2>Group 0 &mdash; core system (bits 7:0 of lirq)</h2>
+  <p class="regline">PENDING $FE20 &middot; POLARITY $FE24 &middot; EDGE $FE28 &middot; MASK $FE2C</p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>VICKY_INT_Sync[0]</code></td><td>TinyVicky start of frame (60&nbsp;Hz) &mdash; the OS clock tick</td><td><code>INT_VKY_SOF</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[1]</code></td><td>TinyVicky start of line (per raster line)</td><td><code>INT_VKY_SOL</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">2</td><td><code>Keyboard_int_PulSe[3]</code></td><td>PS/2 keyboard event pulse</td><td><code>INT_PS2_KBD</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">3</td><td><code>Mouse_int_PulSe[3]</code></td><td>PS/2 mouse event pulse</td><td><code>INT_PS2_MOUSE</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">4</td><td><code>~Timer0_i</code></td><td>Timer 0 reached target</td><td><code>INT_TIMER_0</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">5</td><td><code>~Timer1_i</code></td><td>Timer 1 reached target</td><td><code>INT_TIMER_1</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6</td><td><code>DMA_INT_i</code></td><td>DMA engine interrupt</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">7</td><td><code>CRT_IRQn_Sync</code></td><td>Cartridge (&ldquo;CRT&rdquo;) IRQ line from the expansion port</td><td><code>INT_CARTRIDGE</code> %10000000</td><td><span class="tag ok">MATCH</span></td></tr>
+  </table></div>
+
+  <h2>Group 1 &mdash; peripherals (bits 15:8)</h2>
+  <p class="regline">PENDING $FE21 &middot; POLARITY $FE25 &middot; EDGE $FE29 &middot; MASK $FE2D</p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>!COM1_int_PulSe[3]</code></td><td>UART (COM1 / 16550) ready</td><td><code>INT_UART</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[2]</code></td><td>TinyVicky interrupt 2</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">2</td><td><code>VICKY_INT_Sync[3]</code></td><td>TinyVicky interrupt 3</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">3</td><td><code>VICKY_INT_Sync[4]</code></td><td>TinyVicky interrupt 4</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">4</td><td><code>RTC_IRQ[2]</code></td><td>Real-time clock chip event</td><td><code>INT_RTC</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">5</td><td><code>VIA0_INT_i</code></td><td>65C22 VIA #0 event</td><td><code>INT_VIA0</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6</td><td><code>VIA1_INT_i</code></td><td>65C22 VIA #1 (F256K mechanical keyboard)</td><td><code>INT_VIA1</code> %01000000 &ldquo;K Only: local keyboard&rdquo;</td><td><span class="tag stale">STALE COMMENT</span></td></tr>
+    <tr><td class="bit">7</td><td><code>SDC_IRQ[2]</code></td><td>SD card inserted</td><td><code>INT_SDC_INS</code> %01000000</td><td><span class="tag bad">WRONG VALUE</span></td></tr>
+  </table></div>
+  <div class="note">
+    <strong><code>INT_SDC_INS</code> is defined as %01000000 (bit&nbsp;6)</strong> &mdash; the same value as
+    <code>INT_VIA1</code>. The hardware drives SD-insert on <strong>bit&nbsp;7</strong> (%10000000). Any code that ever
+    uses this equate will mask/poll the VIA1 bit instead of the SD-card bit. Latent bug: nothing in the tree uses it today.
+    The VIA1 comment is also stale for the K2 &mdash; the K2&rsquo;s optical keyboard is <em>not</em> on VIA1
+    (see group&nbsp;3 bit&nbsp;2 below).
+  </div>
+
+  <h2>Group 2 &mdash; IEC bus + module IRQ pins (bits 23:16)</h2>
+  <p class="regline">PENDING $FE22 &middot; POLARITY $FE26 &middot; EDGE $FE2A &middot; MASK $FE2E &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>IEC_DATA_i_Sync</code></td><td>IEC serial bus DATA in</td><td><code>IEC_DATA_i</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>IEC_CLK_i_Sync</code></td><td>IEC serial bus CLK in</td><td><code>IEC_CLK_i</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">2</td><td><code>IEC_ATN_i_Sync</code></td><td>IEC serial bus ATN in</td><td><code>IEC_ATN_i</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">3</td><td><code>IEC_SREQ_i_Sync</code></td><td>IEC serial bus SREQ in</td><td><code>IEC_SREQ_i</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">4</td><td><code>NET_IRQn_Sync</code></td><td>Ethernet (WizNet module) IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">5</td><td><code>WIFI_IRQn_Sync</code></td><td>WiFi module IRQ pin (the module&rsquo;s own line, not the FIFOs)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">6</td><td><code>HDMI_IRQn_Sync</code></td><td>HDMI encoder IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">7</td><td>constant <code>1'b0</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
+  </table></div>
+  <div class="note">
+    The four IEC bits (group&nbsp;2 bits 0&ndash;3, <code>Interrupt[16..19]</code>) have a second life: when the
+    <code>IEC_NMI_IRQn_i</code> strap is low they also drive the CPU&rsquo;s <strong>NMI</strong>
+    (<span class="mono">IRQ_Controller_Jr.v:427</span>), not just IRQ.
+  </div>
+
+  <h2>Group 3 &mdash; FIFO events: WiFi / keyboard / MIDI / WizNet (bits 31:24)</h2>
+  <p class="regline">PENDING $FE23 &middot; POLARITY $FE27 &middot; EDGE $FE2B &middot; MASK $FE2F &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
+  <div class="tablewrap"><table>
+    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
+    <tr><td class="bit">0</td><td><code>NEW_Rx_FIFO_WIFI_Sync</code></td><td>WiFi RX FIFO went non-empty</td><td><code>INT_WIZFI_RX</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">1</td><td><code>NEW_Rx_FIFO_MIDI_Sync</code></td><td>MIDI RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">2</td><td><code>NEW_Optical_Kbd_Sync</code></td><td><strong>K2 optical keyboard</strong> FIFO went non-empty (latches on every keystroke; Jr2 never wires this)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">3</td><td><code>NEW_WizNet_FIFO_Sync</code></td><td>WizNet (Ethernet) FIFO event</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">4</td><td><code>NEW_Rx_FIFO_MIDI_VS_Sync</code></td><td>MIDI synth (VS) RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
+    <tr><td class="bit">5</td><td><code>NEW_Tx_FIFO_WIFI_Sync</code></td><td>WiFi TX FIFO drained to empty</td><td><code>INT_WIZFI_TX</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
+    <tr><td class="bit">6&ndash;7</td><td>constant <code>2'b00</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
+  </table></div>
+  <div class="note">
+    <strong>Group 3 is why K2 keyboard freezes intersected with the WizFi driver.</strong> The optical keyboard&rsquo;s
+    IRQ line is literally the FIFO-empty flag (<span class="mono">OpticalKeyboardScanner.v:46</span>), so bit&nbsp;2
+    latches into PENDING_3 on every keystroke and nothing in the OS ever services or clears it &mdash;
+    <span class="mono">keydrv_k2</span> polls the FIFO off the 60&nbsp;Hz clock and never touches the INT registers.
+    It stays harmless only because MASK_3 resets to all-ones. Meanwhile wizfi&rsquo;s F$IRQ poll entry matches against
+    the <em>same shared register</em>. wildbits.d&rsquo;s &ldquo;not used&rdquo; comment on this group is exactly the
+    documentation gap that let that interaction hide.
+  </div>
+
+  <h2>Controller behavior (applies to all four groups)</h2>
+  <ul>
+    <li><strong>Reset defaults:</strong> POLARITY = $00 (falling edge), EDGE = $FF (edge mode), MASK = $FF (all masked), PENDING = $00. These reset only on FPGA reset &mdash; <strong>a soft reboot preserves them</strong>, so mask bits a driver unmasked (e.g. wizfi&rsquo;s group-3 bits) survive into the next OS boot.</li>
+    <li><strong>PENDING latches unconditionally:</strong> <span class="mono">pending &lt;= pending | irq_event</span> &mdash; the mask gates only the CPU IRQ output (<span class="mono">Interrupt[n] = pending[n] &amp; ~mask[n]</span>), never the latch.</li>
+    <li><strong>PENDING is write-1-to-clear;</strong> reads are side-effect-free. MASK is a plain read/write register.</li>
+    <li><strong>OS init gap:</strong> the clock module clears/masks only groups 0 and 1 at init (and with a read-modify-write on MASK_0 on the campaign branches &mdash; the committed freeze fix on <span class="mono">wb/sd_dw</span> makes it an absolute store). Groups 2 and 3 are never initialized by the OS.</li>
+  </ul>
+
+  <h2>Recommended wildbits.d patch</h2>
+  <ul>
+    <li>Delete the &ldquo;not used&rdquo; comments on the group 2/3 register equates.</li>
+    <li>Fix <code>INT_SDC_INS</code> to %10000000.</li>
+    <li>Group 0: add <code>INT_DMA</code> %01000000.</li>
+    <li>Group 2: add equates for NET (%00010000), WiFi module pin (%00100000), HDMI (%01000000).</li>
+    <li>Group 3: add <code>INT_MIDI_RX</code> %00000010, <code>INT_OPT_KBD</code> %00000100, <code>INT_WIZNET</code> %00001000, <code>INT_MIDI_VS_RX</code> %00010000; note K2-only on the keyboard bit.</li>
+    <li>Correct the <code>INT_VIA1</code> comment: F256K mechanical keyboard only &mdash; the K2 optical keyboard is group&nbsp;3 bit&nbsp;2.</li>
+  </ul>
+
+  <p class="src">Sources: IRQ_Controller_Jr.v lines 153&ndash;156 (input latch), 172&ndash;190 (trigger/edge logic), 383&ndash;427 (output/NMI), reset block (pol/edgen/mask/pending defaults); OpticalKeyboardScanner.v:46; TinyVKY2K2_IO_Page0_Devices.v:2117/2354 (K2-only keyboard wiring); wildbits.d:206&ndash;251; keydrv_k2.asm (no INT register access); clock.asm init (groups 0/1 only).</p>
+</main>
+<br><br><br><br><br>
 <!-- ===== Wildbits OS-9 512K Physical Map.htm ===== -->
 <style>
 :root{
@@ -1013,7 +1131,7 @@ strobe policy covers all three.</p>
 <h2>Sectored I/O pages ($C0+)</h2>
 <div class="tblwrap"><table>
 <tr><th>Block</th><th>Contents</th></tr>
-<tr><td class="addr">$C0</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000&ndash;$0BFF gamma tables B / G / R (3 &times; 1 KB, readable)</span><br><span class="bit">$0C00&ndash;$0FFF mouse pointer graphic</span><br><span class="bit">$1000&ndash;$10FF bitmap layer registers &middot; $1100&ndash;$11FF tile registers &middot; $1200&ndash;$12FF memtext registers</span><br><span class="bit">$1300&ndash;$16FF sprite attribute records (128 &times; 8 bytes, see the sprite chapter)</span><br><span class="bit">$1700&ndash;$173F text foreground colour LUT &middot; $1740&ndash;$177F text background colour LUT (16 entries &times; 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable since rc13</b> through shadow copies &mdash; before rc13 the CPU could only write them)</span></td></tr>
+<tr><td class="addr">$C0</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000&ndash;$0BFF gamma tables B / G / R (3 &times; 1 KB, readable)</span><br><span class="bit">$0C00&ndash;$0FFF mouse pointer graphic</span><br><span class="bit">$1000&ndash;$10FF bitmap layer registers (three 8-byte sets at $1000 / $1008 / $1010; the line-draw accelerator at $1080&ndash;$1087, see the sprite chapter) &middot; $1100&ndash;$11FF tile registers &middot; $1200&ndash;$12FF memtext registers</span><br><span class="bit">$1300&ndash;$16FF sprite attribute records (128 &times; 8 bytes, see the sprite chapter)</span><br><span class="bit">$1700&ndash;$173F text foreground colour LUT &middot; $1740&ndash;$177F text background colour LUT (16 entries &times; 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable since rc13</b> through shadow copies &mdash; before rc13 the CPU could only write them)</span></td></tr>
 <tr><td class="addr">$C1</td><td>Font memory at $0000&ndash;$0FFF (FONT_BLK); the four graphics CLUTs at $1000&ndash;$1FFF (256 entries &times; 4 bytes each, LUTn at $1000 + $400&times;n; readable; all zero at power-up until a program loads them)</td></tr>
 <tr><td class="addr">$C2</td><td>Text screen memory (what vtio and the flash-ID debug display map in)</td></tr>
 <tr><td class="addr">$C3</td><td>Text colour attribute memory (one byte per character cell: foreground index in the high nibble, background in the low)</td></tr>
@@ -1238,7 +1356,8 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
 </div>
 </div>
 <br><br><br><br><br>
-<!-- ===== Wildbits OS-9 Interrupt Groups.html ===== -->
+<!-- style block of the Interrupt Groups section (moved above the 512K Physical Map on 2026-09-10): it stays HERE
+     because its :root tokens are the last ones in the cascade and every section below inherits them -->
 <style>
   :root {
     --bg: #f7f6f2;
@@ -1302,122 +1421,160 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
   li { margin: .35rem 0; }
   .src { color: var(--muted); font-size: .8rem; }
 </style>
-<main>
-  <h1>WildBits Interrupt Groups: Hardware vs. wildbits.d</h1>
-  <p class="sub">
-    Hardware truth from <span class="mono">fpga-6809-cores-staging/source/IRQ_Controller_Jr.v</span>
-    (the <span class="mono">lirq0</span> concatenation, line 153&ndash;156) vs. the OS definitions in
-    <span class="mono">nitros9/defs/wildbits.d</span> (lines 206&ndash;251). Registers per group:
-    PENDING <span class="mono">$FE20+n</span>, POLARITY <span class="mono">$FE24+n</span>,
-    EDGE <span class="mono">$FE28+n</span>, MASK <span class="mono">$FE2C+n</span>.
-    Report date 2026-09-01.
-  </p>
+<!-- ===== Block RAM ledger (2026-09-10): what the K2 rc14 and Jr2 rc13 cores keep in the FPGA's own memory; from Vivado's report_utilization on the routed checkpoints ===== -->
+<div class="wrap" style="padding-left:0;padding-right:0">
+<header>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; the FPGA's own memory</div>
+  <h1>How the cores spend their block RAM</h1>
+<p class="sub">Every RAMB36/RAMB18 tile and every LUT used as RAM in the two routed builds, what each one holds, and how much of it is real content. The 2&nbsp;MB external SRAM (the CPU's memory and the video RAM) is not FPGA memory and is outside this ledger.</p>
+</header>
 
-  <div class="note">
-    <strong>Headline discrepancies:</strong> wildbits.d marks groups 2 and 3 &ldquo;not used&rdquo; &mdash;
-    group 3 is in fact the busiest group on the K2 (WiFi RX/TX, optical keyboard, MIDI, WizNet).
-    <span class="tag bad">WRONG</span> <code>INT_SDC_INS</code> is defined as bit&nbsp;6, colliding with
-    <code>INT_VIA1</code>; the hardware puts SD-card-insert at bit&nbsp;7.
-    <span class="tag stale">STALE</span> the <code>INT_VIA1</code> &ldquo;K only: local keyboard&rdquo; comment does not
-    apply to the K2, whose optical keyboard interrupts in group&nbsp;3 bit&nbsp;2.
-  </div>
+<p class="src">Source: <code>report_utilization</code> on the routed checkpoints <code>CFP95139K2_Top_routed.dcp</code> (K2 rc14, built 2026-09-10 17:04) and <code>CFP95139AJR2_Top_routed.dcp</code> (Jr2 rc13, built 2026-09-08 16:02), every BMEM/DMEM primitive listed by hierarchical instance, and the memory IP configurations (<code>.xci</code>) for the logical sizes. Kbit = 1,024 bits; a RAMB36 tile is 36 Kbit, a RAMB18 half-tile 18 Kbit.</p>
 
-  <h2>Group 0 &mdash; core system (bits 7:0 of lirq)</h2>
-  <p class="regline">PENDING $FE20 &middot; POLARITY $FE24 &middot; EDGE $FE28 &middot; MASK $FE2C</p>
-  <div class="tablewrap"><table>
-    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
-    <tr><td class="bit">0</td><td><code>VICKY_INT_Sync[0]</code></td><td>TinyVicky start of frame (60&nbsp;Hz) &mdash; the OS clock tick</td><td><code>INT_VKY_SOF</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[1]</code></td><td>TinyVicky start of line (per raster line)</td><td><code>INT_VKY_SOL</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">2</td><td><code>Keyboard_int_PulSe[3]</code></td><td>PS/2 keyboard event pulse</td><td><code>INT_PS2_KBD</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">3</td><td><code>Mouse_int_PulSe[3]</code></td><td>PS/2 mouse event pulse</td><td><code>INT_PS2_MOUSE</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">4</td><td><code>~Timer0_i</code></td><td>Timer 0 reached target</td><td><code>INT_TIMER_0</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">5</td><td><code>~Timer1_i</code></td><td>Timer 1 reached target</td><td><code>INT_TIMER_1</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">6</td><td><code>DMA_INT_i</code></td><td>DMA engine interrupt</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">7</td><td><code>CRT_IRQn_Sync</code></td><td>Cartridge (&ldquo;CRT&rdquo;) IRQ line from the expansion port</td><td><code>INT_CARTRIDGE</code> %10000000</td><td><span class="tag ok">MATCH</span></td></tr>
-  </table></div>
+<h2>K2 (xc7a200t, core rc14)</h2>
+<div class="tblwrap"><table>
+<tr><th>At a glance</th><th>Detail</th></tr>
+<tr><td class="addr">40 / 365</td><td>block RAM tiles used (11.0%)</td></tr>
+<tr><td class="addr">1,440 Kbit</td><td>180 KB physical: 25 &times; 36K + 30 &times; 18K (23 RAMB36E1, 2 FIFO36E1, 28 RAMB18E1, 2 FIFO18E1)</td></tr>
+<tr><td class="addr">&asymp; 850 Kbit</td><td>logical contents &mdash; about 59% of the tiles' capacity; the rest is primitive granularity</td></tr>
+<tr><td class="addr">488 LUTs</td><td>as distributed RAM (1.1% of the LUTs that can be memory), plus 197 as shift registers</td></tr>
+</table></div>
 
-  <h2>Group 1 &mdash; peripherals (bits 15:8)</h2>
-  <p class="regline">PENDING $FE21 &middot; POLARITY $FE25 &middot; EDGE $FE29 &middot; MASK $FE2D</p>
-  <div class="tablewrap"><table>
-    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
-    <tr><td class="bit">0</td><td><code>!COM1_int_PulSe[3]</code></td><td>UART (COM1 / 16550) ready</td><td><code>INT_UART</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">1</td><td><code>VICKY_INT_Sync[2]</code></td><td>TinyVicky interrupt 2</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">2</td><td><code>VICKY_INT_Sync[3]</code></td><td>TinyVicky interrupt 3</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">3</td><td><code>VICKY_INT_Sync[4]</code></td><td>TinyVicky interrupt 4</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">4</td><td><code>RTC_IRQ[2]</code></td><td>Real-time clock chip event</td><td><code>INT_RTC</code> %00010000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">5</td><td><code>VIA0_INT_i</code></td><td>65C22 VIA #0 event</td><td><code>INT_VIA0</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">6</td><td><code>VIA1_INT_i</code></td><td>65C22 VIA #1 (F256K mechanical keyboard)</td><td><code>INT_VIA1</code> %01000000 &ldquo;K Only: local keyboard&rdquo;</td><td><span class="tag stale">STALE COMMENT</span></td></tr>
-    <tr><td class="bit">7</td><td><code>SDC_IRQ[2]</code></td><td>SD card inserted</td><td><code>INT_SDC_INS</code> %01000000</td><td><span class="tag bad">WRONG VALUE</span></td></tr>
-  </table></div>
-  <div class="note">
-    <strong><code>INT_SDC_INS</code> is defined as %01000000 (bit&nbsp;6)</strong> &mdash; the same value as
-    <code>INT_VIA1</code>. The hardware drives SD-insert on <strong>bit&nbsp;7</strong> (%10000000). Any code that ever
-    uses this equate will mask/poll the VIA1 bit instead of the SD-card bit. Latent bug: nothing in the tree uses it today.
-    The VIA1 comment is also stale for the K2 &mdash; the K2&rsquo;s optical keyboard is <em>not</em> on VIA1
-    (see group&nbsp;3 bit&nbsp;2 below).
-  </div>
+<h3>By purpose</h3>
+<div class="tblwrap"><table>
+<tr><th>Purpose</th><th style="text-align:right">Kbit</th><th style="text-align:right">Share</th><th>Of the 1,440 Kbit</th><th>What it is</th></tr>
+<tr><td>Graphics engine (VICKY)</td><td class="addr" style="text-align:right">396</td><td class="addr" style="text-align:right">27.5%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:27.5%;background:var(--io)"></div></div></td><td>CLUTs, three layer line buffers, sprite line, final RGB lines, tile-map capture, mouse pointer, sprite registers, gamma</td></tr>
+<tr><td>Serial and bus I/O FIFOs</td><td class="addr" style="text-align:right">270</td><td class="addr" style="text-align:right">18.8%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:18.8%;background:var(--stale-ink)"></div></div></td><td>MIDI, WiFi, WizNet, VS1053, PS/2, optical keyboard, LCD, I&sup2;C</td></tr>
+<tr><td>Text display</td><td class="addr" style="text-align:right">252</td><td class="addr" style="text-align:right">17.5%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:17.5%;background:var(--exram)"></div></div></td><td>character matrix, colour matrix, font, foreground and background palettes</td></tr>
+<tr><td>MemText (VRAM text mode)</td><td class="addr" style="text-align:right">180</td><td class="addr" style="text-align:right">12.5%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:12.5%;background:var(--amber)"></div></div></td><td>its own font, two line memories, two greyscale LUTs</td></tr>
+<tr><td>Line-draw accelerator FIFO</td><td class="addr" style="text-align:right">144</td><td class="addr" style="text-align:right">10.0%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:10%;background:var(--warn)"></div></div></td><td>one 4096 &times; 32 FIFO of address+colour pixels: the single largest block</td></tr>
+<tr><td>Sound</td><td class="addr" style="text-align:right">90</td><td class="addr" style="text-align:right">6.3%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:6.3%;background:var(--miss-ink)"></div></div></td><td>PSG/SID command FIFOs, SID and OPL3 emulation tables</td></tr>
+<tr><td>Debug serial port</td><td class="addr" style="text-align:right">90</td><td class="addr" style="text-align:right">6.3%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:6.3%;background:var(--dead)"></div></div></td><td>the Gavin debug channel's command, reply and receive buffers</td></tr>
+<tr><td>System page RAM</td><td class="addr" style="text-align:right">18</td><td class="addr" style="text-align:right">1.3%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:1.3%;background:var(--ink-2)"></div></div></td><td>$FD00 page, palette read-back shadows, the $FFF0 vector copy</td></tr>
+<tr><td><b>Total</b></td><td class="addr" style="text-align:right"><b>1,440</b></td><td class="addr" style="text-align:right">100%</td><td></td><td>40 tiles</td></tr>
+</table></div>
 
-  <h2>Group 2 &mdash; IEC bus + module IRQ pins (bits 23:16)</h2>
-  <p class="regline">PENDING $FE22 &middot; POLARITY $FE26 &middot; EDGE $FE2A &middot; MASK $FE2E &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
-  <div class="tablewrap"><table>
-    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
-    <tr><td class="bit">0</td><td><code>IEC_DATA_i_Sync</code></td><td>IEC serial bus DATA in</td><td><code>IEC_DATA_i</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">1</td><td><code>IEC_CLK_i_Sync</code></td><td>IEC serial bus CLK in</td><td><code>IEC_CLK_i</code> %00000010</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">2</td><td><code>IEC_ATN_i_Sync</code></td><td>IEC serial bus ATN in</td><td><code>IEC_ATN_i</code> %00000100</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">3</td><td><code>IEC_SREQ_i_Sync</code></td><td>IEC serial bus SREQ in</td><td><code>IEC_SREQ_i</code> %00001000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">4</td><td><code>NET_IRQn_Sync</code></td><td>Ethernet (WizNet module) IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">5</td><td><code>WIFI_IRQn_Sync</code></td><td>WiFi module IRQ pin (the module&rsquo;s own line, not the FIFOs)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">6</td><td><code>HDMI_IRQn_Sync</code></td><td>HDMI encoder IRQ pin</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">7</td><td>constant <code>1'b0</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
-  </table></div>
-  <div class="note">
-    The four IEC bits (group&nbsp;2 bits 0&ndash;3, <code>Interrupt[16..19]</code>) have a second life: when the
-    <code>IEC_NMI_IRQn_i</code> strap is low they also drive the CPU&rsquo;s <strong>NMI</strong>
-    (<span class="mono">IRQ_Controller_Jr.v:427</span>), not just IRQ.
-  </div>
+<h3>Block by block</h3>
+<p class="src">Logical = what the IP was configured to hold; physical = the primitives it occupies. A true-dual-port memory with a 32- or 64-bit second port is forced into whole 36 Kbit tiles however small its contents, which is where most of the gap lives.</p>
+<div class="tblwrap"><table>
+<tr><th>Instance</th><th>Holds</th><th>Configured</th><th style="text-align:right">Logical Kbit</th><th>Physical</th><th style="text-align:right">Kbit</th></tr>
+<tr><td colspan="6"><b>Text display</b></td></tr>
+<tr><td class="addr">TEXT_BLOCK</td><td>the text screen's character matrix (page $C2)</td><td>8192 &times; 8, true dual port</td><td class="addr" style="text-align:right">64</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td class="addr">COLOR_BLOCK</td><td>the text screen's colour matrix (page $C3)</td><td>8192 &times; 8, true dual port</td><td class="addr" style="text-align:right">64</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td class="addr">FONT</td><td>the two text font sets, boot-loaded from <code>Font_OS9_bannerfont.coe</code></td><td>4096 &times; 8, true dual port</td><td class="addr" style="text-align:right">32</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">FOREGROUND_LUT</td><td>16-entry text foreground palette (B,G,R,A); the video side reads it 32 bits wide</td><td>64 &times; 8 / 32</td><td class="addr" style="text-align:right">0.5</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">BACKGROUND_LUT</td><td>16-entry text background palette</td><td>64 &times; 8 / 32</td><td class="addr" style="text-align:right">0.5</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td colspan="6"><b>Graphics engine</b></td></tr>
+<tr><td class="addr">LUT_4Tables_H</td><td>the four graphics CLUTs (4 &times; 256 entries &times; 4 bytes)</td><td>4096 &times; 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">LUT_4Tables_L</td><td>rc14: a second copy of the CLUTs so HIRES4 looks up both dots of a byte in one cycle</td><td>4096 &times; 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">Layer0/1/2_DPMem</td><td>one scan line of pixels for each of the three bitmap/tile layers</td><td>3 &times; (256 &times; 32 / 16)</td><td class="addr" style="text-align:right">24</td><td>3 &times; RAMB36</td><td class="addr" style="text-align:right">108</td></tr>
+<tr><td class="addr">Sprite_DPMem</td><td>the composed sprite line</td><td>512 &times; 18</td><td class="addr" style="text-align:right">9</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">OUTPUT_RGB_H</td><td>the final RGB pixel line handed to the output</td><td>512 &times; 32, simple dual port</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">OUTPUT_RGB_L</td><td>rc14: the second dot of each HIRES4 pair, one colour line of its own</td><td>512 &times; 32, simple dual port</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">TileMapCapture</td><td>two tile-map lines captured as 16-bit entries</td><td>512 &times; 16, simple dual port</td><td class="addr" style="text-align:right">8</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">MousePointerMem</td><td>the hardware mouse pointer image</td><td>1024 &times; 8, true dual port</td><td class="addr" style="text-align:right">8</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">Sprite_Reg_Block_inst</td><td>the 128 sprite attribute records (page $C0, $1300&ndash;$16FF); the engine reads a whole 64-bit record per cycle</td><td>1024 &times; 8 / 64</td><td class="addr" style="text-align:right">8</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td class="addr">GAMMA_R / G / B</td><td>gamma tables, boot-loaded from <code>init_hex_GAMMA.coe</code></td><td>3 &times; (256 &times; 8)</td><td class="addr" style="text-align:right">6</td><td>3 &times; RAMB18</td><td class="addr" style="text-align:right">54</td></tr>
+<tr><td colspan="6"><b>Line-draw accelerator</b></td></tr>
+<tr><td class="addr">LD_AddyPixel_FIFO</td><td>the Bresenham unit's queue of {colour, 24-bit address} pixels waiting to be written</td><td>FIFO 4096 &times; 32, common clock</td><td class="addr" style="text-align:right">128</td><td>4 &times; RAMB36</td><td class="addr" style="text-align:right">144</td></tr>
+<tr><td colspan="6"><b>MemText</b> &mdash; the text mode whose matrices live in video RAM (master control register 1, bit 6)</td></tr>
+<tr><td class="addr">MEM_TEXT_FONT</td><td>two 8&times;8 font sets and one 8&times;16 set, from <code>FontSet2x8x8Set_1x8x16Set.coe</code></td><td>8192 &times; 8, true dual port</td><td class="addr" style="text-align:right">64</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td class="addr">TEXT_MEMORY, COLOR_MEMORY</td><td>one line of characters and one of colours fetched from VRAM</td><td>2 &times; (128 &times; 16)</td><td class="addr" style="text-align:right">4</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">FG_LUT, BG_LUT</td><td>MemText palettes, greyscale at boot (<code>LUT_GreyScale.coe</code>)</td><td>2 &times; (2048 &times; 8 / 32)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td colspan="6"><b>System page RAM</b></td></tr>
+<tr><td class="addr">FC00_Block_RAM</td><td>the $FD00&ndash;$FDFF page, read-back shadows of the text palettes at $FF00&ndash;$FF7F, and the $FFF0&ndash;$FFFF vector copy that lets any block sit in slot 7</td><td>1024 &times; 8, single port</td><td class="addr" style="text-align:right">8</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td colspan="6"><b>Serial and bus I/O FIFOs</b></td></tr>
+<tr><td class="addr">MIDI_RxD_FIFO, MIDI_TxD_FIFO</td><td>the MIDI UART (SAM2695 and the DIN port)</td><td>2 &times; (FIFO 2048 &times; 8)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">WIFI_RxD_FIFO, WIFI_TxD_FIFO</td><td>the WizFi serial channel</td><td>2 &times; (FIFO 2048 &times; 8)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">Wiz5100S Rx_FIFO, Tx_FIFO</td><td>K2 only: the WizNet Ethernet bus interface</td><td>2 &times; (FIFO 2048 &times; 8)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">VS1053B_My_FIFO</td><td>data stream to the VS1053 codec ($FF50 bridge)</td><td>FIFO 2048 &times; 8</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">FIFOKeyboard, FIFOMouse</td><td>PS/2 receive queues</td><td>2 &times; (FIFO 256 &times; 8)</td><td class="addr" style="text-align:right">4</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">FIFO_OPTKBD</td><td>K2 only: the optical keyboard scanner</td><td>FIFO 1024 &times; 16</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">LCD_FIFO_2K</td><td>K2 only: SPI LCD command/data stream</td><td>FIFO 2048 &times; 12, built-in</td><td class="addr" style="text-align:right">24</td><td>1 &times; FIFO36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">I2C_FIFO_CMD, I2C_FIFO_READ</td><td>K2 only: the I&sup2;C master's command and read queues</td><td>FIFO 1024 &times; 36; FIFO 2048 &times; 8</td><td class="addr" style="text-align:right">52</td><td>1 &times; RAMB36 + 1 &times; RAMB18</td><td class="addr" style="text-align:right">54</td></tr>
+<tr><td colspan="6"><b>Sound</b></td></tr>
+<tr><td class="addr">PSG_CMD_Write_FIFO_inst</td><td>register writes queued to the sound chips</td><td>FIFO 256 &times; 17</td><td class="addr" style="text-align:right">4.3</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">SID_FIFO_inst</td><td>the SID/OPL3 bridge's access FIFO</td><td>FIFO 1024 &times; 16, built-in</td><td class="addr" style="text-align:right">16</td><td>1 &times; FIFO18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">sid_6581_Left</td><td>tables inferred inside the SID emulation</td><td>RTL arrays</td><td class="addr" style="text-align:right">&mdash;</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">opl/channels</td><td>channel state of the OPL3 emulation</td><td>RTL arrays</td><td class="addr" style="text-align:right">&mdash;</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td colspan="6"><b>Debug serial port</b> (GavinDebug)</td></tr>
+<tr><td class="addr">Serial2CPU</td><td>48-bit debug commands from the host</td><td>FIFO 512 &times; 48, built-in</td><td class="addr" style="text-align:right">24</td><td>1 &times; FIFO36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">CPU2Serial</td><td>replies to the host</td><td>FIFO 512 &times; 8, built-in</td><td class="addr" style="text-align:right">4</td><td>1 &times; FIFO18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">DEBUG_SERIAL_BUF</td><td>the debug data buffer (what k2dump reads out)</td><td>2048 &times; 8, true dual port</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">SerialRxD_FIFO</td><td>raw receive queue of the debug UART</td><td>FIFO 512 &times; 8</td><td class="addr" style="text-align:right">4</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td colspan="3"><b>Total block RAM</b></td><td class="addr" style="text-align:right"><b>&asymp; 850</b></td><td>40 tiles</td><td class="addr" style="text-align:right"><b>1,440</b></td></tr>
+</table></div>
 
-  <h2>Group 3 &mdash; FIFO events: WiFi / keyboard / MIDI / WizNet (bits 31:24)</h2>
-  <p class="regline">PENDING $FE23 &middot; POLARITY $FE27 &middot; EDGE $FE2B &middot; MASK $FE2F &mdash; wildbits.d says <span class="tag stale">&ldquo;not used&rdquo;</span></p>
-  <div class="tablewrap"><table>
-    <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
-    <tr><td class="bit">0</td><td><code>NEW_Rx_FIFO_WIFI_Sync</code></td><td>WiFi RX FIFO went non-empty</td><td><code>INT_WIZFI_RX</code> %00000001</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">1</td><td><code>NEW_Rx_FIFO_MIDI_Sync</code></td><td>MIDI RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">2</td><td><code>NEW_Optical_Kbd_Sync</code></td><td><strong>K2 optical keyboard</strong> FIFO went non-empty (latches on every keystroke; Jr2 never wires this)</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">3</td><td><code>NEW_WizNet_FIFO_Sync</code></td><td>WizNet (Ethernet) FIFO event</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">4</td><td><code>NEW_Rx_FIFO_MIDI_VS_Sync</code></td><td>MIDI synth (VS) RX FIFO went non-empty</td><td>&mdash; no equate</td><td><span class="tag miss">MISSING</span></td></tr>
-    <tr><td class="bit">5</td><td><code>NEW_Tx_FIFO_WIFI_Sync</code></td><td>WiFi TX FIFO drained to empty</td><td><code>INT_WIZFI_TX</code> %00100000</td><td><span class="tag ok">MATCH</span></td></tr>
-    <tr><td class="bit">6&ndash;7</td><td>constant <code>2'b00</code></td><td>unused</td><td>&mdash;</td><td><span class="tag ok">n/a</span></td></tr>
-  </table></div>
-  <div class="note">
-    <strong>Group 3 is why K2 keyboard freezes intersected with the WizFi driver.</strong> The optical keyboard&rsquo;s
-    IRQ line is literally the FIFO-empty flag (<span class="mono">OpticalKeyboardScanner.v:46</span>), so bit&nbsp;2
-    latches into PENDING_3 on every keystroke and nothing in the OS ever services or clears it &mdash;
-    <span class="mono">keydrv_k2</span> polls the FIFO off the 60&nbsp;Hz clock and never touches the INT registers.
-    It stays harmless only because MASK_3 resets to all-ones. Meanwhile wizfi&rsquo;s F$IRQ poll entry matches against
-    the <em>same shared register</em>. wildbits.d&rsquo;s &ldquo;not used&rdquo; comment on this group is exactly the
-    documentation gap that let that interaction hide.
-  </div>
+<h3>Distributed (LUT) RAM</h3>
+<ul>
+  <li><b>Splash flash read FIFO</b> &mdash; the SPI splash-screen loader's 2048 &times; 8 FIFO is configured as distributed RAM and takes 480 LUT-RAM cells, almost all of the 488 LUTs the placed report counts as distributed RAM.</li>
+  <li><b>OPL3 channel storage</b> (132 cells), the <b>SuperIO</b> block (35) and the two 64-byte <b>text palette read-back shadows</b> added in rc13 (16 cells: <code>TEXT_FG_Shadow</code>, <code>TEXT_BG_Shadow</code>) make up the rest.</li>
+  <li>197 LUTs are shift registers (SRL16/SRL32): FIFO reset synchronisers and pipeline delays, not storage.</li>
+</ul>
 
-  <h2>Controller behavior (applies to all four groups)</h2>
-  <ul>
-    <li><strong>Reset defaults:</strong> POLARITY = $00 (falling edge), EDGE = $FF (edge mode), MASK = $FF (all masked), PENDING = $00. These reset only on FPGA reset &mdash; <strong>a soft reboot preserves them</strong>, so mask bits a driver unmasked (e.g. wizfi&rsquo;s group-3 bits) survive into the next OS boot.</li>
-    <li><strong>PENDING latches unconditionally:</strong> <span class="mono">pending &lt;= pending | irq_event</span> &mdash; the mask gates only the CPU IRQ output (<span class="mono">Interrupt[n] = pending[n] &amp; ~mask[n]</span>), never the latch.</li>
-    <li><strong>PENDING is write-1-to-clear;</strong> reads are side-effect-free. MASK is a plain read/write register.</li>
-    <li><strong>OS init gap:</strong> the clock module clears/masks only groups 0 and 1 at init (and with a read-modify-write on MASK_0 on the campaign branches &mdash; the committed freeze fix on <span class="mono">wb/sd_dw</span> makes it an absolute store). Groups 2 and 3 are never initialized by the OS.</li>
-  </ul>
+<h2>Jr2 (xc7a35t, core rc13)</h2>
+<div class="tblwrap"><table>
+<tr><th>At a glance</th><th>Detail</th></tr>
+<tr><td class="addr">34.5 / 50</td><td>block RAM tiles used (69.0%)</td></tr>
+<tr><td class="addr">1,242 Kbit</td><td>155 KB physical: 22 &times; 36K + 25 &times; 18K (21 RAMB36E1, 1 FIFO36E1, 23 RAMB18E1, 2 FIFO18E1)</td></tr>
+<tr><td class="addr">&asymp; 760 Kbit</td><td>logical contents &mdash; about 61% of the tiles' capacity</td></tr>
+<tr><td class="addr">488 LUTs</td><td>as distributed RAM (5.1% of the 9,600 LUTs that can be memory), plus 177 as shift registers</td></tr>
+</table></div>
 
-  <h2>Recommended wildbits.d patch</h2>
-  <ul>
-    <li>Delete the &ldquo;not used&rdquo; comments on the group 2/3 register equates.</li>
-    <li>Fix <code>INT_SDC_INS</code> to %10000000.</li>
-    <li>Group 0: add <code>INT_DMA</code> %01000000.</li>
-    <li>Group 2: add equates for NET (%00010000), WiFi module pin (%00100000), HDMI (%01000000).</li>
-    <li>Group 3: add <code>INT_MIDI_RX</code> %00000010, <code>INT_OPT_KBD</code> %00000100, <code>INT_WIZNET</code> %00001000, <code>INT_MIDI_VS_RX</code> %00010000; note K2-only on the keyboard bit.</li>
-    <li>Correct the <code>INT_VIA1</code> comment: F256K mechanical keyboard only &mdash; the K2 optical keyboard is group&nbsp;3 bit&nbsp;2.</li>
-  </ul>
+<h3>By purpose</h3>
+<div class="tblwrap"><table>
+<tr><th>Purpose</th><th style="text-align:right">Kbit</th><th style="text-align:right">Share</th><th>Of the 1,242 Kbit</th><th>Difference from the K2</th></tr>
+<tr><td>Graphics engine (VICKY)</td><td class="addr" style="text-align:right">342</td><td class="addr" style="text-align:right">27.5%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:27.5%;background:var(--io)"></div></div></td><td>one CLUT copy and one RGB line: the rc14 HIRES4 pair is not built yet (&minus;54 Kbit)</td></tr>
+<tr><td>Text display</td><td class="addr" style="text-align:right">252</td><td class="addr" style="text-align:right">20.3%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:20.3%;background:var(--exram)"></div></div></td><td>same blocks</td></tr>
+<tr><td>MemText (VRAM text mode)</td><td class="addr" style="text-align:right">180</td><td class="addr" style="text-align:right">14.5%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:14.5%;background:var(--amber)"></div></div></td><td>same blocks</td></tr>
+<tr><td>Line-draw accelerator FIFO</td><td class="addr" style="text-align:right">144</td><td class="addr" style="text-align:right">11.6%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:11.6%;background:var(--warn)"></div></div></td><td>same block</td></tr>
+<tr><td>Serial and bus I/O FIFOs</td><td class="addr" style="text-align:right">126</td><td class="addr" style="text-align:right">10.1%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:10.1%;background:var(--stale-ink)"></div></div></td><td>no WizNet, optical keyboard, LCD or I&sup2;C queues (&minus;144 Kbit)</td></tr>
+<tr><td>Sound</td><td class="addr" style="text-align:right">90</td><td class="addr" style="text-align:right">7.2%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:7.2%;background:var(--miss-ink)"></div></div></td><td>same blocks</td></tr>
+<tr><td>Debug serial port</td><td class="addr" style="text-align:right">90</td><td class="addr" style="text-align:right">7.2%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:7.2%;background:var(--dead)"></div></div></td><td>same blocks</td></tr>
+<tr><td>System page RAM</td><td class="addr" style="text-align:right">18</td><td class="addr" style="text-align:right">1.4%</td><td><div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:1.4%;background:var(--ink-2)"></div></div></td><td>same block</td></tr>
+<tr><td><b>Total</b></td><td class="addr" style="text-align:right"><b>1,242</b></td><td class="addr" style="text-align:right">100%</td><td></td><td>34.5 tiles</td></tr>
+</table></div>
 
-  <p class="src">Sources: IRQ_Controller_Jr.v lines 153&ndash;156 (input latch), 172&ndash;190 (trigger/edge logic), 383&ndash;427 (output/NMI), reset block (pol/edgen/mask/pending defaults); OpticalKeyboardScanner.v:46; TinyVKY2K2_IO_Page0_Devices.v:2117/2354 (K2-only keyboard wiring); wildbits.d:206&ndash;251; keydrv_k2.asm (no INT register access); clock.asm init (groups 0/1 only).</p>
-</main>
+<h3>Block by block</h3>
+<div class="tblwrap"><table>
+<tr><th>Instance</th><th>Holds</th><th>Configured</th><th style="text-align:right">Logical Kbit</th><th>Physical</th><th style="text-align:right">Kbit</th></tr>
+<tr><td colspan="6"><b>Text display</b> &mdash; as the K2</td></tr>
+<tr><td class="addr">TEXT_BLOCK, COLOR_BLOCK</td><td>character and colour matrices</td><td>2 &times; (8192 &times; 8)</td><td class="addr" style="text-align:right">128</td><td>4 &times; RAMB36</td><td class="addr" style="text-align:right">144</td></tr>
+<tr><td class="addr">FONT</td><td>the two text font sets (<code>FONT_CPU_Memory</code> here, the same contents)</td><td>4096 &times; 8</td><td class="addr" style="text-align:right">32</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">FOREGROUND_LUT, BACKGROUND_LUT</td><td>text palettes</td><td>2 &times; (64 &times; 8 / 32)</td><td class="addr" style="text-align:right">1</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td colspan="6"><b>Graphics engine</b></td></tr>
+<tr><td class="addr">LUT_4Tables</td><td>the four graphics CLUTs (one copy: rc13 has no HIRES4)</td><td>4096 &times; 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 &times; RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">Layer0/1/2_DPMem</td><td>three layer line buffers</td><td>3 &times; (256 &times; 32 / 16)</td><td class="addr" style="text-align:right">24</td><td>3 &times; RAMB36</td><td class="addr" style="text-align:right">108</td></tr>
+<tr><td class="addr">Sprite_DPMem</td><td>the composed sprite line</td><td>512 &times; 18</td><td class="addr" style="text-align:right">9</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">OUTPUT_RGB</td><td>the final RGB pixel line (one)</td><td>512 &times; 32</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">TileMapCapture, MousePointerMem</td><td>tile-map line capture; mouse pointer image</td><td>512 &times; 16; 1024 &times; 8</td><td class="addr" style="text-align:right">16</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">Sprite_Reg_Block_inst</td><td>the 128 sprite attribute records</td><td>1024 &times; 8 / 64</td><td class="addr" style="text-align:right">8</td><td>2 &times; RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
+<tr><td class="addr">GAMMA_R / G / B</td><td>gamma tables</td><td>3 &times; (256 &times; 8)</td><td class="addr" style="text-align:right">6</td><td>3 &times; RAMB18</td><td class="addr" style="text-align:right">54</td></tr>
+<tr><td colspan="6"><b>Line-draw accelerator, MemText, system page</b> &mdash; as the K2</td></tr>
+<tr><td class="addr">LD_AddyPixel_FIFO</td><td>the line-draw pixel queue</td><td>FIFO 4096 &times; 32</td><td class="addr" style="text-align:right">128</td><td>4 &times; RAMB36</td><td class="addr" style="text-align:right">144</td></tr>
+<tr><td class="addr">MEM_TEXT_FONT, TEXT_MEMORY, COLOR_MEMORY, FG_LUT, BG_LUT</td><td>the MemText font, line memories and palettes</td><td>8192 &times; 8; 2 &times; (128 &times; 16); 2 &times; (2048 &times; 8 / 32)</td><td class="addr" style="text-align:right">100</td><td>4 &times; RAMB36 + 2 &times; RAMB18</td><td class="addr" style="text-align:right">180</td></tr>
+<tr><td class="addr">FC00_Block_RAM</td><td>the $FD00 page, palette shadows and vector copy</td><td>1024 &times; 8</td><td class="addr" style="text-align:right">8</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td colspan="6"><b>Serial and bus I/O FIFOs</b></td></tr>
+<tr><td class="addr">MIDI_RxD_FIFO, MIDI_TxD_FIFO</td><td>the MIDI UART</td><td>2 &times; (FIFO 2048 &times; 8)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">WIFI_RxD_FIFO, WIFI_TxD_FIFO</td><td>the WizFi serial channel</td><td>2 &times; (FIFO 2048 &times; 8)</td><td class="addr" style="text-align:right">32</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">VS1053B_My_FIFO</td><td>data stream to the VS1053 codec</td><td>FIFO 2048 &times; 8</td><td class="addr" style="text-align:right">16</td><td>1 &times; RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">FIFOKeyboard, FIFOMouse</td><td>PS/2 receive queues</td><td>2 &times; (FIFO 256 &times; 8)</td><td class="addr" style="text-align:right">4</td><td>2 &times; RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td colspan="6"><b>Sound and debug port</b> &mdash; as the K2</td></tr>
+<tr><td class="addr">PSG_CMD_Write_FIFO_inst, SID_FIFO_inst, sid_6581_Left, opl/channels</td><td>sound-chip command queues and emulation tables</td><td>FIFO 256 &times; 17; FIFO 1024 &times; 16; RTL arrays</td><td class="addr" style="text-align:right">&asymp; 20</td><td>1 &times; FIFO18 + 4 &times; RAMB18</td><td class="addr" style="text-align:right">90</td></tr>
+<tr><td class="addr">Serial2CPU, CPU2Serial, DEBUG_SERIAL_BUF, SerialRxD_FIFO</td><td>the debug channel's queues and buffer</td><td>FIFO 512 &times; 48; FIFO 512 &times; 8; 2048 &times; 8; FIFO 512 &times; 8</td><td class="addr" style="text-align:right">48</td><td>1 &times; FIFO36 + 1 &times; FIFO18 + 2 &times; RAMB18</td><td class="addr" style="text-align:right">90</td></tr>
+<tr><td colspan="3"><b>Total block RAM</b></td><td class="addr" style="text-align:right"><b>&asymp; 760</b></td><td>34.5 tiles</td><td class="addr" style="text-align:right"><b>1,242</b></td></tr>
+</table></div>
+<p class="src">Distributed RAM on the Jr2 is the same 488 LUTs for the same reasons (the splash flash FIFO, the OPL3 channels, SuperIO, the palette shadows); with only 9,600 LUTs able to act as memory on the 35T that is 5.1% of them.</p>
+
+<h2>What this means</h2>
+<ul>
+  <li><b>The Jr2 is the constrained board.</b> 15.5 tiles (558 Kbit) remain on the 35T. Bringing the rc14 HIRES4 pair across (a second CLUT copy and a second RGB line) costs one RAMB36 and one RAMB18, so it fits with room to spare; a second line-draw-sized FIFO would not.</li>
+  <li><b>The K2 has 325 tiles free</b> (4,680 Kbit). Block RAM is nowhere near a limit there; the K2 core's timing closure (the 200 MHz scheduler, the SRAM strobe constraints) is the constraint, not memory.</li>
+  <li><b>About 40% of the allocated block RAM is primitive granularity, not data.</b> The four palette-style LUTs (text foreground/background, MemText foreground/background) occupy 144 Kbit for 33 Kbit of contents because their video-side ports are 32 bits wide; the sprite register block takes 72 Kbit for 8 because its engine port is 64 bits wide; the three gamma tables take 54 Kbit for 6. None of that is worth reclaiming on the K2; on the Jr2 the two text palettes (72 Kbit for 1) would be the first place to look if tiles ever run short.</li>
+  <li><b>No ILA or VIO debug cores are in either routed build.</b> The <code>MC6809_ILA</code>, <code>Chipscope144_3x12</code> and <code>vio_0</code> IPs exist in both projects but occupy no block RAM in these bitstreams.</li>
+  <li><b>The text screen lives in the FPGA, the graphics do not.</b> The 8 KB character matrix, 8 KB colour matrix and 4 KB font are block RAM (which is why the text pages sit at fixed addresses), while bitmaps, tiles and sprite images stream from the external 2 MB SRAM through the line buffers listed above.</li>
+</ul>
+</div>
 <br><br><br><br><br>
 <!-- ===== WildBits_Sprite_Engine.htm (restyled 2026-09-03 to match the 64K Memory Map section; its private style blocks were removed) ===== -->
 <div class="wrap" style="padding-left:0;padding-right:0">
@@ -1522,6 +1679,28 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 &times; 256 bytes</td><td>read / write</td></tr>
 <tr><td class="addr">graphics LUT0&ndash;3</td><td class="addr">page $C1 $1000 + $400&times;n</td><td>256 &times; B G R A each</td><td>read / write</td></tr>
 </table></div>
+
+<h3>Line-draw accelerator &mdash; VICKY page $C0, offsets $1080&ndash;$1087 (wildbits.d: TyVKY_LD_*)</h3>
+<p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$C0</code> in slot 7, so these are $F080&ndash;$F087). Write the two end points and a colour, raise the go bit, and the engine walks the line at 100&nbsp;MHz, queueing every pixel as {colour, address} into a 4096-entry FIFO that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y&times;320 + x</b>: the 320-wide 8-bit bitmap modes only, nothing for the rc14 HIRES4 nibble layout.</p>
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>wildbits.d</th><th>Write</th><th>Read</th></tr>
+<tr><td class="addr">$1080</td><td class="addr">TyVKY_LD_CTRL_REG</td><td>bit 0 <code>LD_ENABLE</code> &middot; bit 1 <code>LD_GO</code> &middot; bits 3:2 target bitmap (<code>LD_BM0</code> $00, <code>LD_BM1</code> $04, <code>LD_BM2</code> $08) &middot; bit 4 <code>LD_FIFO_RESET</code></td><td>bit 7 <code>LD_BUSY</code>, bits 6:0 the control bits</td></tr>
+<tr><td class="addr">$1081</td><td class="addr">TyVKY_LD_COLOR</td><td>8-bit CLUT index</td><td>the colour</td></tr>
+<tr><td class="addr">$1082</td><td class="addr">TyVKY_LD_X0_H</td><td>X0 bits 9:8</td><td><code>TyVKY_LD_COUNT_H</code>: pixels still queued, bits 12:8</td></tr>
+<tr><td class="addr">$1083</td><td class="addr">TyVKY_LD_X0_L</td><td>X0 bits 7:0</td><td><code>TyVKY_LD_COUNT_L</code>: pixels still queued, bits 7:0</td></tr>
+<tr><td class="addr">$1084</td><td class="addr">TyVKY_LD_X1_H</td><td>X1 bits 9:8</td><td>X1 bits 7:0 (the read order is swapped)</td></tr>
+<tr><td class="addr">$1085</td><td class="addr">TyVKY_LD_X1_L</td><td>X1 bits 7:0</td><td>X1 bits 9:8</td></tr>
+<tr><td class="addr">$1086</td><td class="addr">TyVKY_LD_Y0</td><td>Y0 (8 bits)</td><td>Y1 (swapped)</td></tr>
+<tr><td class="addr">$1087</td><td class="addr">TyVKY_LD_Y1</td><td>Y1 (8 bits)</td><td>Y0 (swapped)</td></tr>
+</table></div>
+<ul>
+  <li><b>Accepted range:</b> X0 and X1 below 320, Y0 and Y1 below 240 &mdash; a go with any end point outside is ignored (the engine stays idle, busy never rises).</li>
+  <li><b>Handshake:</b> the go bit starts the line on its rising edge and the engine parks in its done state <em>until the go bit is written back to 0</em>; drop it before the next line. Busy (bit 7 on read) covers both the walk and the queued pixels; the FIFO count at $1082/$1083 says how many are still waiting.</li>
+  <li><b>Read-back quirks:</b> X0 cannot be read (its two bytes return the FIFO count), and the X1 and Y read order is the reverse of the write order &mdash; both are in <span class="mono">TinyVicky_BM_Registers.v</span>&rsquo;s read multiplexer. The RTL comment puts busy at bit 6; the multiplexer puts it at bit 7.</li>
+  <li><b>Target address:</b> bits 3:2 pick which bitmap layer&rsquo;s start address ($1001&ndash;$1003 / $1009&ndash;$100B / $1011&ndash;$1013) the pixel addresses are built on; the layer does not have to be displayed.</li>
+  <li><b>Cost:</b> the pixel FIFO is the largest block RAM in the core (4 &times; RAMB36, 144&nbsp;Kbit; see the block RAM ledger above).</li>
+</ul>
+<p class="src">Sources: TinyVicky_BM_Registers.v (LINE_DRAWING_REG, the write decode on address bit 7, the read multiplexer), LineDraw.v (X0_Ok/Y0_Ok limits, the IDLE/RUN/DONE machine, Addy_Addyx_Offset), TinyVickyCoreModule.v:444 (the LINEDRAWING_Reg64 wiring), TinyVKY2K2_IO_Page0_Devices.v:744 (CS_VICKY_BITMAP = $18_1000&ndash;$18_10FF; the Jr2 decode is identical).</p>
 
 <h2>Coordinates</h2>
 <p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320&times;240 area spans sprite coordinates (32,32) to (351,271):</p>
