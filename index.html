@@ -48,25 +48,25 @@
 <style>
 :root{
   --bg:#F7F6F2; --ink:#1F2733; --ink-2:#5A6373; --line:#DAD6CC; --card:#FFFFFF;
-  --ram:#3E6B9E; --ram-bg:#E3EBF4; --flash:#C97B2D; --flash-bg:#F6E9D8;
-  --exram:#4E8A5C; --exram-bg:#E2EEE5; --io:#8A5CA8; --io-bg:#EDE4F3;
-  --dead:#9A958A; --dead-bg:#EFEDE7; --warn:#B3462E; --warn-bg:#F6E2DC;
+  --atl-ram:#3E6B9E; --atl-ram-bg:#E3EBF4; --atl-flash:#C97B2D; --atl-flash-bg:#F6E9D8;
+  --atl-exram:#4E8A5C; --atl-exram-bg:#E2EEE5; --atl-io:#8A5CA8; --atl-io-bg:#EDE4F3;
+  --atl-dead:#9A958A; --atl-dead-bg:#EFEDE7; --atl-warn:#B3462E; --atl-warn-bg:#F6E2DC;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
   --sans:'IBM Plex Sans',system-ui,Segoe UI,sans-serif;
 }
 /* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
-    --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
-    --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
-    --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
+    --atl-ram:#7FA8D4; --atl-ram-bg:#22303F; --atl-flash:#E0A05B; --atl-flash-bg:#3A2D1D;
+    --atl-exram:#83BC92; --atl-exram-bg:#203225; --atl-io:#B893D3; --atl-io-bg:#32273D;
+    --atl-dead:#767268; --atl-dead-bg:#232219; --atl-warn:#E07B5F; --atl-warn-bg:#3B241D;
   }
 
 :root[data-theme="dark"]{
   --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
-  --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
-  --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
-  --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
+  --atl-ram:#7FA8D4; --atl-ram-bg:#22303F; --atl-flash:#E0A05B; --atl-flash-bg:#3A2D1D;
+  --atl-exram:#83BC92; --atl-exram-bg:#203225; --atl-io:#B893D3; --atl-io-bg:#32273D;
+  --atl-dead:#767268; --atl-dead-bg:#232219; --atl-warn:#E07B5F; --atl-warn-bg:#3B241D;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px}
@@ -83,7 +83,7 @@ code,.m{font-family:var(--mono);font-size:.93em}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
 .note{font-size:12.5px;color:var(--ink-2)}
-.warncall{background:var(--warn-bg);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13.5px}
+.warncall{background:var(--atl-warn-bg);border-left:3px solid var(--atl-warn);padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13.5px}
 .warncall .m{font-weight:600}
 table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
 th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2);border-bottom:2px solid var(--line);padding:6px 10px}
@@ -104,11 +104,11 @@ td.m,th.m{font-family:var(--mono);white-space:nowrap}
 .seg .body{flex:1;padding:8px 12px}
 .seg .body b{font-size:13.5px}
 .seg .body .d{font-size:12.5px;color:var(--ink-2)}
-.seg.ram{background:var(--ram-bg)} .seg.ram b{color:var(--ram)}
-.seg.flash{background:var(--flash-bg)} .seg.flash b{color:var(--flash)}
-.seg.exram{background:var(--exram-bg)} .seg.exram b{color:var(--exram)}
-.seg.io{background:var(--io-bg)} .seg.io b{color:var(--io)}
-.seg.dead{background:var(--dead-bg)} .seg.dead b{color:var(--dead)}
+.seg.ram{background:var(--atl-ram-bg)} .seg.ram b{color:var(--atl-ram)}
+.seg.flash{background:var(--atl-flash-bg)} .seg.flash b{color:var(--atl-flash)}
+.seg.exram{background:var(--atl-exram-bg)} .seg.exram b{color:var(--atl-exram)}
+.seg.io{background:var(--atl-io-bg)} .seg.io b{color:var(--atl-io)}
+.seg.dead{background:var(--atl-dead-bg)} .seg.dead b{color:var(--atl-dead)}
 .seg.plain{background:var(--card)}
 .tall{min-height:74px}.mid{min-height:54px}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
@@ -119,8 +119,8 @@ td.m,th.m{font-family:var(--mono);white-space:nowrap}
 .bits div:first-child{border-left:none}
 .bits .lab{display:block;font-family:var(--sans);font-size:10.5px;color:var(--ink-2);margin-top:2px}
 .tagv{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600;letter-spacing:.03em}
-.tv{background:var(--exram-bg);color:var(--exram)}
-.ti{background:var(--dead-bg);color:var(--ink-2)}
+.tv{background:var(--atl-exram-bg);color:var(--atl-exram)}
+.ti{background:var(--atl-dead-bg);color:var(--ink-2)}
 footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--ink-2)}
 .steps{counter-reset:s;display:flex;flex-direction:column;gap:10px;margin:14px 0}
 .step{display:flex;gap:12px}
@@ -130,25 +130,25 @@ footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-si
 <style>
 :root{
   --bg:#F7F6F2; --ink:#1F2733; --ink-2:#5A6373; --line:#DAD6CC; --card:#FFFFFF;
-  --ram:#3E6B9E; --ram-bg:#E3EBF4; --flash:#C97B2D; --flash-bg:#F6E9D8;
-  --exram:#4E8A5C; --exram-bg:#E2EEE5; --io:#8A5CA8; --io-bg:#EDE4F3;
-  --dead:#9A958A; --dead-bg:#EFEDE7; --warn:#B3462E; --warn-bg:#F6E2DC;
+  --atl-ram:#3E6B9E; --atl-ram-bg:#E3EBF4; --atl-flash:#C97B2D; --atl-flash-bg:#F6E9D8;
+  --atl-exram:#4E8A5C; --atl-exram-bg:#E2EEE5; --atl-io:#8A5CA8; --atl-io-bg:#EDE4F3;
+  --atl-dead:#9A958A; --atl-dead-bg:#EFEDE7; --atl-warn:#B3462E; --atl-warn-bg:#F6E2DC;
   --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
   --sans:'IBM Plex Sans',system-ui,Segoe UI,sans-serif;
 }
 /* forced dark (was prefers-color-scheme) */
   :root:not([data-theme="light"]){
     --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
-    --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
-    --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
-    --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
+    --atl-ram:#7FA8D4; --atl-ram-bg:#22303F; --atl-flash:#E0A05B; --atl-flash-bg:#3A2D1D;
+    --atl-exram:#83BC92; --atl-exram-bg:#203225; --atl-io:#B893D3; --atl-io-bg:#32273D;
+    --atl-dead:#767268; --atl-dead-bg:#232219; --atl-warn:#E07B5F; --atl-warn-bg:#3B241D;
   }
 
 :root[data-theme="dark"]{
   --bg:#15181D; --ink:#E4E1D8; --ink-2:#9AA1AD; --line:#31363F; --card:#1C2027;
-  --ram:#7FA8D4; --ram-bg:#22303F; --flash:#E0A05B; --flash-bg:#3A2D1D;
-  --exram:#83BC92; --exram-bg:#203225; --io:#B893D3; --io-bg:#32273D;
-  --dead:#767268; --dead-bg:#232219; --warn:#E07B5F; --warn-bg:#3B241D;
+  --atl-ram:#7FA8D4; --atl-ram-bg:#22303F; --atl-flash:#E0A05B; --atl-flash-bg:#3A2D1D;
+  --atl-exram:#83BC92; --atl-exram-bg:#203225; --atl-io:#B893D3; --atl-io-bg:#32273D;
+  --atl-dead:#767268; --atl-dead-bg:#232219; --atl-warn:#E07B5F; --atl-warn-bg:#3B241D;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;font-size:15px}
@@ -165,7 +165,7 @@ code,.m{font-family:var(--mono);font-size:.93em}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .sw{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid var(--line)}
 .note{font-size:12.5px;color:var(--ink-2)}
-.warncall{background:var(--warn-bg);border-left:3px solid var(--warn);padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13.5px}
+.warncall{background:var(--atl-warn-bg);border-left:3px solid var(--atl-warn);padding:10px 14px;border-radius:0 6px 6px 0;margin:12px 0;font-size:13.5px}
 .warncall .m{font-weight:600}
 table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
 th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-2);border-bottom:2px solid var(--line);padding:6px 10px}
@@ -186,11 +186,11 @@ td.m,th.m{font-family:var(--mono);white-space:nowrap}
 .seg .body{flex:1;padding:8px 12px}
 .seg .body b{font-size:13.5px}
 .seg .body .d{font-size:12.5px;color:var(--ink-2)}
-.seg.ram{background:var(--ram-bg)} .seg.ram b{color:var(--ram)}
-.seg.flash{background:var(--flash-bg)} .seg.flash b{color:var(--flash)}
-.seg.exram{background:var(--exram-bg)} .seg.exram b{color:var(--exram)}
-.seg.io{background:var(--io-bg)} .seg.io b{color:var(--io)}
-.seg.dead{background:var(--dead-bg)} .seg.dead b{color:var(--dead)}
+.seg.ram{background:var(--atl-ram-bg)} .seg.ram b{color:var(--atl-ram)}
+.seg.flash{background:var(--atl-flash-bg)} .seg.flash b{color:var(--atl-flash)}
+.seg.exram{background:var(--atl-exram-bg)} .seg.exram b{color:var(--atl-exram)}
+.seg.io{background:var(--atl-io-bg)} .seg.io b{color:var(--atl-io)}
+.seg.dead{background:var(--atl-dead-bg)} .seg.dead b{color:var(--atl-dead)}
 .seg.plain{background:var(--card)}
 .tall{min-height:74px}.mid{min-height:54px}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
@@ -201,8 +201,8 @@ td.m,th.m{font-family:var(--mono);white-space:nowrap}
 .bits div:first-child{border-left:none}
 .bits .lab{display:block;font-family:var(--sans);font-size:10.5px;color:var(--ink-2);margin-top:2px}
 .tagv{display:inline-block;padding:1px 7px;border-radius:10px;font-size:11px;font-weight:600;letter-spacing:.03em}
-.tv{background:var(--exram-bg);color:var(--exram)}
-.ti{background:var(--dead-bg);color:var(--ink-2)}
+.tv{background:var(--atl-exram-bg);color:var(--atl-exram)}
+.ti{background:var(--atl-dead-bg);color:var(--ink-2)}
 footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-size:12.5px;color:var(--ink-2)}
 .steps{counter-reset:s;display:flex;flex-direction:column;gap:10px;margin:14px 0}
 .step{display:flex;gap:12px}
@@ -218,11 +218,11 @@ footer{margin-top:56px;border-top:1px solid var(--line);padding-top:14px;font-si
   the trampolines, and the runtime windows the OS actually uses. Region colors are consistent
   across every diagram. Ladders are not to scale.</p>
   <div class="legend">
-    <span><i class="sw" style="background:var(--ram-bg);border-color:var(--ram)"></i>RAM</span>
-    <span><i class="sw" style="background:var(--flash-bg);border-color:var(--flash)"></i>Flash (SST39VF1681)</span>
-    <span><i class="sw" style="background:var(--exram-bg);border-color:var(--exram)"></i>Expansion RAM</span>
-    <span><i class="sw" style="background:var(--io-bg);border-color:var(--io)"></i>I/O</span>
-    <span><i class="sw" style="background:var(--dead-bg);border-color:var(--dead)"></i>Unreachable</span>
+    <span><i class="sw" style="background:var(--atl-ram-bg);border-color:var(--atl-ram)"></i>RAM</span>
+    <span><i class="sw" style="background:var(--atl-flash-bg);border-color:var(--atl-flash)"></i>Flash (SST39VF1681)</span>
+    <span><i class="sw" style="background:var(--atl-exram-bg);border-color:var(--atl-exram)"></i>Expansion RAM</span>
+    <span><i class="sw" style="background:var(--atl-io-bg);border-color:var(--atl-io)"></i>I/O</span>
+    <span><i class="sw" style="background:var(--atl-dead-bg);border-color:var(--atl-dead)"></i>Unreachable</span>
     <span class="note"><span class="tagv tv">verified</span> read from source&ensp;<span class="tagv ti">inferred</span> from behavior/comments</span>
   </div>
 </header>
@@ -244,15 +244,15 @@ supplies the physical block; the entry&rsquo;s top bits pick which bus answers.<
 
 <div class="card">
   <b style="font-size:13.5px">LUT entry encoding</b> <span class="tagv tv">verified</span>
-  <span class="note">(TyVKy2_MMU_Register.v)</span>
+  <span class="note">(TyVKy2K2x1_MMU_Register.v)</span>
   <div class="scroll"><table style="margin-top:8px">
     <tr><th class="m">entry bits</th><th>region</th><th class="m">blocks</th><th>size</th><th>physical</th></tr>
-    <tr><td class="m" style="color:var(--ram)">00xxxxxx</td><td><b>RAM</b></td><td class="m">$00&ndash;$3F</td><td>512&nbsp;KB</td><td>SRAM (also the VKY video port)</td></tr>
-    <tr><td class="m" style="color:var(--flash)">01xxxxxx</td><td><b>Flash window</b></td><td class="m">$40&ndash;$7F</td><td>512&nbsp;KB</td><td class="m">$08_0000&ndash;$0F_FFFF of the SST chip</td></tr>
-    <tr><td class="m" style="color:var(--exram)">100xxxxx</td><td><b>Expansion RAM</b></td><td class="m">$80&ndash;$9F</td><td>256&nbsp;KB</td><td class="m">$10_0000&ndash;$13_FFFF</td></tr>
-    <tr><td class="m" style="color:var(--io)">11000xxx</td><td><b>Sectored I/O pages</b></td><td class="m">$C0&ndash;$C4</td><td>5&times;8&nbsp;KB</td><td>text / color / VKY / sound registers</td></tr>
-    <tr><td class="m" style="color:var(--ram)">101xxxxx</td><td><b>RAM window A</b> <span class="note">K2 rc14</span></td><td class="m">$A0&ndash;$BF</td><td>256&nbsp;KB</td><td class="m">$14_0000&ndash;$17_FFFF (block &times; $2000; Revision E)</td></tr>
-    <tr><td class="m" style="color:var(--ram)">$D0&ndash;$EF</td><td><b>RAM window B</b> <span class="note">K2 rc14</span></td><td class="m">$D0&ndash;$EF</td><td>256&nbsp;KB</td><td class="m">$20_0000&ndash;$23_FFFF (block + $30, &times; $2000; Revision E)</td></tr>
+    <tr><td class="m" style="color:var(--atl-ram)">00xxxxxx</td><td><b>RAM</b></td><td class="m">$00&ndash;$3F</td><td>512&nbsp;KB</td><td>SRAM (also the VKY video port)</td></tr>
+    <tr><td class="m" style="color:var(--atl-flash)">01xxxxxx</td><td><b>Flash window</b></td><td class="m">$40&ndash;$7F</td><td>512&nbsp;KB</td><td class="m">$08_0000&ndash;$0F_FFFF of the SST chip</td></tr>
+    <tr><td class="m" style="color:var(--atl-exram)">100xxxxx</td><td><b>Expansion RAM</b></td><td class="m">$80&ndash;$9F</td><td>256&nbsp;KB</td><td class="m">$10_0000&ndash;$13_FFFF</td></tr>
+    <tr><td class="m" style="color:var(--atl-io)">11000xxx</td><td><b>Sectored I/O pages</b></td><td class="m">$C0&ndash;$C4</td><td>5&times;8&nbsp;KB</td><td>text / color / VKY / sound registers</td></tr>
+    <tr><td class="m" style="color:var(--atl-ram)">101xxxxx</td><td><b>RAM window A</b> <span class="note">K2 rc14</span></td><td class="m">$A0&ndash;$BF</td><td>256&nbsp;KB</td><td class="m">$14_0000&ndash;$17_FFFF (block &times; $2000; Revision E)</td></tr>
+    <tr><td class="m" style="color:var(--atl-ram)">$D0&ndash;$EF</td><td><b>RAM window B</b> <span class="note">K2 rc14</span></td><td class="m">$D0&ndash;$EF</td><td>256&nbsp;KB</td><td class="m">$20_0000&ndash;$23_FFFF (block + $30, &times; $2000; Revision E)</td></tr>
   </table></div>
   <div class="warncall"><b>1 MB of SRAM since K2 rc14.</b> The two RAM windows and the kernel side: see <a href="#doc-1mb">Documentation &middot; 1 MB RAM windows</a>.</div>
   <div class="warncall">The 2&nbsp;MB flash chip is only 512&nbsp;KB-visible: the FPGA drives
@@ -366,7 +366,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 
 <h2><span class="no">4</span>The fixed I/O page, $FE00&ndash;$FEFF</h2>
 
-<p class="sub" style="max-width:none">Every register the $FE page carries, reported the way the 512K map is: the block stack on the left, one table per block on the right, bits listed under their register.</p>
+<p class="sub" style="max-width:none">Every register the $FE page carries, reported the way the 1MB map is: the block stack on the left, one table per block on the right, bits listed under their register.</p>
 <div class="grid" style="grid-template-columns:250px 1fr;gap:28px">
 <div class="mapcol">
   <div class="map" style="grid-template-columns:1fr">
@@ -832,7 +832,7 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not &l
 <!-- ===== Wildbits OS-9 Interrupt Groups.html ===== -->
 <div class="wrap">
 <header>
-  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 512K Physical Map</div>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 1MB Physical Map</div>
   <h1>WildBits Interrupt Groups: Hardware vs. wildbits.d</h1>
   <p class="sub">
     Hardware truth from <code>fpga-6809-cores-staging/source/IRQ_Controller_Jr.v</code>
@@ -988,12 +988,12 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not &l
 &bull;&nbsp;keydrv_k2.asm (no INT register access).<br>
 &bull;&nbsp;clock.asm init (groups 0/1 only).</p>
 
-<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-09-01 from IRQ_Controller_Jr.v and wildbits.d. Companion: WildBits 512K Physical Map.</footer>
+<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-09-01 from IRQ_Controller_Jr.v and wildbits.d. Companion: WildBits 1MB Physical Map.</footer>
 </div>
 </div>
 </div>
 <br><br><br><br><br>
-<!-- ===== Wildbits OS-9 512K Physical Map.htm ===== -->
+<!-- ===== Wildbits OS-9 512K Physical Map.htm (now the 1MB Physical Map, 2026-09-12) ===== -->
 <style>
 :root{
   --bg:#F6F8F9; --panel:#FFFFFF; --ink:#1B2328; --ink-soft:#4E5C64; --line:#D4DCE1;
@@ -1084,8 +1084,8 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
 <div class="wrap">
 <header>
   <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 64K Memory Map</div>
-  <h1>WildBits 512K Physical Map</h1>
-  <p class="sub">The physical 8K blocks behind the MMU: where system RAM, the flash drives, the FEU,
+  <h1>WildBits 1MB Physical Map</h1>
+  <p class="sub">The physical 8K blocks behind the MMU: where system RAM (512K, plus the two 256K windows of the K2 rc14 / Jr2 rc14 cores), the flash drives, the FEU,
   the boot trampoline, and the cartridge live &mdash; and which blocks OS-9 actually owns at run time.
   Block numbers are the values written to the MMU slot registers.</p>
 </header>
@@ -1100,9 +1100,11 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
       <div class="seg flash"><span class="nm">/f0 &middot; FEU system<br><small>40K</small></span><span class="ad">$78&ndash;$7C</span></div>
       <div class="seg flash"><span class="nm">Booter<br><small>24K</small></span><span class="ad">$7D&ndash;$7F</span></div>
       <div class="seg ex" style="min-height:52px"><span class="nm">EXRAM / cartridge<br><small>K2: 256K exp. RAM &middot; Jr2: /c0 /c1 cart</small></span><span class="ad">$80&ndash;$9F</span></div>
-      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$A0&ndash;$BF</span></div>
-      <div class="seg io"><span class="nm">Sectored I/O pages<br><small>VICKY blocks</small></span><span class="ad">$C0&ndash;$C7</span></div>
-      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$C8&ndash;$FF</span></div>
+      <div class="seg ram" style="min-height:52px"><span class="nm">RAM window A &middot; 256K<br><small>rc14 cores &middot; absolute $14_0000&ndash;$17_FFFF</small></span><span class="ad">$A0&ndash;$BF</span></div>
+      <div class="seg io"><span class="nm">Sectored I/O pages<br><small>VICKY blocks $C0&ndash;$C4, MEMTEXT $C5&ndash;$C6</small></span><span class="ad">$C0&ndash;$C7</span></div>
+      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$C8&ndash;$CF</span></div>
+      <div class="seg ram" style="min-height:52px"><span class="nm">RAM window B &middot; 256K<br><small>rc14 cores &middot; absolute $20_0000&ndash;$23_FFFF</small></span><span class="ad">$D0&ndash;$EF</span></div>
+      <div class="seg void"><span class="nm">unmapped</span><span class="ad">$F0&ndash;$FF</span></div>
     </div>
     <div class="zoomlink" role="presentation"></div>
     <!-- right: zoom of RAM $00-$3F, bottom = $00 -->
@@ -1121,7 +1123,7 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
     <span><i class="sw io"></i>I/O pages</span>
   </div>
   <p class="mapcap">Low block numbers at the bottom. The MMU slot-entry high bits select the region:
-  <code>00</code>=RAM, <code>01</code>=flash, <code>100</code>=EXRAM, <code>11000</code>=I/O page.</p>
+  <code>00</code>=RAM, <code>01</code>=flash, <code>100</code>=EXRAM, <code>101</code>=RAM window A, <code>11000</code>=I/O page, <code>$D0&ndash;$EF</code>=RAM window B (rc14 cores).</p>
 </div>
 
 <div>
@@ -1132,12 +1134,16 @@ footer{margin-top:48px;padding-top:14px;border-top:1px solid var(--line);font-si
 <tr><td class="addr">$01&ndash;$03</td><td>Free pool</td><td>General allocation. (Block 1 doubles as <code>bootos9</code>&rsquo;s temporary MMU copy window during a re-boot, then returns to the pool.)</td></tr>
 <tr><td class="addr">$04&ndash;$07</td><td>Boot modules</td><td>OS9Boot is loaded into the blocks just below block 8 &mdash; blocks (8&minus;n)&hellip;7 for an n-block bootfile (currently n=4, so $04&ndash;$07). The kernel (last module in the merge) lands in the top block and is marked used; the rest hold the boot module directory contents.</td></tr>
 <tr><td class="addr">$08&ndash;$3F</td><td>Free pool (448K)</td><td>Process address spaces, RBF/SCF buffers, bitmap framebuffers (VICKY fetches these over its RAM port &mdash; the layers you see in <code>view</code>/<code>shellbg</code> live here), and rbmem&rsquo;s 8K flash-write cache (one block via <code>F$AllRAM</code> at Init).</td></tr>
+<tr><td class="addr">$A0&ndash;$BF</td><td>Free pool (256K) &middot; rc14 cores</td><td>RAM window A. Ordinary pool blocks for the 1 MB kernel (<code>wb/1mb_ram_upgrade</code>: block map grown to 256 entries); the core places them at absolute $14_0000&ndash;$17_FFFF = block &times; $2000, so VICKY and DMA addresses work as for any block. Free at boot, used once the low 512K is spoken for. K2 today; the Jr2 kernel joins when its rc14 core is verified.</td></tr>
+<tr><td class="addr">$D0&ndash;$EF</td><td>Free pool (256K) &middot; rc14 cores</td><td>RAM window B, absolute $20_0000&ndash;$23_FFFF (Revision E: block + $30, then &times; $2000, the one non-identity range - <code>vtio</code>&rsquo;s Blk2Addr does that for VICKY). <code>mfree</code> shows both windows: 928K free after boot.</td></tr>
+<tr><td class="addr">$40&ndash;$9F, $C0&ndash;$CF, $F0&ndash;$FF</td><td>Not RAM</td><td>Flash window, expansion RAM / cartridge, I/O pages and undecoded patterns: marked <code>NotRAM</code> in the 256-entry map so no allocator crosses them.</td></tr>
 </table></div>
 
-<p>Memory sizing is a ghost test, not a table: the kernel writes a marker through successively doubled
-block numbers (8, 16, 32, 64&hellip;) until the write aliases back to block 0 &mdash; on these machines that
-stops at <strong>64 blocks = 512K</strong>, recorded in <code>D.MemSz</code>. Nothing about the pool is
-hard-coded; more RAM would be found the same way.</p>
+<p>Memory sizing: the CoCo kernel ghost-tests doubled block numbers until a write aliases back to block 0; the
+wildbits kernel skips that and sets the map end for <strong>64 blocks = 512K</strong> (<code>krn</code>). With the
+1 MB kernel, <code>krnp2</code> then grows the map to all <strong>256 entries</strong>, as a 2 MB CoCo 3 has it, and marks
+the three gaps NotRAM; the two windows come up free. RAM is not contiguous in block-number space, so the largest
+run an allocator can find above $3F is 32 blocks (256K).</p>
 
 <div class="callout">
 <h3>The trampoline</h3>
@@ -1401,71 +1407,220 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
 </div>
 </div>
 <br><br><br><br><br>
-<!-- style block of the Interrupt Groups section (moved above the 512K Physical Map on 2026-09-10): it stays HERE
+<!-- style block of the Interrupt Groups section (moved above the 1MB Physical Map on 2026-09-10): it stays HERE
      because its :root tokens are the last ones in the cascade and every section below inherits them -->
-<style>
-  :root {
-    --bg: #f7f6f2;
-    --panel: #ffffff;
-    --ink: #1e2229;
-    --muted: #5c6470;
-    --line: #ddd8cf;
-    --accent: #7a3b12;
-    --ok-bg: #e6f2e6;   --ok-ink: #1e5c22;
-    --miss-bg: #fdf3d7; --miss-ink: #7a5a00;
-    --bad-bg: #fbe3e0;  --bad-ink: #8f1f10;
-    --stale-bg: #ece7f5;--stale-ink: #4a3a7a;
-    --code-bg: #f0ede6;
-  }
-  /* forced dark (was prefers-color-scheme) */
-    :root {
-      --bg: #16181d;
-      --panel: #1e2128;
-      --ink: #e4e1da;
-      --muted: #9aa1ab;
-      --line: #363b45;
-      --accent: #e0956a;
-      --ok-bg: #1e3320;   --ok-ink: #8fce93;
-      --miss-bg: #3a3212; --miss-ink: #e5c76a;
-      --bad-bg: #421e19;  --bad-ink: #f09a8c;
-      --stale-bg: #2b2540;--stale-ink: #b9a8e8;
-      --code-bg: #272b33;
-    }
-  
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 2rem 1rem 4rem;
-    background: var(--bg); color: var(--ink);
-    font: 15px/1.55 Georgia, "Times New Roman", serif;
-  }
-  main { max-width: 1400px; margin: 0 auto; }   /* matches .wrap (site-wide override) so the section is as wide as the 64K Memory Map */
-  h1 { font-size: 1.7rem; margin: 0 0 .2rem; }
-  h2 { font-size: 1.2rem; margin: 2.2rem 0 .6rem; color: var(--accent); }
-  .sub { color: var(--muted); margin: 0 0 1.6rem; font-size: .95rem; }
-  .regline { font-family: Consolas, "Cascadia Mono", monospace; font-size: .85rem; color: var(--muted); margin: 0 0 .5rem; }
-  table {
-    width: 100%; border-collapse: collapse; background: var(--panel);
-    border: 1px solid var(--line); font-size: .9rem;
-  }
-  .tablewrap { overflow-x: auto; }
-  th, td { padding: .45rem .6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
-  th { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-bottom: 2px solid var(--line); }
-  tr:last-child td { border-bottom: none; }
-  code, .mono { font-family: Consolas, "Cascadia Mono", monospace; font-size: .85em; background: var(--code-bg); padding: .05em .3em; border-radius: 3px; white-space: nowrap; }
-  td.bit { font-family: Consolas, monospace; white-space: nowrap; }
-  .tag { display: inline-block; padding: .1em .5em; border-radius: 3px; font-size: .75rem; font-family: Consolas, monospace; white-space: nowrap; }
-  .ok    { background: var(--ok-bg);    color: var(--ok-ink); }
-  .miss  { background: var(--miss-bg);  color: var(--miss-ink); }
-  .bad   { background: var(--bad-bg);   color: var(--bad-ink); }
-  .stale { background: var(--stale-bg); color: var(--stale-ink); }
-  .note {
-    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent);
-    padding: .8rem 1rem; margin: 1rem 0; font-size: .92rem;
-  }
-  ul { padding-left: 1.3rem; }
-  li { margin: .35rem 0; }
-  .src { color: var(--muted); font-size: .8rem; }
-</style>
+<!-- ===== WildBits_Sprite_Engine.htm (restyled 2026-09-03 to match the 64K Memory Map section; its private style blocks were removed) ===== -->
+<div class="wrap" style="padding-left:0;padding-right:0">
+<header>
+  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 64K Memory Map</div>
+  <h1>WildBits Sprite Engine</h1>
+<p class="sub">Hardware reference for the 128-sprite engine in the 6809 cores: register map, attribute format, coordinate system, the minimum programming recipe for putting a sprite on screen &mdash; and the resolution of the missing-sprites investigation (rc7, both machines verified).</p>
+</header>
+<div class="grid">
+<div class="mapcol">
+  <div class="map">
+    <!-- left: VICKY page $C0 (8K), bottom = offset $0000 -->
+    <div class="stack" aria-label="VICKY page C0">
+      <div class="seg io" style="min-height:52px"><span class="nm">Gamma tables B / G / R<br><span style="font-weight:500;font-size:11px">3 &times; 256 bytes</span></span><span class="ad">$0000&ndash;$0BFF</span></div>
+      <div class="seg io"><span class="nm">Mouse pointer graphic</span><span class="ad">$0C00&ndash;$0FFF</span></div>
+      <div class="seg regs"><span class="nm">Bitmap + line-draw regs</span><span class="ad">$1000&ndash;$10FF</span></div>
+      <div class="seg regs"><span class="nm">Tile map regs</span><span class="ad">$1100&ndash;$11FF</span></div>
+      <div class="seg regs"><span class="nm">MEMTEXT regs<br><span style="font-weight:500;font-size:11px">future</span></span><span class="ad">$1200&ndash;$12FF</span></div>
+      <div class="seg mmu carve" style="min-height:74px"><span class="nm">Sprite attributes<br><span style="font-weight:500;font-size:11px">128 &times; 8 bytes, 4 banks of 32 &middot; record &rarr;</span></span><span class="ad">$1300&ndash;$16FF</span></div>
+      <div class="seg const"><span class="nm">Text colour LUTs<br><span style="font-weight:500;font-size:11px">foreground $1700, background $1740</span></span><span class="ad">$1700&ndash;$177F</span></div>
+      <div class="seg io"><span class="nm">Reserved</span><span class="ad">$1780&ndash;$1FFF</span></div>
+    </div>
+    <div class="zoomlink" role="presentation"></div>
+    <!-- right: one 8-byte attribute record, bottom = +0 -->
+    <div class="stack" aria-label="One sprite attribute record">
+      <div class="seg regs" style="min-height:52px"><span class="nm">CTRL<br><span style="font-weight:500;font-size:11px">b0 enable &middot; b2:1 LUT &middot; b4:3 depth &middot; b6:5 size</span></span><span class="ad">+0</span></div>
+      <div class="seg mmu" style="min-height:52px"><span class="nm">ADDR hi / mid / lo<br><span style="font-weight:500;font-size:11px">pixel data, 24-bit, big-endian</span></span><span class="ad">+1&ndash;+3</span></div>
+      <div class="seg const"><span class="nm">X hi / lo</span><span class="ad">+4&ndash;+5</span></div>
+      <div class="seg const"><span class="nm">Y hi / lo</span><span class="ad">+6&ndash;+7</span></div>
+    </div>
+  </div>
+  <div class="maplegend">
+    <span><i class="sw mmu"></i>sprite attributes / pixel address</span>
+    <span><i class="sw regs"></i>engine registers</span>
+    <span><i class="sw const"></i>tables and positions</span>
+    <span><i class="sw io"></i>other page contents</span>
+  </div>
+  <p class="mapcap">Low offsets at the bottom. Page $C0 reaches the CPU through an MMU slot (slot 2 puts record n at $5300 + 8n); the pixel data the record points to lives in system RAM, not in the page.</p>
+</div>
+
+<div>
+
+
+<div class="tblwrap"><table>
+<tr><th>At a glance</th><th>Detail</th></tr>
+<tr><td class="addr">128</td><td>hardware sprites, scanned 127 &rarr; 0 each line pair (sprite 0 composites on top)</td></tr>
+<tr><td class="addr">4 sizes</td><td>32&times;32, 24&times;24, 16&times;16, 8&times;8 &mdash; per-sprite, 2 control bits</td></tr>
+<tr><td class="addr">8 bpp</td><td>indexed color through one of 4 graphics CLUTs; index 0 = transparent</td></tr>
+<tr><td class="addr">320&times;240</td><td>coordinate space, origin offset +32: screen top-left is (32,32)</td></tr>
+</table></div>
+
+<h2>How the engine works</h2>
+<p>Sprites are <b>line-buffered</b>, not framebuffered. The display runs 640&times;480 with every 320&times;240 pixel doubled, so the engine only needs each sprite line once per <em>pair</em> of scanlines. On every <b>odd</b> scanline, during horizontal blanking, the master video scheduler enters its sprite phase (<code>DoSpriteHere</code>), hands VRAM channel&nbsp;3 to the sprite state machine, and fires it.</p>
+<p>The sprite state machine then walks all 128 attribute records, from sprite 127 down to sprite 0. For each record it checks two things in two clocks: the per-sprite <b>enable bit</b>, and a <b>line hit</b> &mdash; whether the upcoming pixel row falls inside the sprite&rsquo;s vertical span. Misses cost ~3 clocks each; a full scan of 128 disabled sprites completes in under 4&nbsp;&micro;s, well inside blanking. On a hit, the engine multiplies the row-within-sprite by the sprite&rsquo;s line width, adds the pixel base address, and streams that one line of pixels (8&ndash;32 bytes, fetched 16 bits at a time) from video RAM into the sprite line buffer at horizontal position X. Because sprite 0 is written <em>last</em>, it wins overlaps.</p>
+<p>During the following even scanline, the compositor reads the line buffer back at pixel rate and merges it with text, bitmap, and tiles according to the master control register. A non-zero pixel index is looked up in the sprite&rsquo;s selected CLUT; index 0 lets the layers behind show through.</p>
+
+<h3>The scan pipeline, per line pair</h3>
+<div class="tblwrap"><table>
+<tr><th>Stage</th><th>State(s)</th><th>What happens</th></tr>
+<tr><td class="addr">Arm</td><td class="addr">SP_IDLE &rarr; SP_PRESTATE</td><td><code>Sprite_Effect_On</code> raised by the master scheduler on odd-line blanking; channel select preloaded to sprite 127.</td></tr>
+<tr><td class="addr">Probe</td><td class="addr">SP_STATE0 &rarr; SP_STATE1</td><td>One clock of BRAM latency, then the 64-bit attribute record is valid. Disabled &rarr; <code>NEXTCHANNEL</code>.</td></tr>
+<tr><td class="addr">Line hit</td><td class="addr">ENABLED</td><td>Hit when <code>Y &le; line/2+32 &lt; Y+height</code>. Miss &rarr; <code>NEXTCHANNEL</code>.</td></tr>
+<tr><td class="addr">Fetch</td><td class="addr">SP_GET_DATA_VRAM0..1, SP_WRITE_ATTRIB0..2</td><td>Line-buffer write pointer set to X+64; VRAM counter loaded with start/stop = base + row&times;width (+width); pixels stream on each <code>VRAM_Data_Valid</code> until the counter reaches stop.</td></tr>
+<tr><td class="addr">Next / done</td><td class="addr">NEXTCHANNEL &rarr; &hellip; &rarr; SP_TRF_DONE</td><td>Decrement sprite select; after sprite 0, signal done &mdash; the master scheduler moves on to bitmap/tile slots.</td></tr>
+</table></div>
+
+<h2>Register map</h2>
+
+<h3>Master control &mdash; $FFC0 (fixed I/O, visible in every map)</h3>
+<div class="tblwrap"><table>
+<tr><th>Bit</th><th>Mask</th><th>Name</th><th>Function</th></tr>
+<tr><td>0</td><td class="addr">$01</td><td class="addr">Text_Mode_En</td><td>Text layer on</td></tr>
+<tr><td>1</td><td class="addr">$02</td><td class="addr">Text_Overlay</td><td>Text floats over graphics (text background transparent)</td></tr>
+<tr><td>2</td><td class="addr">$04</td><td class="addr">Graph_Mode_En</td><td>Graphics pipeline on &mdash; <b>required for sprites</b></td></tr>
+<tr><td>3</td><td class="addr">$08</td><td class="addr">Bitmap_En</td><td>Bitmap layer on</td></tr>
+<tr><td>4</td><td class="addr">$10</td><td class="addr">TileMap_En</td><td>Tile layer on</td></tr>
+<tr><td>5</td><td class="addr">$20</td><td class="addr">Sprite_En</td><td><b>Sprite layer on</b></td></tr>
+<tr><td>6</td><td class="addr">$40</td><td class="addr">GAMMA_En</td><td>Gamma correction</td></tr>
+<tr><td>7</td><td class="addr">$80</td><td class="addr">Disable_Vid</td><td>Stop video scanning (CPU gets full bandwidth)</td></tr>
+</table></div>
+<p>Text + overlay + graphics + sprites = <code>$27</code>. Add bitmap for <code>$2F</code>.</p>
+
+<h3>Sprite attribute block &mdash; VICKY page $C0, offsets $1300&ndash;$16FF</h3>
+<p>The 128 attribute records live in a dual-port BRAM inside I/O page <code>$C0</code> (the same page as the bitmap/gamma registers). Map the page into a CPU slot to reach it &mdash; e.g. write <code>$C0</code> to <code>MMU_SLOT_2</code> (<code>$FFAA</code>) and the block appears at <code>$4000&ndash;$5FFF</code>. Each sprite owns 8 bytes:</p>
+<div class="tblwrap"><table>
+<tr><th>Sprites</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Record n at</th></tr>
+<tr><td>0 &ndash; 31</td><td class="addr">$1300&ndash;$13FF</td><td class="addr">$5300&ndash;$53FF</td><td class="addr">$5300 + 8&times;n</td></tr>
+<tr><td>32 &ndash; 63</td><td class="addr">$1400&ndash;$14FF</td><td class="addr">$5400&ndash;$54FF</td><td class="addr">$5400 + 8&times;(n&minus;32)</td></tr>
+<tr><td>64 &ndash; 95</td><td class="addr">$1500&ndash;$15FF</td><td class="addr">$5500&ndash;$55FF</td><td class="addr">$5500 + 8&times;(n&minus;64)</td></tr>
+<tr><td>96 &ndash; 127</td><td class="addr">$1600&ndash;$16FF</td><td class="addr">$5600&ndash;$56FF</td><td class="addr">$5600 + 8&times;(n&minus;96)</td></tr>
+</table></div>
+<p class="src">The RTL rotates the page index (<code>RecodedAddy</code>) so that page $13 lands on BRAM rows 0&ndash;31 &mdash; the table above is the net effect; sprite 0 really is the first 8 bytes of $1300.</p>
+
+<h3>The 8-byte attribute record</h3>
+<p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly), so a single 16-bit
+<code>STD</code> at the high offset stores X or Y correctly in one instruction:</p>
+<p class="src">Worth knowing if you are reading other documentation: pre-rework cores and the official 65C02
+material describe these fields as little-endian. The 6809 rework changed it, confirmed on rc7 silicon, and
+the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
+<tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 enable &middot; bits 2:1 LUT &middot; bits 4:3 depth &middot; bits 6:5 size</td></tr>
+<tr><td class="addr">+1</td><td>ADDR hi</td><td>pixel data address bits 23:16</td></tr>
+<tr><td class="addr">+2</td><td>ADDR mid</td><td>pixel data address bits 15:8</td></tr>
+<tr><td class="addr">+3</td><td>ADDR lo</td><td>pixel data address bits 7:0</td></tr>
+<tr><td class="addr">+4</td><td>X hi</td><td>position bits 15:8</td></tr>
+<tr><td class="addr">+5</td><td>X lo</td><td>position bits 7:0</td></tr>
+<tr><td class="addr">+6</td><td>Y hi</td><td>position bits 15:8</td></tr>
+<tr><td class="addr">+7</td><td>Y lo</td><td>position bits 7:0</td></tr>
+</table></div>
+<div class="tblwrap"><table>
+<tr><th>CTRL bits 6:5</th><th>Size</th><th>Example CTRL (enable, LUT0)</th></tr>
+<tr><td class="addr">00</td><td>32 &times; 32</td><td class="addr">$01</td></tr>
+<tr><td class="addr">01</td><td>24 &times; 24</td><td class="addr">$21</td></tr>
+<tr><td class="addr">10</td><td>16 &times; 16</td><td class="addr">$41</td></tr>
+<tr><td class="addr">11</td><td>8 &times; 8</td><td class="addr">$61</td></tr>
+</table></div>
+<p>The pixel-data address is a <b>physical</b> address in system RAM (block &times; $2000 + offset; a block in RAM window B, $D0&ndash;$EF on rc14 cores, is $20_0000 + offset instead), pixels stored row-major, one byte per pixel, rows packed at the sprite&rsquo;s width. Keep depth = <code>00</code> (8 bpp).</p>
+
+<h3>Graphics CLUTs &mdash; VICKY page $C1, offsets $1000&ndash;$1FFF</h3>
+<p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$C1</code> with the font (font at $0000&ndash;$0FFF, CLUTs above it). Each CLUT is 256 entries &times; 4 bytes, ordered <b>B, G, R, A</b>. All four read back (the CPU port of a true dual-port RAM) and hold zeros at power-up: the shell&rsquo;s colours come from the text colour LUTs below, so nothing loads these until a bitmap viewer or a sprite program does.</p>
+<div class="tblwrap"><table>
+<tr><th>CLUT</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Entry i at</th></tr>
+<tr><td class="addr">LUT0</td><td class="addr">$1000&ndash;$13FF</td><td class="addr">$5000&ndash;$53FF</td><td class="addr">$5000 + 4&times;i</td></tr>
+<tr><td class="addr">LUT1</td><td class="addr">$1400&ndash;$17FF</td><td class="addr">$5400&ndash;$57FF</td><td class="addr">$5400 + 4&times;i</td></tr>
+<tr><td class="addr">LUT2</td><td class="addr">$1800&ndash;$1BFF</td><td class="addr">$5800&ndash;$5BFF</td><td class="addr">$5800 + 4&times;i</td></tr>
+<tr><td class="addr">LUT3</td><td class="addr">$1C00&ndash;$1FFF</td><td class="addr">$5C00&ndash;$5FFF</td><td class="addr">$5C00 + 4&times;i</td></tr>
+</table></div>
+
+<h3>Text colour LUTs &mdash; VICKY page $C0, offsets $1700 (foreground) and $1740 (background)</h3>
+<p>Text and the banner font take their colours from two 16-entry tables in page <code>$C0</code>, the sprite-record page: foreground at $1700&ndash;$173F, background at $1740&ndash;$177F, 4 bytes per entry ordered <b>B, G, R, A</b>, indexed by the two nibbles of the character&rsquo;s attribute byte. The core loads both with the OS-9 palette when the bitstream comes up, so they survive a reset; a power cycle restores them. Up to rc12 they were write-only block RAM. <b>Since rc13 the CPU reads them back</b> (each table has a shadow copy written on the same strobe), so a program can save the tables it is about to change and put them back on exit. <code>lutrd</code> on the kit disks dumps both, plus the graphics CLUTs and the gamma tables.</p>
+<div class="tblwrap"><table>
+<tr><th>Table</th><th>Page offset</th><th>Entries</th><th>Access</th></tr>
+<tr><td class="addr">text FG</td><td class="addr">$1700&ndash;$173F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
+<tr><td class="addr">text BG</td><td class="addr">$1740&ndash;$177F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
+<tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 &times; 256 bytes</td><td>read / write</td></tr>
+<tr><td class="addr">graphics LUT0&ndash;3</td><td class="addr">page $C1 $1000 + $400&times;n</td><td>256 &times; B G R A each</td><td>read / write</td></tr>
+</table></div>
+
+<h3>Line-draw accelerator &mdash; VICKY page $C0, offsets $1080&ndash;$1087 (wildbits.d: TyVKY_LD_*)</h3>
+<p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$C0</code> in slot 7, so these are $F080&ndash;$F087). Write the two end points and a colour, raise the go bit, and the engine walks the line at 100&nbsp;MHz, queueing every pixel as {colour, address} into a 4096-entry FIFO that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y&times;320 + x</b>: the 320-wide 8-bit bitmap modes only, nothing for the rc14 HIRES4 nibble layout.</p>
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>wildbits.d</th><th>Write</th><th>Read</th></tr>
+<tr><td class="addr">$1080</td><td class="addr">TyVKY_LD_CTRL_REG</td><td>bit 0 <code>LD_ENABLE</code> &middot; bit 1 <code>LD_GO</code> &middot; bits 3:2 target bitmap (<code>LD_BM0</code> $00, <code>LD_BM1</code> $04, <code>LD_BM2</code> $08) &middot; bit 4 <code>LD_FIFO_RESET</code></td><td>bit 7 <code>LD_BUSY</code>, bits 6:0 the control bits</td></tr>
+<tr><td class="addr">$1081</td><td class="addr">TyVKY_LD_COLOR</td><td>8-bit CLUT index</td><td>the colour</td></tr>
+<tr><td class="addr">$1082</td><td class="addr">TyVKY_LD_X0_H</td><td>X0 bits 9:8</td><td><code>TyVKY_LD_COUNT_H</code>: pixels still queued, bits 12:8</td></tr>
+<tr><td class="addr">$1083</td><td class="addr">TyVKY_LD_X0_L</td><td>X0 bits 7:0</td><td><code>TyVKY_LD_COUNT_L</code>: pixels still queued, bits 7:0</td></tr>
+<tr><td class="addr">$1084</td><td class="addr">TyVKY_LD_X1_H</td><td>X1 bits 9:8</td><td>X1 bits 7:0 (the read order is swapped)</td></tr>
+<tr><td class="addr">$1085</td><td class="addr">TyVKY_LD_X1_L</td><td>X1 bits 7:0</td><td>X1 bits 9:8</td></tr>
+<tr><td class="addr">$1086</td><td class="addr">TyVKY_LD_Y0</td><td>Y0 (8 bits)</td><td>Y1 (swapped)</td></tr>
+<tr><td class="addr">$1087</td><td class="addr">TyVKY_LD_Y1</td><td>Y1 (8 bits)</td><td>Y0 (swapped)</td></tr>
+</table></div>
+<ul>
+  <li><b>Accepted range:</b> X0 and X1 below 320, Y0 and Y1 below 240 &mdash; a go with any end point outside is ignored (the engine stays idle, busy never rises).</li>
+  <li><b>Handshake:</b> the go bit starts the line on its rising edge and the engine parks in its done state <em>until the go bit is written back to 0</em>; drop it before the next line. Busy (bit 7 on read) covers both the walk and the queued pixels; the FIFO count at $1082/$1083 says how many are still waiting.</li>
+  <li><b>Read-back quirks:</b> X0 cannot be read (its two bytes return the FIFO count), and the X1 and Y read order is the reverse of the write order &mdash; both are in <span class="mono">TinyVicky_BM_Registers.v</span>&rsquo;s read multiplexer. The RTL comment puts busy at bit 6; the multiplexer puts it at bit 7.</li>
+  <li><b>Target address:</b> bits 3:2 pick which bitmap layer&rsquo;s start address ($1001&ndash;$1003 / $1009&ndash;$100B / $1011&ndash;$1013) the pixel addresses are built on; the layer does not have to be displayed.</li>
+  <li><b>Cost:</b> the pixel FIFO is the largest block RAM in the core (4 &times; RAMB36, 144&nbsp;Kbit; see the block RAM ledger above).</li>
+</ul>
+<p class="src">Sources: TinyVicky_BM_Registers.v (LINE_DRAWING_REG, the write decode on address bit 7, the read multiplexer), LineDraw.v (X0_Ok/Y0_Ok limits, the IDLE/RUN/DONE machine, Addy_Addyx_Offset), TinyVickyCoreModule.v:444 (the LINEDRAWING_Reg64 wiring), TinyVKY2K2_IO_Page0_Devices.v:744 (CS_VICKY_BITMAP = $18_1000&ndash;$18_10FF; the Jr2 decode is identical).</p>
+
+<h2>Coordinates</h2>
+<p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320&times;240 area spans sprite coordinates (32,32) to (351,271):</p>
+<div style="margin:16px 0;overflow-x:auto">
+<svg viewBox="0 0 460 330" width="460" role="img" aria-label="Sprite coordinate plane" style="max-width:100%">
+  <rect x="20" y="20" width="416" height="296" fill="none" stroke="var(--ink-soft)" stroke-dasharray="4 4"/>
+  <rect x="52" y="52" width="352" height="264" fill="var(--io-soft)" stroke="var(--io)"/>
+  <rect x="392" y="52" width="12" height="12" fill="var(--amber)"/>
+  <text x="24" y="14" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">(0,0) off-screen margin</text>
+  <text x="58" y="70" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(32,32) screen top-left</text>
+  <text x="252" y="308" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(351,271) bottom-right</text>
+  <text x="268" y="46" font-family="IBM Plex Mono" font-size="11" fill="var(--amber)">8&times;8 @ (344,32) = ($0158,$0020)</text>
+  <text x="180" y="180" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-soft)">visible 320 &times; 240</text>
+</svg>
+</div>
+<p>Upper-right corner for an N-wide sprite: <code>X = 32 + 320 &minus; N</code>, <code>Y = 32</code>. For 8&times;8: <b>X = 344 ($0158), Y = 32 ($0020)</b>.</p>
+
+
+<h2>Minimum recipe &mdash; a green 8&times;8 sprite at screen center</h2>
+<div class="callout">
+<h3>Read this first</h3>
+<p>Five register groups, one interrupt-masked window. Verified end-to-end by <code>sprtest</code> on both machines. This is the direct-MLUT method: until the kernel&rsquo;s <code>F$MapBlk</code> fix lands, user-mode code must program the MLUT itself, because the kernel rewrites the slot registers from its own map images on every task switch &mdash; an unprotected mapping evaporates within one timeslice (which is also why <code>debug</code> pokes can never do this).</p>
+</div>
+
+<ol>
+<li><b>Prepare pixel data</b> <span class="src">(no masking needed)</span> &mdash; fill a 64-byte buffer in RAM you own with <code>$01</code> (pixel index 1) and compute its <b>physical</b> address: block# &times; $2000 + offset. The buffer must outlive the sprite &mdash; a process&rsquo;s pages are recycled at exit, so stay resident or use memory you keep.</li>
+<li><b>Enter the masked window</b> &mdash; <code>orcc #IntMasks</code>. Everything touching $FFA0, the slot registers, or the mapped window sits inside one masked stretch.</li>
+<li><b>MLUT setup</b> &mdash; read <code>$FFA0</code>, save it, write it back with bits [5:4] (EDIT map) copied from bits [1:0] (ACTIVE map) &mdash; otherwise slot writes edit somebody else&rsquo;s map. Save slot 5 (<code>$FFAD</code>, window at $A000) and write <code>$C1</code> into it.</li>
+<li><b>Palette (page $C1)</b> &mdash; LUT0 entry 1 at window+$1004: write <code>$00, $FF, $00, $00</code> (B, G, R, A) &mdash; pure green.</li>
+<li><b>Sprite record (page $C0)</b> &mdash; write <code>$C0</code> to $FFAD; sprite 0&rsquo;s record is at window+$1300, eight bytes, big-endian fields:
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>Value</th><th>Meaning</th></tr>
+<tr><td class="addr">+0</td><td class="addr">$61</td><td>enable + 8&times;8 (size 11) + LUT0 + depth 0</td></tr>
+<tr><td class="addr">+1..+3</td><td class="addr">addr hi, mid, lo</td><td>physical address of the pixel buffer</td></tr>
+<tr><td class="addr">+4, +5</td><td class="addr">$00, $BC</td><td>X = 188 &nbsp;(center: 32 + (320&minus;8)/2)</td></tr>
+<tr><td class="addr">+6, +7</td><td class="addr">$00, $94</td><td>Y = 148 &nbsp;(center: 32 + (240&minus;8)/2)</td></tr>
+</table></div>
+<span class="src">If the other 127 records can&rsquo;t be trusted (power-on garbage can carry stray enable bits), zero $1300&ndash;$16FF first.</span></li>
+<li><b>Leave the window</b> &mdash; restore $FFAD, restore $FFA0, <code>andcc #^IntMasks</code>. Total masked time: microseconds.</li>
+<li><b>Enable the layer</b> &mdash; <code>$FFC0</code> is fixed I/O: no mapping, no masking, any map, any time. Read it, OR in <code>$26</code> (graphics $04 + overlay $02 + sprite $20, preserving the text bit), write it back. The green square appears at center.</li>
+</ol>
+<p class="src">To hide the sprite later: clear bit 5 of $FFC0 (no mapping needed), or clear the record&rsquo;s enable bit (needs the mapped window again). The complete working implementation of this recipe is the <code>sprtest</code> command source: <code>level1/wildbits/cmds/sprtest.asm</code>.</p>
+
+<h2>Where this comes from</h2>
+<p class="src">RTL and definitions read for this reference:<br>
+&bull;&nbsp;<code>Sprite_State_Machine.v</code> &mdash; the per-line-pair scan, line-hit test and VRAM fetch.<br>
+&bull;&nbsp;<code>TinyVickyCoreModule.v</code> &mdash; master video scheduler and compositor.<br>
+&bull;&nbsp;<code>TinyVKY2K2_IO_Page0_Devices.v</code> &mdash; attribute BRAM, page rotation (<code>RecodedAddy</code>), CLUTs.<br>
+&bull;&nbsp;<code>defs/wildbits.d</code> &mdash; register names and addresses.</p>
+</div>
+</div>
+</div>
+
 <!-- ===== Block RAM ledger (2026-09-10): what the K2 rc14 and Jr2 rc13 cores keep in the FPGA's own memory; from Vivado's report_utilization on the routed checkpoints ===== -->
 <div class="wrap" style="padding-left:0;padding-right:0">
 <header>
@@ -1621,181 +1776,7 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> &mdash; 
 </ul>
 </div>
 <br><br><br><br><br>
-<!-- ===== WildBits_Sprite_Engine.htm (restyled 2026-09-03 to match the 64K Memory Map section; its private style blocks were removed) ===== -->
-<div class="wrap" style="padding-left:0;padding-right:0">
-<header>
-  <div class="eyebrow">WildBits K2 / Jr2 &middot; FNX6809 core &middot; hardware reference &middot; companion to the 64K Memory Map</div>
-  <h1>WildBits Sprite Engine</h1>
-<p class="sub">Hardware reference for the 128-sprite engine in the 6809 cores: register map, attribute format, coordinate system, the minimum programming recipe for putting a sprite on screen &mdash; and the resolution of the missing-sprites investigation (rc7, both machines verified).</p>
-</header>
-
-<div class="tblwrap"><table>
-<tr><th>At a glance</th><th>Detail</th></tr>
-<tr><td class="addr">128</td><td>hardware sprites, scanned 127 &rarr; 0 each line pair (sprite 0 composites on top)</td></tr>
-<tr><td class="addr">4 sizes</td><td>32&times;32, 24&times;24, 16&times;16, 8&times;8 &mdash; per-sprite, 2 control bits</td></tr>
-<tr><td class="addr">8 bpp</td><td>indexed color through one of 4 graphics CLUTs; index 0 = transparent</td></tr>
-<tr><td class="addr">320&times;240</td><td>coordinate space, origin offset +32: screen top-left is (32,32)</td></tr>
-</table></div>
-
-<h2>How the engine works</h2>
-<p>Sprites are <b>line-buffered</b>, not framebuffered. The display runs 640&times;480 with every 320&times;240 pixel doubled, so the engine only needs each sprite line once per <em>pair</em> of scanlines. On every <b>odd</b> scanline, during horizontal blanking, the master video scheduler enters its sprite phase (<code>DoSpriteHere</code>), hands VRAM channel&nbsp;3 to the sprite state machine, and fires it.</p>
-<p>The sprite state machine then walks all 128 attribute records, from sprite 127 down to sprite 0. For each record it checks two things in two clocks: the per-sprite <b>enable bit</b>, and a <b>line hit</b> &mdash; whether the upcoming pixel row falls inside the sprite&rsquo;s vertical span. Misses cost ~3 clocks each; a full scan of 128 disabled sprites completes in under 4&nbsp;&micro;s, well inside blanking. On a hit, the engine multiplies the row-within-sprite by the sprite&rsquo;s line width, adds the pixel base address, and streams that one line of pixels (8&ndash;32 bytes, fetched 16 bits at a time) from video RAM into the sprite line buffer at horizontal position X. Because sprite 0 is written <em>last</em>, it wins overlaps.</p>
-<p>During the following even scanline, the compositor reads the line buffer back at pixel rate and merges it with text, bitmap, and tiles according to the master control register. A non-zero pixel index is looked up in the sprite&rsquo;s selected CLUT; index 0 lets the layers behind show through.</p>
-
-<h3>The scan pipeline, per line pair</h3>
-<div class="tblwrap"><table>
-<tr><th>Stage</th><th>State(s)</th><th>What happens</th></tr>
-<tr><td class="addr">Arm</td><td class="addr">SP_IDLE &rarr; SP_PRESTATE</td><td><code>Sprite_Effect_On</code> raised by the master scheduler on odd-line blanking; channel select preloaded to sprite 127.</td></tr>
-<tr><td class="addr">Probe</td><td class="addr">SP_STATE0 &rarr; SP_STATE1</td><td>One clock of BRAM latency, then the 64-bit attribute record is valid. Disabled &rarr; <code>NEXTCHANNEL</code>.</td></tr>
-<tr><td class="addr">Line hit</td><td class="addr">ENABLED</td><td>Hit when <code>Y &le; line/2+32 &lt; Y+height</code>. Miss &rarr; <code>NEXTCHANNEL</code>.</td></tr>
-<tr><td class="addr">Fetch</td><td class="addr">SP_GET_DATA_VRAM0..1, SP_WRITE_ATTRIB0..2</td><td>Line-buffer write pointer set to X+64; VRAM counter loaded with start/stop = base + row&times;width (+width); pixels stream on each <code>VRAM_Data_Valid</code> until the counter reaches stop.</td></tr>
-<tr><td class="addr">Next / done</td><td class="addr">NEXTCHANNEL &rarr; &hellip; &rarr; SP_TRF_DONE</td><td>Decrement sprite select; after sprite 0, signal done &mdash; the master scheduler moves on to bitmap/tile slots.</td></tr>
-</table></div>
-
-<h2>Register map</h2>
-
-<h3>Master control &mdash; $FFC0 (fixed I/O, visible in every map)</h3>
-<div class="tblwrap"><table>
-<tr><th>Bit</th><th>Mask</th><th>Name</th><th>Function</th></tr>
-<tr><td>0</td><td class="addr">$01</td><td class="addr">Text_Mode_En</td><td>Text layer on</td></tr>
-<tr><td>1</td><td class="addr">$02</td><td class="addr">Text_Overlay</td><td>Text floats over graphics (text background transparent)</td></tr>
-<tr><td>2</td><td class="addr">$04</td><td class="addr">Graph_Mode_En</td><td>Graphics pipeline on &mdash; <b>required for sprites</b></td></tr>
-<tr><td>3</td><td class="addr">$08</td><td class="addr">Bitmap_En</td><td>Bitmap layer on</td></tr>
-<tr><td>4</td><td class="addr">$10</td><td class="addr">TileMap_En</td><td>Tile layer on</td></tr>
-<tr><td>5</td><td class="addr">$20</td><td class="addr">Sprite_En</td><td><b>Sprite layer on</b></td></tr>
-<tr><td>6</td><td class="addr">$40</td><td class="addr">GAMMA_En</td><td>Gamma correction</td></tr>
-<tr><td>7</td><td class="addr">$80</td><td class="addr">Disable_Vid</td><td>Stop video scanning (CPU gets full bandwidth)</td></tr>
-</table></div>
-<p>Text + overlay + graphics + sprites = <code>$27</code>. Add bitmap for <code>$2F</code>.</p>
-
-<h3>Sprite attribute block &mdash; VICKY page $C0, offsets $1300&ndash;$16FF</h3>
-<p>The 128 attribute records live in a dual-port BRAM inside I/O page <code>$C0</code> (the same page as the bitmap/gamma registers). Map the page into a CPU slot to reach it &mdash; e.g. write <code>$C0</code> to <code>MMU_SLOT_2</code> (<code>$FFAA</code>) and the block appears at <code>$4000&ndash;$5FFF</code>. Each sprite owns 8 bytes:</p>
-<div class="tblwrap"><table>
-<tr><th>Sprites</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Record n at</th></tr>
-<tr><td>0 &ndash; 31</td><td class="addr">$1300&ndash;$13FF</td><td class="addr">$5300&ndash;$53FF</td><td class="addr">$5300 + 8&times;n</td></tr>
-<tr><td>32 &ndash; 63</td><td class="addr">$1400&ndash;$14FF</td><td class="addr">$5400&ndash;$54FF</td><td class="addr">$5400 + 8&times;(n&minus;32)</td></tr>
-<tr><td>64 &ndash; 95</td><td class="addr">$1500&ndash;$15FF</td><td class="addr">$5500&ndash;$55FF</td><td class="addr">$5500 + 8&times;(n&minus;64)</td></tr>
-<tr><td>96 &ndash; 127</td><td class="addr">$1600&ndash;$16FF</td><td class="addr">$5600&ndash;$56FF</td><td class="addr">$5600 + 8&times;(n&minus;96)</td></tr>
-</table></div>
-<p class="src">The RTL rotates the page index (<code>RecodedAddy</code>) so that page $13 lands on BRAM rows 0&ndash;31 &mdash; the table above is the net effect; sprite 0 really is the first 8 bytes of $1300.</p>
-
-<h3>The 8-byte attribute record</h3>
-<p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly), so a single 16-bit
-<code>STD</code> at the high offset stores X or Y correctly in one instruction:</p>
-<p class="src">Worth knowing if you are reading other documentation: pre-rework cores and the official 65C02
-material describe these fields as little-endian. The 6809 rework changed it, confirmed on rc7 silicon, and
-the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
-<div class="tblwrap"><table>
-<tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
-<tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 enable &middot; bits 2:1 LUT &middot; bits 4:3 depth &middot; bits 6:5 size</td></tr>
-<tr><td class="addr">+1</td><td>ADDR hi</td><td>pixel data address bits 23:16</td></tr>
-<tr><td class="addr">+2</td><td>ADDR mid</td><td>pixel data address bits 15:8</td></tr>
-<tr><td class="addr">+3</td><td>ADDR lo</td><td>pixel data address bits 7:0</td></tr>
-<tr><td class="addr">+4</td><td>X hi</td><td>position bits 15:8</td></tr>
-<tr><td class="addr">+5</td><td>X lo</td><td>position bits 7:0</td></tr>
-<tr><td class="addr">+6</td><td>Y hi</td><td>position bits 15:8</td></tr>
-<tr><td class="addr">+7</td><td>Y lo</td><td>position bits 7:0</td></tr>
-</table></div>
-<div class="tblwrap"><table>
-<tr><th>CTRL bits 6:5</th><th>Size</th><th>Example CTRL (enable, LUT0)</th></tr>
-<tr><td class="addr">00</td><td>32 &times; 32</td><td class="addr">$01</td></tr>
-<tr><td class="addr">01</td><td>24 &times; 24</td><td class="addr">$21</td></tr>
-<tr><td class="addr">10</td><td>16 &times; 16</td><td class="addr">$41</td></tr>
-<tr><td class="addr">11</td><td>8 &times; 8</td><td class="addr">$61</td></tr>
-</table></div>
-<p>The pixel-data address is a <b>physical</b> address in the 512K RAM (block &times; $2000 + offset), pixels stored row-major, one byte per pixel, rows packed at the sprite&rsquo;s width. Keep depth = <code>00</code> (8 bpp).</p>
-
-<h3>Graphics CLUTs &mdash; VICKY page $C1, offsets $1000&ndash;$1FFF</h3>
-<p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$C1</code> with the font (font at $0000&ndash;$0FFF, CLUTs above it). Each CLUT is 256 entries &times; 4 bytes, ordered <b>B, G, R, A</b>. All four read back (the CPU port of a true dual-port RAM) and hold zeros at power-up: the shell&rsquo;s colours come from the text colour LUTs below, so nothing loads these until a bitmap viewer or a sprite program does.</p>
-<div class="tblwrap"><table>
-<tr><th>CLUT</th><th>Page offset</th><th>CPU addr (slot 2)</th><th>Entry i at</th></tr>
-<tr><td class="addr">LUT0</td><td class="addr">$1000&ndash;$13FF</td><td class="addr">$5000&ndash;$53FF</td><td class="addr">$5000 + 4&times;i</td></tr>
-<tr><td class="addr">LUT1</td><td class="addr">$1400&ndash;$17FF</td><td class="addr">$5400&ndash;$57FF</td><td class="addr">$5400 + 4&times;i</td></tr>
-<tr><td class="addr">LUT2</td><td class="addr">$1800&ndash;$1BFF</td><td class="addr">$5800&ndash;$5BFF</td><td class="addr">$5800 + 4&times;i</td></tr>
-<tr><td class="addr">LUT3</td><td class="addr">$1C00&ndash;$1FFF</td><td class="addr">$5C00&ndash;$5FFF</td><td class="addr">$5C00 + 4&times;i</td></tr>
-</table></div>
-
-<h3>Text colour LUTs &mdash; VICKY page $C0, offsets $1700 (foreground) and $1740 (background)</h3>
-<p>Text and the banner font take their colours from two 16-entry tables in page <code>$C0</code>, the sprite-record page: foreground at $1700&ndash;$173F, background at $1740&ndash;$177F, 4 bytes per entry ordered <b>B, G, R, A</b>, indexed by the two nibbles of the character&rsquo;s attribute byte. The core loads both with the OS-9 palette when the bitstream comes up, so they survive a reset; a power cycle restores them. Up to rc12 they were write-only block RAM. <b>Since rc13 the CPU reads them back</b> (each table has a shadow copy written on the same strobe), so a program can save the tables it is about to change and put them back on exit. <code>lutrd</code> on the kit disks dumps both, plus the graphics CLUTs and the gamma tables.</p>
-<div class="tblwrap"><table>
-<tr><th>Table</th><th>Page offset</th><th>Entries</th><th>Access</th></tr>
-<tr><td class="addr">text FG</td><td class="addr">$1700&ndash;$173F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
-<tr><td class="addr">text BG</td><td class="addr">$1740&ndash;$177F</td><td>16 &times; B G R A</td><td>read / write (read-back since rc13)</td></tr>
-<tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 &times; 256 bytes</td><td>read / write</td></tr>
-<tr><td class="addr">graphics LUT0&ndash;3</td><td class="addr">page $C1 $1000 + $400&times;n</td><td>256 &times; B G R A each</td><td>read / write</td></tr>
-</table></div>
-
-<h3>Line-draw accelerator &mdash; VICKY page $C0, offsets $1080&ndash;$1087 (wildbits.d: TyVKY_LD_*)</h3>
-<p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$C0</code> in slot 7, so these are $F080&ndash;$F087). Write the two end points and a colour, raise the go bit, and the engine walks the line at 100&nbsp;MHz, queueing every pixel as {colour, address} into a 4096-entry FIFO that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y&times;320 + x</b>: the 320-wide 8-bit bitmap modes only, nothing for the rc14 HIRES4 nibble layout.</p>
-<div class="tblwrap"><table>
-<tr><th>Offset</th><th>wildbits.d</th><th>Write</th><th>Read</th></tr>
-<tr><td class="addr">$1080</td><td class="addr">TyVKY_LD_CTRL_REG</td><td>bit 0 <code>LD_ENABLE</code> &middot; bit 1 <code>LD_GO</code> &middot; bits 3:2 target bitmap (<code>LD_BM0</code> $00, <code>LD_BM1</code> $04, <code>LD_BM2</code> $08) &middot; bit 4 <code>LD_FIFO_RESET</code></td><td>bit 7 <code>LD_BUSY</code>, bits 6:0 the control bits</td></tr>
-<tr><td class="addr">$1081</td><td class="addr">TyVKY_LD_COLOR</td><td>8-bit CLUT index</td><td>the colour</td></tr>
-<tr><td class="addr">$1082</td><td class="addr">TyVKY_LD_X0_H</td><td>X0 bits 9:8</td><td><code>TyVKY_LD_COUNT_H</code>: pixels still queued, bits 12:8</td></tr>
-<tr><td class="addr">$1083</td><td class="addr">TyVKY_LD_X0_L</td><td>X0 bits 7:0</td><td><code>TyVKY_LD_COUNT_L</code>: pixels still queued, bits 7:0</td></tr>
-<tr><td class="addr">$1084</td><td class="addr">TyVKY_LD_X1_H</td><td>X1 bits 9:8</td><td>X1 bits 7:0 (the read order is swapped)</td></tr>
-<tr><td class="addr">$1085</td><td class="addr">TyVKY_LD_X1_L</td><td>X1 bits 7:0</td><td>X1 bits 9:8</td></tr>
-<tr><td class="addr">$1086</td><td class="addr">TyVKY_LD_Y0</td><td>Y0 (8 bits)</td><td>Y1 (swapped)</td></tr>
-<tr><td class="addr">$1087</td><td class="addr">TyVKY_LD_Y1</td><td>Y1 (8 bits)</td><td>Y0 (swapped)</td></tr>
-</table></div>
-<ul>
-  <li><b>Accepted range:</b> X0 and X1 below 320, Y0 and Y1 below 240 &mdash; a go with any end point outside is ignored (the engine stays idle, busy never rises).</li>
-  <li><b>Handshake:</b> the go bit starts the line on its rising edge and the engine parks in its done state <em>until the go bit is written back to 0</em>; drop it before the next line. Busy (bit 7 on read) covers both the walk and the queued pixels; the FIFO count at $1082/$1083 says how many are still waiting.</li>
-  <li><b>Read-back quirks:</b> X0 cannot be read (its two bytes return the FIFO count), and the X1 and Y read order is the reverse of the write order &mdash; both are in <span class="mono">TinyVicky_BM_Registers.v</span>&rsquo;s read multiplexer. The RTL comment puts busy at bit 6; the multiplexer puts it at bit 7.</li>
-  <li><b>Target address:</b> bits 3:2 pick which bitmap layer&rsquo;s start address ($1001&ndash;$1003 / $1009&ndash;$100B / $1011&ndash;$1013) the pixel addresses are built on; the layer does not have to be displayed.</li>
-  <li><b>Cost:</b> the pixel FIFO is the largest block RAM in the core (4 &times; RAMB36, 144&nbsp;Kbit; see the block RAM ledger above).</li>
-</ul>
-<p class="src">Sources: TinyVicky_BM_Registers.v (LINE_DRAWING_REG, the write decode on address bit 7, the read multiplexer), LineDraw.v (X0_Ok/Y0_Ok limits, the IDLE/RUN/DONE machine, Addy_Addyx_Offset), TinyVickyCoreModule.v:444 (the LINEDRAWING_Reg64 wiring), TinyVKY2K2_IO_Page0_Devices.v:744 (CS_VICKY_BITMAP = $18_1000&ndash;$18_10FF; the Jr2 decode is identical).</p>
-
-<h2>Coordinates</h2>
-<p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320&times;240 area spans sprite coordinates (32,32) to (351,271):</p>
-<div style="margin:16px 0;overflow-x:auto">
-<svg viewBox="0 0 460 330" width="460" role="img" aria-label="Sprite coordinate plane" style="max-width:100%">
-  <rect x="20" y="20" width="416" height="296" fill="none" stroke="var(--ink-soft)" stroke-dasharray="4 4"/>
-  <rect x="52" y="52" width="352" height="264" fill="var(--io-soft)" stroke="var(--io)"/>
-  <rect x="392" y="52" width="12" height="12" fill="var(--amber)"/>
-  <text x="24" y="14" font-family="IBM Plex Mono" font-size="11" fill="var(--ink-soft)">(0,0) off-screen margin</text>
-  <text x="58" y="70" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(32,32) screen top-left</text>
-  <text x="252" y="308" font-family="IBM Plex Mono" font-size="11" fill="var(--io)">(351,271) bottom-right</text>
-  <text x="268" y="46" font-family="IBM Plex Mono" font-size="11" fill="var(--amber)">8&times;8 @ (344,32) = ($0158,$0020)</text>
-  <text x="180" y="180" font-family="IBM Plex Mono" font-size="12" fill="var(--ink-soft)">visible 320 &times; 240</text>
-</svg>
-</div>
-<p>Upper-right corner for an N-wide sprite: <code>X = 32 + 320 &minus; N</code>, <code>Y = 32</code>. For 8&times;8: <b>X = 344 ($0158), Y = 32 ($0020)</b>.</p>
-
-
-<h2>Minimum recipe &mdash; a green 8&times;8 sprite at screen center</h2>
-<div class="callout">
-<h3>Read this first</h3>
-<p>Five register groups, one interrupt-masked window. Verified end-to-end by <code>sprtest</code> on both machines. This is the direct-MLUT method: until the kernel&rsquo;s <code>F$MapBlk</code> fix lands, user-mode code must program the MLUT itself, because the kernel rewrites the slot registers from its own map images on every task switch &mdash; an unprotected mapping evaporates within one timeslice (which is also why <code>debug</code> pokes can never do this).</p>
-</div>
-
-<ol>
-<li><b>Prepare pixel data</b> <span class="src">(no masking needed)</span> &mdash; fill a 64-byte buffer in RAM you own with <code>$01</code> (pixel index 1) and compute its <b>physical</b> address: block# &times; $2000 + offset. The buffer must outlive the sprite &mdash; a process&rsquo;s pages are recycled at exit, so stay resident or use memory you keep.</li>
-<li><b>Enter the masked window</b> &mdash; <code>orcc #IntMasks</code>. Everything touching $FFA0, the slot registers, or the mapped window sits inside one masked stretch.</li>
-<li><b>MLUT setup</b> &mdash; read <code>$FFA0</code>, save it, write it back with bits [5:4] (EDIT map) copied from bits [1:0] (ACTIVE map) &mdash; otherwise slot writes edit somebody else&rsquo;s map. Save slot 5 (<code>$FFAD</code>, window at $A000) and write <code>$C1</code> into it.</li>
-<li><b>Palette (page $C1)</b> &mdash; LUT0 entry 1 at window+$1004: write <code>$00, $FF, $00, $00</code> (B, G, R, A) &mdash; pure green.</li>
-<li><b>Sprite record (page $C0)</b> &mdash; write <code>$C0</code> to $FFAD; sprite 0&rsquo;s record is at window+$1300, eight bytes, big-endian fields:
-<div class="tblwrap"><table>
-<tr><th>Offset</th><th>Value</th><th>Meaning</th></tr>
-<tr><td class="addr">+0</td><td class="addr">$61</td><td>enable + 8&times;8 (size 11) + LUT0 + depth 0</td></tr>
-<tr><td class="addr">+1..+3</td><td class="addr">addr hi, mid, lo</td><td>physical address of the pixel buffer</td></tr>
-<tr><td class="addr">+4, +5</td><td class="addr">$00, $BC</td><td>X = 188 &nbsp;(center: 32 + (320&minus;8)/2)</td></tr>
-<tr><td class="addr">+6, +7</td><td class="addr">$00, $94</td><td>Y = 148 &nbsp;(center: 32 + (240&minus;8)/2)</td></tr>
-</table></div>
-<span class="src">If the other 127 records can&rsquo;t be trusted (power-on garbage can carry stray enable bits), zero $1300&ndash;$16FF first.</span></li>
-<li><b>Leave the window</b> &mdash; restore $FFAD, restore $FFA0, <code>andcc #^IntMasks</code>. Total masked time: microseconds.</li>
-<li><b>Enable the layer</b> &mdash; <code>$FFC0</code> is fixed I/O: no mapping, no masking, any map, any time. Read it, OR in <code>$26</code> (graphics $04 + overlay $02 + sprite $20, preserving the text bit), write it back. The green square appears at center.</li>
-</ol>
-<p class="src">To hide the sprite later: clear bit 5 of $FFC0 (no mapping needed), or clear the record&rsquo;s enable bit (needs the mapped window again). The complete working implementation of this recipe is the <code>sprtest</code> command source: <code>level1/wildbits/cmds/sprtest.asm</code>.</p>
-
-<h2>Where this comes from</h2>
-<p class="src">RTL and definitions read for this reference:<br>
-&bull;&nbsp;<code>Sprite_State_Machine.v</code> &mdash; the per-line-pair scan, line-hit test and VRAM fetch.<br>
-&bull;&nbsp;<code>TinyVickyCoreModule.v</code> &mdash; master video scheduler and compositor.<br>
-&bull;&nbsp;<code>TinyVKY2K2_IO_Page0_Devices.v</code> &mdash; attribute BRAM, page rotation (<code>RecodedAddy</code>), CLUTs.<br>
-&bull;&nbsp;<code>defs/wildbits.d</code> &mdash; register names and addresses.</p>
-
+<div class="wrap">
 <h2 id="documentation"><span class="no">7</span>Documentation</h2>
 <p class="lede">The long-form notes. The tables above say what a register is; this is how the thing behaves and how to drive it.</p>
 <h3 id="doc-dma">DMA engine &mdash; $FEC0&ndash;$FED7</h3>
@@ -1840,7 +1821,7 @@ was four bytes high.</p>
   <span class="m">$D0&ndash;$EF</span>, the one range whose absolute address is not block&nbsp;&times;&nbsp;$2000. Open: a boot-time probe so the kernel frees a window only when
   RAM answers there; DMA into a window (the engine drops high address bits).</p>
 
-<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-08-31 &middot; companion to the 64K Memory Map and 512K Physical Map reports.</footer>
+<footer>WildBits K2 / Jr2 &middot; FNX6809 v8-era cores &middot; compiled 2026-08-31 &middot; companion to the 64K Memory Map and 1MB Physical Map reports.</footer>
 </div>
 </body>
 </html>
