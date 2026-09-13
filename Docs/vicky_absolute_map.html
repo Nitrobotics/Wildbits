@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WildBits Absolute Address Map</title>
+<style>
+  body{margin:0;background:#ffffff;color:#1a1a1a;font-family:Calibri,"Segoe UI",Arial,sans-serif;font-size:13px;padding:14px 18px 28px}
+  h1{font-size:17px;margin:0 0 2px;font-weight:bold}
+  .sub{margin:0 0 12px;color:#444;font-size:12px}
+  table{border-collapse:collapse;width:100%;margin:0 0 16px;table-layout:fixed}
+  th,td{border:1px solid #a6a6a6;padding:3px 6px;vertical-align:top;line-height:1.3;word-wrap:break-word}
+  th{background:#bfbfbf;font-weight:bold;text-align:left;font-size:12px}
+  td.m{font-family:Consolas,"Courier New",monospace;font-size:12px;white-space:nowrap}
+  td.c{text-align:center}
+  .ram{background:#e2efda}          /* system RAM */
+  .win{background:#a9d08e}          /* the two new RAM windows */
+  .flash{background:#f8cbad}        /* flash bus */
+  .cart{background:#bdd7ee}         /* cartridge / expansion */
+  .io{background:#d9d2e9}           /* sectored I/O pages */
+  .io2{background:#e4dff0}
+  .none{background:#ededed;color:#555}
+  .sheet{font-size:12px;font-weight:bold;color:#333;margin:14px 0 4px;padding:2px 6px;background:#e7e6e6;border:1px solid #a6a6a6;display:inline-block}
+  .foot{color:#444;font-size:11px;margin:2px 0}
+  .lg span{display:inline-block;width:14px;height:11px;border:1px solid #888;vertical-align:-1px;margin:0 3px 0 10px}
+</style></head><body>
+<h1>WildBits K2 / Jr2 &mdash; Absolute address map (A[23:0])</h1>
+<p class="sub">The address every master speaks: the CPU through its LUT entry (entry &times; $2000 + offset, for every entry), VICKY&rsquo;s bitmap / tile / sprite address registers, the DMA registers and the debug port. FNX6809 Core2X rc15 cores (K2 and Jr2, deployed 2026-09-13); Foenix F256 memory map Revision E (2026-03-13) with its $D0&ndash;$EF row corrected to the identity address. &ldquo;Physical home&rdquo; is where the bytes actually live; for RAM it is the same number as the absolute address.</p>
+
+<div class="sheet">Sheet 1 &mdash; by MMU entry</div>
+<table>
+<colgroup><col style="width:8%"><col style="width:9%"><col style="width:9%"><col style="width:6%"><col style="width:30%"><col style="width:16%"><col style="width:22%"></colgroup>
+<tr><th>MMU entry</th><th>Absolute from</th><th>Absolute to</th><th>Size</th><th>What answers</th><th>Physical home</th><th>Notes</th></tr>
+
+<tr class="ram"><td class="m">$00&ndash;$07</td><td class="m">$00_0000</td><td class="m">$00_FFFF</td><td class="m">64 KB</td><td>System RAM, blocks 0&ndash;7. Block $07 is the kernel&rsquo;s fixed page ($FD00 internal RAM, $FE00&ndash;$FFFF I/O and vectors are hardware-fixed in every task and never go through the LUT).</td><td>SRAM chip bytes $00_0000&ndash;$00_FFFF</td><td>Shared with VICKY. Unchanged address on the chip.</td></tr>
+<tr class="ram"><td class="m">$08&ndash;$3F</td><td class="m">$01_0000</td><td class="m">$07_FFFF</td><td class="m">448 KB</td><td>System RAM (the rest of the original 512 KB): kernel pool, process blocks, bitmaps, sprites, tiles.</td><td>SRAM chip bytes $01_0000&ndash;$07_FFFF</td><td>Shared with VICKY. Unchanged.</td></tr>
+
+<tr class="flash"><td class="m">$40&ndash;$7F</td><td class="m">$08_0000</td><td class="m">$0F_FFFF</td><td class="m">512 KB</td><td>Program flash: the boot / FEU blocks and the OS-9 flash drives (/f0 &hellip;).</td><td>Flash chip, its own bus (MMU_Flash_Valid)</td><td>Same numbers as the SRAM&rsquo;s unreachable middle &mdash; a different bus, no collision. VICKY and DMA cannot fetch from here (they only reach the SRAM).</td></tr>
+
+<tr class="cart"><td class="m">$80&ndash;$9F</td><td class="m">$10_0000</td><td class="m">$13_FFFF</td><td class="m">256 KB</td><td>Cartridge / expansion RAM select (MMU_EXRAM_Valid).</td><td>Expansion connector &mdash; nothing fitted</td><td>No memory answers on the K2 or Jr2 as built; the 1 MB kernel marks $80&ndash;$9F NotRAM.</td></tr>
+
+<tr class="win"><td class="m">$A0&ndash;$BF</td><td class="m">$14_0000</td><td class="m">$17_FFFF</td><td class="m">256 KB</td><td><b>RAM window A</b> (new, rc14): ordinary kernel pool blocks, shared with VICKY.</td><td>SRAM chip bytes $14_0000&ndash;$17_FFFF</td><td>Entry &times; $2000. Free at boot (wb/1mb_ram_upgrade), used once the low 512 KB is spoken for.</td></tr>
+
+<tr class="io"><td class="m">$C0</td><td class="m">$18_0000</td><td class="m">$18_1FFF</td><td class="m">8 KB</td><td>VICKY page 0: gamma tables B / G / R $18_0000&ndash;$18_0BFF (3 &times; 1 KB) &middot; mouse pointer image $18_0C00&ndash;$18_0FFF &middot; bitmap registers $18_1000 (line-draw engine $18_1080&ndash;$18_1087) &middot; tile registers $18_1100 &middot; MemText registers $18_1200 &middot; sprite records $18_1300&ndash;$18_16FF (128 &times; 8 bytes) &middot; text LUT foreground $18_1700&ndash;$18_173F, background $18_1740&ndash;$18_177F.</td><td>FPGA block RAM / registers</td><td>Text LUTs readable since rc13. $18_1780&ndash;$18_1FFF: nothing.</td></tr>
+<tr class="io2"><td class="m">$C1</td><td class="m">$18_2000</td><td class="m">$18_3FFF</td><td class="m">8 KB</td><td>Text fonts $18_2000&ndash;$18_2FFF (two 2 KB sets) &middot; graphics CLUT 0&ndash;3 $18_3000&ndash;$18_3FFF (4 &times; 256 entries &times; 4 bytes).</td><td>FPGA block RAM</td><td></td></tr>
+<tr class="io"><td class="m">$C2</td><td class="m">$18_4000</td><td class="m">$18_5FFF</td><td class="m">8 KB</td><td>Text character matrix $18_4000&ndash;$18_52BF (80 &times; 60 = 4,800 bytes).</td><td>FPGA block RAM</td><td>$18_52C0&ndash;$18_5FFF: nothing.</td></tr>
+<tr class="io2"><td class="m">$C3</td><td class="m">$18_6000</td><td class="m">$18_7FFF</td><td class="m">8 KB</td><td>Text colour matrix $18_6000&ndash;$18_72BF (80 &times; 60 attribute bytes).</td><td>FPGA block RAM</td><td>$18_72C0&ndash;$18_7FFF: nothing.</td></tr>
+<tr class="io"><td class="m">$C4</td><td class="m">$18_8000</td><td class="m">$18_9FFF</td><td class="m">8 KB</td><td>Sound: SID left $18_8000&ndash;$18_801F &middot; SID mono $18_8080&ndash;$18_809F &middot; SID right $18_8100&ndash;$18_811F &middot; OPL3 $18_8180&ndash;$18_8182 &middot; PSG left $18_8200&ndash;$18_8207 &middot; PSG both $18_8208&ndash;$18_820F &middot; PSG right $18_8210&ndash;$18_8217.</td><td>FPGA sound blocks</td><td>Rest of the sector: nothing.</td></tr>
+<tr class="io2"><td class="m">$C5</td><td class="m">$18_A000</td><td class="m">$18_BFFF</td><td class="m">8 KB</td><td>MemText (VRAM text mode) font block 4: $18_A000&ndash;$18_AFFF decoded.</td><td>FPGA block RAM</td><td>Revision E lists $C5/$C6 as FUTURE; the wildbits cores decode them.</td></tr>
+<tr class="io"><td class="m">$C6</td><td class="m">$18_C000</td><td class="m">$18_DFFF</td><td class="m">8 KB</td><td>MemText block 5: $18_C000&ndash;$18_DFFF.</td><td>FPGA block RAM</td><td></td></tr>
+<tr class="io2"><td class="m">$C7</td><td class="m">$18_E000</td><td class="m">$18_FFFF</td><td class="m">8 KB</td><td>Sector decoded (entry pattern 11000xxx) but no device behind it.</td><td>&mdash;</td><td>Reads return the data mux default, $33.</td></tr>
+
+<tr class="none"><td class="m">$C8&ndash;$CF</td><td class="m">$19_0000</td><td class="m">$19_FFFF</td><td class="m">64 KB</td><td>Nothing &mdash; no decode.</td><td>&mdash;</td><td>Marked NotRAM by the 1 MB kernel.</td></tr>
+<tr class="win"><td class="m">$D0&ndash;$EF</td><td class="m">$1A_0000</td><td class="m">$1D_FFFF</td><td class="m">256 KB</td><td><b>RAM window B</b> (rc14+, at this address since rc15): ordinary kernel pool blocks, shared with VICKY.</td><td>SRAM chip bytes $1A_0000&ndash;$1D_FFFF</td><td>Entry &times; $2000, like every block. rc14 had placed it at $20_0000 (a mis-edited sheet row, one bit past the SRAM&rsquo;s A19) behind a +$30 and a bit-20 fold; rc15 removed both.</td></tr>
+<tr class="none"><td class="m">&mdash;</td><td class="m">$1E_0000</td><td class="m">$1F_FFFF</td><td class="m">128 KB</td><td>Nothing: the identity numbers of the undecoded entries $F0&ndash;$FF.</td><td>&mdash;</td><td>Reachable by no LUT entry.</td></tr>
+
+
+<tr class="none"><td class="m">$F0&ndash;$FF</td><td class="m" colspan="2">no absolute address</td><td class="m">&mdash;</td><td>Reserved &mdash; undecoded LUT patterns; a read returns nothing meaningful.</td><td>&mdash;</td><td>Marked NotRAM by the 1 MB kernel.</td></tr>
+<tr class="none"><td class="m">&mdash;</td><td class="m">$20_0000</td><td class="m">$FF_FFFF</td><td class="m">14 MB</td><td>Nothing: past the SRAM&rsquo;s top address pin (A19 = byte bit 20). Only VICKY / DMA address registers can even name these numbers; a fetch there wraps onto the chip.</td><td>&mdash;</td><td>Not for use.</td></tr>
+</table>
+
+<div class="sheet">Sheet 2 &mdash; the same map from the SRAM&rsquo;s side (IS61WV102416, 1M &times; 16 = 2 MB, address pins A[19:0])</div>
+<table>
+<colgroup><col style="width:17%"><col style="width:17%"><col style="width:8%"><col style="width:58%"></colgroup>
+<tr><th>Chip bytes (pins &times; 2)</th><th>Absolute address</th><th>Size</th><th>Holds</th></tr>
+<tr class="ram"><td class="m">$00_0000&ndash;$07_FFFF</td><td class="m">$00_0000&ndash;$07_FFFF</td><td class="m">512 KB</td><td>System RAM, entries $00&ndash;$3F &mdash; unchanged address.</td></tr>
+<tr class="none"><td class="m">$08_0000&ndash;$13_FFFF</td><td class="m">&mdash;</td><td class="m">768 KB</td><td>Unreachable: no absolute address maps here (the flash and cartridge numbers go to other buses). A FLASHDIS bit for a later core would turn exactly this slice into RAM.</td></tr>
+<tr class="win"><td class="m">$14_0000&ndash;$17_FFFF</td><td class="m">$14_0000&ndash;$17_FFFF</td><td class="m">256 KB</td><td>RAM window A, entries $A0&ndash;$BF &mdash; unchanged address.</td></tr>
+<tr class="none"><td class="m">$18_0000&ndash;$19_FFFF</td><td class="m">&mdash;</td><td class="m">128 KB</td><td>Unreachable: the numbers behind the sectored I/O pages $C0&ndash;$CF.</td></tr>
+<tr class="win"><td class="m">$1A_0000&ndash;$1D_FFFF</td><td class="m">$1A_0000&ndash;$1D_FFFF</td><td class="m">256 KB</td><td>RAM window B, entries $D0&ndash;$EF &mdash; unchanged address.</td></tr>
+<tr class="none"><td class="m">$1E_0000&ndash;$1F_FFFF</td><td class="m">&mdash;</td><td class="m">128 KB</td><td>Unreachable: behind the undecoded entries $F0&ndash;$FF.</td></tr>
+</table>
+<p class="foot">1 MB of the 2 MB part is in use (512 + 256 + 256 KB), 1 MB is not reachable by any address (768 + 128 + 128 KB). Since rc15 there is no address translation anywhere: the MMU emits block &times; $2000 for every RAM entry and the SRAM pins carry that number / 2.</p>
+
+<p class="foot lg"><b>Legend:</b><span class="ram"></span>system RAM<span class="win"></span>RAM windows (rc14)<span class="flash"></span>flash bus<span class="cart"></span>cartridge / expansion<span class="io"></span>sectored I/O pages<span class="none"></span>nothing / reserved</p>
+<p class="foot">Sources: TyVKy2K2x1_MMU_Register.v (entry decode: RAM, RAM_Win_A0/D0, flash, EXRAM, sectored I/O), TinyVKY2K2_IO_Page0_Devices.v (the chip selects inside $18_xxxx), TyVKy2K2turbo_MMU_FNX6809.v (RAM_Addy_o), Foenix F256 memory map Revision E (2026-03-13). Compiled 2026-09-12, rc15 update 2026-09-13.</p>
+</body></html>
