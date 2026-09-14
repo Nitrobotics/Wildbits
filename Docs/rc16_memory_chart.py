@@ -1,107 +1,68 @@
 from pathlib import Path
 from reportlab.pdfgen import canvas
-from reportlab.lib.colors import HexColor, white
+from reportlab.lib.colors import HexColor
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-
-ROOT = Path(__file__).resolve().parent
-OUT = ROOT / 'wildbits-rc16-memory-map.pdf'
-# Reference PNG has no physical resolution metadata. At 96 dpi this page
-# reproduces its exact 1940 x 1920 pixel dimensions and aspect ratio.
-W,H = 1455,1440
-for name,file in [('Body','arial.ttf'),('Bold','arialbd.ttf'),('Mono','consola.ttf')]:
-    pdfmetrics.registerFont(TTFont(name, str(Path('C:/Windows/Fonts')/file)))
-c=canvas.Canvas(str(OUT),pagesize=(W,H))
-c.setTitle('WildBits rc16 - K2 and Jr2 memory layout')
-c.setAuthor('WildBits')
-BG='#101B29'; INK='#EAF1FA'; MUTED='#B9C9DB'
-RAM='#174F4B'; FLASH='#624130'; IO='#293F67'; GAP='#35404F'
-c.setFillColor(HexColor(BG));c.rect(0,0,W,H,fill=1,stroke=0)
-def text(x,y,s,size=12,font='Body',color=INK):
-    c.setFillColor(HexColor(color));c.setFont(font,size);c.drawString(x,H-y,s)
-def rect(x,y,w,h,col):
-    c.setFillColor(HexColor(col));c.rect(x,H-y-h,w,h,fill=1,stroke=0)
-def section(y,num,title,subtitle):
-    rect(32,y,1391,35,'#22354A');text(44,y+24,num,15,'Bold','#70DFCA');text(80,y+24,title,17,'Bold')
-    text(44,y+55,subtitle,11.5,color=MUTED)
-def table(x,y,widths,headers,rows,rh=29):
-    full=sum(widths);rect(x,y,full,29,'#314860')
-    xx=x
-    for w,h in zip(widths,headers):text(xx+9,y+20,h,10.5,'Bold');xx+=w
-    y+=29
-    for vals,col in rows:
-        rect(x,y,full,rh,col);xx=x
-        for i,(w,v) in enumerate(zip(widths,vals)):
-            text(xx+9,y+rh/2+4,v,11.3,'Mono' if i==0 else 'Body')
-            xx+=w
-        c.setStrokeColor(HexColor('#536171'));c.setLineWidth(.35);c.line(x,H-y-rh,x+full,H-y-rh)
-        y+=rh
-    return y
-
-text(34,38,'WILDBITS / HARDWARE ADDRESS REFERENCE',12,'Bold','#70DFCA')
-text(34,83,'Core rc16 memory layout',35,'Bold')
-text(35,111,'Foenix F256 K2 + Jr2  |  Current RTL and NitrOS-9 max-RAM kernel  |  14 September 2026',13,color=MUTED)
-for x,w,big,small,col in [(34,447,'1,792 KB','CPU RAM pool with FLASHDIS = 1',RAM),(497,447,'224 x 8 KB','MMU blocks available to the max-RAM kernel',IO),(960,461,'2,048 KB','Physical SRAM capacity: 1M x 16 bits',FLASH)]:
-    rect(x,131,w,76,col);text(x+16,163,big,24,'Bold');text(x+16,190,small,12)
-
-section(226,'01','The 256-entry MMU block space','Byte ranges below are block x $2000 through block x $2000 + $1FFF. Device selections are not SRAM accesses.')
-rows=[
-(['$00-$3F','$000000-$07FFFF','512 KB','SRAM','SRAM / 64 blocks'],RAM),
-(['$40-$7F','$080000-$0FFFFF','512 KB','Flash select','SRAM / 64 blocks'],FLASH),
-(['$80-$9F','$100000-$13FFFF','256 KB','Cartridge / expansion select','SRAM / 32 blocks'],FLASH),
-(['$A0-$BF','$140000-$17FFFF','256 KB','SRAM','SRAM / 32 blocks'],RAM),
-(['$C0-$C7','$180000-$18FFFF','64 KB','Sectored device space','Device space / NotRAM'],IO),
-(['$C8-$CF','$190000-$19FFFF','64 KB','No RAM selection','NotRAM'],GAP),
-(['$D0-$EF','$1A0000-$1DFFFF','256 KB','SRAM','SRAM / 32 blocks'],RAM),
-(['$F0-$FF','$1E0000-$1FFFFF','128 KB','No RAM selection','NotRAM'],GAP),
-]
-table(34,293,[135,275,120,385,472],['MMU BLOCKS','BYTE ADDRESS RANGE','SPAN','RESET: FLASHDIS = 0','MAX-RAM: FLASHDIS = 1'],rows,30)
-text(44,582,'The kernel excludes $C0-$CF and $F0-$FF. The 1,792 KB total is the RAM pool before OS, screen and application allocations.',12,color=MUTED)
-
-section(601,'02','Address translation and the rc16 control bit','The CPU selects a block through an MMU slot. VICKY and DMA use SRAM byte addresses directly.')
-rect(34,669,685,126,'#183C46');rect(735,669,686,126,'#283650')
-text(49,693,'CPU -> MMU -> SRAM',15,'Bold','#70DFCA')
-text(49,718,'byte address = (block x $2000) + 13-bit offset',13,'Mono')
-text(49,742,'Example: $D0:$0000 -> $1A0000 -> word pins $D0000',12,'Mono')
-text(49,767,'Block $D0 ends at $1A1FFF; the whole $D0-$EF range ends at $1DFFFF.',11.5)
-text(750,693,'MMU_IO_CTRL: CPU $FFA1',15,'Bold','#9ABEFF')
-text(750,718,'Bit 2: FLASHDIS. Reset = 0; set to 1 for RAM in $40-$9F.',12)
-text(750,742,'Read bit 7 = 1 identifies support. Preserve the other control bits.',12)
-text(750,767,'Bits 0 / 1 enable fixed internal RAM at $FD00 / vectors at $FFF0.',11.5)
-text(44,817,'SRAM pins carry a WORD address: byte address >> 1; the low byte-address bit selects a byte lane. No +$30 or address folding.',12,'Bold')
-
-section(836,'03','Device pages and fixed CPU windows','These are peripheral views, not extra RAM. Mapping a device page into a CPU slot selects its page-relative offsets.')
-table(34,903,[124,245,316],['MMU PAGE','PAGE OFFSETS','CONTENTS'],[
-(['$C0','$0000-$0FFF','Gamma tables / mouse image'],IO),
-(['$C0','$1000-$12FF','Bitmap, tile and misc controls'],IO),
-(['$C0','$1300-$16FF','128 sprite attribute records'],IO),
-(['$C0','$1700-$177F','Text foreground/background LUTs'],IO),
-(['$C1','$0000-$0FFF','Two font banks'],IO),
-(['$C1','$1000-$1FFF','Four graphics palette LUTs'],IO),
-(['$C2 / $C3','Page-relative offsets','Text characters / text attributes'],IO),
-(['$C4','Sound register offsets','SID / PSG register space'],IO),
-],28)
-table(735,903,[195,491],['CPU ADDRESS','FIXED WINDOW / CONTROL'],[
-(['$FD00-$FDFF','256-byte internal RAM when $FFA1 bit 0 = 1'],IO),
-(['$FE00-$FEFF','System, IRQ, timers, serial, mouse, DMA, math'],IO),
-(['$FF00-$FF5F','SD, splash SPI, WizFi, MIDI, W6100, VS1053'],IO),
-(['$FF90','DIP-switch input'],IO),
-(['$FFA0','Active LUT bits 1:0; edit LUT bits 5:4'],IO),
-(['$FFA1 / $FFA8-$FFAF','I/O control / eight MMU slot registers'],IO),
-(['$FFC0-$FFCF','Video master, layers, border and bitmap mode'],IO),
-(['$FFF0-$FFFF','16-byte vector RAM when $FFA1 bit 1 = 1'],IO),
-],28)
-text(44,1176,'Selected device resources are shown above; gaps in those tables are not a promise of usable storage or a connected peripheral.',11,color=MUTED)
-
-rect(34,1199,1387,122,'#22354A')
-text(49,1225,'HOW TO READ THIS MAP',14,'Bold','#70DFCA')
-text(49,1250,'RAM mode: the rc16 max-RAM kernel detects $FFA1 bit 7 and sets FLASHDIS. A core alone does not enlarge the kernel block pool.',12)
-text(49,1274,'Video / DMA: physical SRAM addressing bypasses the CPU LUT and FLASHDIS. The CPU device-space holes do not remove SRAM capacity.',12)
-text(49,1298,'Fixed windows override the selected CPU slot. rc16 inhibits SRAM writes at $FFA0-$FFAF so MMU register writes cannot leak into RAM.',12)
-
-text(34,1349,'SOURCE BASIS',10,'Bold','#70DFCA')
-text(34,1370,'TyVKy2K2x1_MMU_Register.v  |  TyVKy2K2turbo_MMU_FNX6809.v  |  defs/wildbits.d  |  wb/max_ram_upgrade: krnp2.asm',10.5,color=MUTED)
-text(34,1392,'Original chart artwork and wording. Reference image used only for the colorful tabular format and page proportions.',10.5,color=MUTED)
-text(34,1417,'1940 x 1920 reference pixels at 96 dpi  /  vector PDF  /  all addresses hexadecimal ($)',10,color=MUTED)
-c.showPage();c.save()
-print(OUT)
+P=Path(__file__).resolve().parent
+for n,f in [('Arial','arial.ttf'),('Bold','arialbd.ttf'),('Mono','consola.ttf')]:
+ pdfmetrics.registerFont(TTFont(n,str(Path('C:/Windows/Fonts')/f)))
+W,H=1455,1440
+c=canvas.Canvas(str(P/'wildbits-rc16-memory-map-large-type.pdf'),pagesize=(W*2,H*2))
+c.scale(2,2)
+c.setTitle('WildBits rc16 memory layout - address grid')
+rows=[]
+colors={'ram':'FFF0A6','io':'FFD0CA','mmu':'AEEBF2','video':'D0F4F7','sound':'FFDFD8','gap':'E5E5E5','vector':'FFF5BF','flash':'B8EDF3'}
+def row(block,offset,start,end,what,mode,kind='io'):
+ rows.append(([block,offset,start,end,what,mode],kind))
+def band(s): rows.append((s,'band'))
+band('CPU LOGICAL ADDRESS SPACE - fixed windows override the selected MMU slot')
+row('Slot 0-7','$0000-$1FFF','$0000','$FFFF','Eight CPU slots, 8 KB each; each slot selects one MMU block','Four LUTs','ram')
+row('Fixed','$1D00-$1DFF','$FD00','$FDFF','Internal 256-byte RAM window','FFA1 bit 0 = 1','mmu')
+for a,b,s in [(0xFE00,0xFE0F,'System controls'),(0xFE10,0xFE1F,'K2 keyboard interface'),(0xFE20,0xFE2F,'Interrupt controller'),(0xFE30,0xFE3F,'Timer registers'),(0xFE40,0xFE4F,'Real-time clock'),(0xFE50,0xFE5F,'PS/2 keyboard and mouse'),(0xFE60,0xFE6F,'Serial UART / DriveWire'),(0xFE70,0xFE7F,'Codec control'),(0xFE80,0xFE8F,'IEC interface'),(0xFE90,0xFE9F,'External SD interface'),(0xFEA0,0xFEAF,'Mouse cursor controls'),(0xFEB0,0xFEBF,'VIA 0'),(0xFEC0,0xFEDF,'DMA registers'),(0xFEE0,0xFEFF,'Integer math registers'),(0xFF00,0xFF0F,'Internal SD interface'),(0xFF10,0xFF1F,'Splash flash SPI'),(0xFF20,0xFF2F,'WizFi interface'),(0xFF30,0xFF3F,'MIDI UART'),(0xFF40,0xFF4F,'W6100 Ethernet - K2'),(0xFF50,0xFF5F,'VS1053 sound interface'),(0xFF60,0xFF6F,'I2C control - K2'),(0xFF70,0xFF7F,'LCD interface - K2'),(0xFF80,0xFF8F,'NES / SNES controls'),(0xFF90,0xFF9F,'DIP-switch registers')]:
+ row('Fixed',f'${a&8191:04X}-${b&8191:04X}',f'${a:04X}',f'${b:04X}',s,'CPU fixed decode')
+row('Fixed','$1FA0','$FFA0','$FFA0','MMU: active LUT bits 1:0; edit LUT bits 5:4','MMU control','mmu')
+row('Fixed','$1FA1','$FFA1','$FFA1','FLASHDIS bit 2; support read bit 7; RAM enables bits 1:0','Reset bits 6:0 = 0','mmu')
+row('Fixed','$1FA8-$1FAF','$FFA8','$FFAF','Eight block-number registers for the selected edit LUT','MMU slot table','mmu')
+row('Fixed','$1FB0-$1FBF','$FFB0','$FFBF','VIA 1 - K2','CPU fixed decode')
+row('Fixed','$1FC0-$1FDF','$FFC0','$FFDF','Video controls; HIRES4 / CLUT-group register at $FFCB','CPU fixed decode','video')
+row('Fixed','$1FE0-$1FEF','$FFE0','$FFEF','Floating-point math registers','CPU fixed decode')
+row('Fixed','$1FF0-$1FFF','$FFF0','$FFFF','Internal vector RAM; reset vector at $FFFE-$FFFF','FFA1 bit 1 = 1','vector')
+band('MMU BLOCK MAP - byte address = block x $2000 + offset; K2 and Jr2 rc16')
+for block,lo,hi,size,mode,kind in [('$00-$3F',0,0x7FFFF,'512 KB SRAM','Always RAM','ram'),('$40-$7F',0x80000,0xFFFFF,'512 KB: flash select or SRAM','FLASHDIS 0 / 1','flash'),('$80-$9F',0x100000,0x13FFFF,'256 KB: cartridge select or SRAM','FLASHDIS 0 / 1','flash'),('$A0-$BF',0x140000,0x17FFFF,'256 KB SRAM','Always RAM','ram'),('$C0-$C7',0x180000,0x18FFFF,'64 KB sectored device address space','NotRAM','video'),('$C8-$CF',0x190000,0x19FFFF,'64 KB without CPU RAM selection','NotRAM','gap'),('$D0-$EF',0x1A0000,0x1DFFFF,'256 KB SRAM','Always RAM','ram'),('$F0-$FF',0x1E0000,0x1FFFFF,'128 KB without CPU RAM selection','NotRAM','gap')]:
+ row(block,'$0000-$1FFF',f'${lo:06X}',f'${hi:06X}',size,mode,kind)
+band('SECTORED DEVICE DETAIL - address columns below are page x $2000 + offset, not SRAM pin addresses')
+for block,lo,hi,what,kind in [(0xC0,0,0x3FF,'Blue gamma table','video'),(0xC0,0x400,0x7FF,'Green gamma table','video'),(0xC0,0x800,0xBFF,'Red gamma table','video'),(0xC0,0xC00,0xFFF,'Mouse cursor image','video'),(0xC0,0x1000,0x10FF,'Bitmap registers','video'),(0xC0,0x1100,0x11FF,'Tile registers','video'),(0xC0,0x1200,0x12FF,'Miscellaneous video registers','video'),(0xC0,0x1300,0x16FF,'128 sprite attribute records, 8 bytes each','video'),(0xC0,0x1700,0x173F,'Text foreground palette / readback','video'),(0xC0,0x1740,0x177F,'Text background palette / readback','video'),(0xC1,0,0x7FF,'Font bank 0','video'),(0xC1,0x800,0xFFF,'Font bank 1','video'),(0xC1,0x1000,0x13FF,'Graphics palette 0','video'),(0xC1,0x1400,0x17FF,'Graphics palette 1','video'),(0xC1,0x1800,0x1BFF,'Graphics palette 2','video'),(0xC1,0x1C00,0x1FFF,'Graphics palette 3','video'),(0xC2,0,0x1FFF,'Text character page (not all offsets used)','video'),(0xC3,0,0x1FFF,'Text attribute page (not all offsets used)','video'),(0xC4,0,0x1F,'Left SID register window','sound'),(0xC4,0x80,0x9F,'Mono SID register window','sound'),(0xC4,0x100,0x11F,'Right SID register window','sound'),(0xC4,0x180,0x183,'OPL3 FM synthesis - writes only; no status / IRQ','sound'),(0xC4,0x200,0x217,'Left / mono / right PSG windows','sound')]:
+ row(f'${block:02X}',f'${lo:04X}-${hi:04X}',f'${block*8192+lo:06X}',f'${block*8192+hi:06X}',what,f'Mapped page ${block:02X}',kind)
+# Double the actual type size and reflow within the original chart width.
+from reportlab.platypus import Table, TableStyle, Paragraph
+from reportlab.lib.styles import ParagraphStyle
+from xml.sax.saxutils import escape
+widths=[49,70,54,54,222,103]
+data=[]; commands=[]
+def add(vals,bg,header=False,span=False):
+ idx=len(data); items=[]
+ for i,s in enumerate(vals):
+  style=ParagraphStyle('cell',fontName='Bold' if header else ('Mono' if i<4 and not span else 'Arial'),fontSize=7.5,leading=8.2,textColor=HexColor('#000000'))
+  items.append(Paragraph(escape(s),style))
+ if span: items += ['']*5; commands.append(('SPAN',(0,idx),(-1,idx)))
+ data.append(items);commands.append(('BACKGROUND',(0,idx),(-1,idx),HexColor('#'+bg)))
+add(['WILDBITS rc16 | K2 + Jr2 | MEMORY ADDRESS GRID | 14 September 2026'],'E0E0E0',True,True)
+add(['FLASHDIS = 1: 1,792 KB RAM (224 blocks) | Physical SRAM: 2,048 KB / 1M x 16 | FLASHDIS resets to 0'],'FFF0A6',True,True)
+add(['MMU block / view','Offset in 8 KB slot','Address from','Address through','RESOURCE / FUNCTION','SELECTION / MODE'],'FFF5BF',True)
+for vals,kind in rows:
+ if kind=='band':add([vals],'AEE6ED',True,True)
+ else:add(vals,colors[kind])
+for s in ['RAM byte address = (MMU block x $2000) + offset. SRAM word pins = byte address >> 1; bit 0 selects the byte lane.',
+'$D0 alone spans $1A0000-$1A1FFF. The entire $D0-$EF group spans $1A0000-$1DFFFF. No translation fold.',
+'Max-RAM kernel sets FLASHDIS after detecting support; free RAM depends on allocations. VICKY / DMA bypass the CPU MMU.',
+'Register rows show decode windows, not a guarantee that every byte is implemented. Unlisted device offsets are not general RAM.',
+'Sources: rc16 MMU RTL; K2/Jr2 I/O device RTL; wildbits.d; wb/max_ram_upgrade krnp2.asm.']:
+ add([s],'E6E6E6',span=True)
+t=Table(data,colWidths=widths)
+t.setStyle(TableStyle(commands+[('GRID',(0,0),(-1,-1),.8,HexColor('#333333')),('VALIGN',(0,0),(-1,-1),'MIDDLE'),('LEFTPADDING',(0,0),(-1,-1),2),('RIGHTPADDING',(0,0),(-1,-1),2),('TOPPADDING',(0,0),(-1,-1),0.7),('BOTTOMPADDING',(0,0),(-1,-1),0.7)]))
+tw,th=t.wrap(552,100000)
+c=canvas.Canvas(str(P/'wildbits-rc16-memory-map-8x11-opl3.pdf'),pagesize=(576,792))
+c.setTitle('WildBits rc16 memory grid - large black type')
+assert th <= 768, f'Table too tall: {th}'
+t.drawOn(c,12,792-12-th);c.showPage();c.save()
+print('Page size:',1455,th+14)
