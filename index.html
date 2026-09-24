@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 
-<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>Wildbits PC Resource Page - by Roger Taylor</title><link href="assets/report.css" rel="stylesheet"/></head><body><div class="sitebar"><a class="brand" href="#top">WILDBITS <span>6809</span></a><span>K2 / Jr2 · hardware &amp; software</span></div><main id="top"><section class="wrap hero"><h1>Wildbits PC Resource Page - by Roger Taylor</h1><p class="sub">Kits, memory maps and other resources for WildBits NitrOS-9 on the K2 and Jr2.</p><nav aria-label="Report sections" class="report-nav"><a href="Docs/wildbits-rc16-memory-map-letter.pdf">rc16 memory map (PDF)</a><a href="Docs/wildbits-rc16-endian-plan.pdf">Byte-order correction plan (PDF)</a><a href="#kits">Kits &amp; parity</a><a href="#memory-atlas">Memory atlas</a><a href="#interrupts">Interrupts</a><a href="#physical-map">Physical memory</a><a href="#cpu-map">64K CPU map</a><a href="#sprites">Sprites</a><a href="#block-ram">Block RAM</a><a href="#documentation">Documentation</a></nav><div class="metrics"><div><strong>1,792 KB</strong><span>RAM mapped · rc16 + max-RAM kernel</span></div><div><strong style="white-space:nowrap">320 x 240 / 256c · 640 x 240 / 16c</strong><span>Bitmap modes</span></div><div><strong>128</strong><span>hardware sprites</span></div></div></section><section class="wrap report" data-section="01" id="kits"><header><div class="eyebrow">Downloads &amp; capabilities</div><h1>Kits and parity</h1><p class="sub">Stock and Future packages for each machine. Core and disk build dates stay with their downloads.</p></header><div class="grid"><div class="mapcol"><div class="rail-title">Choose a kit</div><div class="ladder"><div class="seg sys"><div class="body"><b>K2 / Jr2</b><div class="d">Use the package for your board</div></div></div><div class="seg ram"><div class="body"><b>Stock</b><div class="d">NitrOS-9 main, without overlays</div></div></div><div class="seg mmu"><div class="body"><b>Future</b><div class="d">Main plus the listed branch overlays</div></div></div></div></div><div class="report-detail"><div class="tblwrap parity"><table style="border-collapse:collapse;margin:8px auto 4px auto;width:80%;font-size:14px;table-layout:fixed;">
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>Wildbits PC Resource Page - by Roger Taylor</title><link href="assets/report.css" rel="stylesheet"/></head><body><div class="sitebar"><a class="brand" href="#top">WILDBITS <span>6809</span></a><span>K2 / Jr2 · hardware &amp; software</span></div><main id="top"><section class="wrap hero"><h1>Wildbits PC Resource Page - by Roger Taylor</h1><p class="sub">Kits, memory maps and other resources for WildBits NitrOS-9 on the K2 and Jr2.</p><nav aria-label="Report sections" class="report-nav"><a href="Docs/wildbits-rc17-memory-map.pdf">Printable Memory Map (PDF)</a><a href="Docs/wildbits-rc16-endian-plan.pdf">Byte-order correction plan (PDF)</a><a href="#kits">Kits &amp; parity</a><a href="#memory-atlas">Memory atlas</a><a href="#interrupts">Interrupts</a><a href="#physical-map">Physical memory</a><a href="#cpu-map">64K CPU map</a><a href="#sprites">Sprites</a><a href="#block-ram">Block RAM</a></nav><div class="metrics"><div><strong>1,792 KB</strong><span>RAM mapped · rc18 + max-RAM kernel</span></div><div><strong style="white-space:nowrap">320 x 240 / 256c · 640 x 240 / 16c</strong><span>Bitmap modes</span></div><div><strong>128</strong><span>hardware sprites</span></div></div></section><section class="wrap report" data-section="01" id="kits"><header><div class="eyebrow">Downloads &amp; capabilities</div><h1>Kits and parity</h1><p class="sub">Stock and Future packages for each machine. Core and disk build dates stay with their downloads.</p></header><div class="grid"><div class="mapcol"><div class="rail-title">What's new</div><div class="ladder whatsnew"><div class="seg io"><div class="addr">RC18</div><div class="body"><b>UART and reset sequencing</b><div class="d">updated UART baud timing and synchronized reset release on K2 and Jr2</div></div></div><div class="seg const"><div class="addr">RC18</div><div class="body"><b>Fixed sound registers</b><div class="d">sound aliases at $FF9x; legacy $C4 access remains available</div></div></div><div class="seg mmu"><div class="addr">RC18</div><div class="body"><b>K2 RP2040 mailbox</b><div class="d">supervisor access at $FE78–$FE7F and $FE88–$FE8F; includes RPDrv/rp drivers and fpga command</div></div></div><div class="seg mmu"><div class="addr">RC17</div><div class="body"><b>Line drawer</b><div class="d">no dropped pixels; spare video slots make lines faster</div></div></div><div class="seg const"><div class="addr">RC17</div><div class="body"><b>DMA logic operations</b><div class="d">DMA_OP ($FED4): OR, AND, XOR, MASK and NOT on copies and fills</div></div></div><div class="seg io"><div class="addr">RC17</div><div class="body"><b>DMA bus handshake</b><div class="d">a transfer and the CPU never write the same SRAM slot</div></div></div><div class="seg ram"><div class="addr">RC17</div><div class="body"><b>Faster I/O writes</b><div class="d">register-page writes finish in a fast frame like RAM writes</div></div></div><div class="seg mmu"><div class="addr">RC16</div><div class="body"><b>MMU register-window inhibit</b><div class="d">LUT writes at $FFA0–$FFAF no longer leak into slot 7 RAM</div></div></div><div class="seg const"><div class="addr">RC16</div><div class="body"><b>FLASHDIS</b><div class="d">$FFA1 bit 2 turns $40–$9F into 768 KB of RAM, 1,792 KB in all</div></div></div></div></div><div class="report-detail"><div class="tblwrap parity"><table style="border-collapse:collapse;margin:8px auto 4px auto;width:80%;table-layout:fixed;">
 <colgroup><col style="width:30%"><col style="width:17.5%"><col style="width:17.5%"><col style="width:17.5%"><col style="width:17.5%"></colgroup>
-<tr><th style="width:34%;padding:6px 10px;text-align:left;vertical-align:middle;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-transform:none;letter-spacing:normal;">Core / NitrOS-9 Parity</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="font-size:15px;color:#f0d9c8;">K2 Stock</span><br><a href="downloads/stock_wildbits_k2_v8_rc16.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full stock kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC16</code></a><br>core built 2026-09-13<br>stock kit built 2026-09-14 02:11</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="font-size:15px;color:#f0d9c8;">Jr2 Stock</span><br><a href="downloads/stock_wildbits_jr2_v8_rc16.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full stock kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC16</code></a><br>core built 2026-09-13<br>stock kit built 2026-09-14 02:12</th><th style="background:#262b33;padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="font-size:15px;color:#f0d9c8;">K2 Future</span><br><a href="downloads/parity_wildbits_k2_v8_rc16.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full future kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC16</code></a><br>core built 2026-09-13<br>future kit built 2026-09-14 02:11</th><th style="background:#262b33;padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="font-size:15px;color:#f0d9c8;">Jr2 Future</span><br><a href="downloads/parity_wildbits_jr2_v8_rc16.zip" style="color:#ff4136 !important;font-size:17px;text-decoration:none !important;border-bottom:none !important;" download title="Full future kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC16</code></a><br>core built 2026-09-13<br>future kit built 2026-09-14 02:12</th></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Memory / bus: 1,792 KB RAM (rc16 + max-RAM kernel), shaped flash/cart writes and RTC write-strobe handling, turbo fast RAM writes (24-tick write frames, full-length E), DIP-switchable turbo stretch mode (~1.4x, reads-fast frames)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">MMU task/LUT register writes ($FFA0&ndash;$FFAF) no longer leak a byte into RAM (slot 7, offset $1FA0&ndash;$1FAF) <span style="font-size:11px;color:#8a8f99;">rc16; caught with an in-core logic analyser</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><th style="width:34%;padding:6px 10px;text-align:left;vertical-align:middle;border-bottom:2px solid #7a3b12;color:#f0d9c8;text-transform:none;letter-spacing:normal;">Core / NitrOS-9 Parity</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="color:#f0d9c8;">K2 Stock</span><br><a href="downloads/stock_wildbits_k2_v8_rc18.zip" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;" download title="Full stock kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC18</code></a><br>core built 2026-09-25<br>stock kit built 2026-09-25 14:43</th><th style="padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="color:#f0d9c8;">Jr2 Stock</span><br><a href="downloads/stock_wildbits_jr2_v8_rc18.zip" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;" download title="Full stock kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC18</code></a><br>core built 2026-09-24<br>stock kit built 2026-09-25 14:44</th><th style="background:#262b33;padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="color:#f0d9c8;">K2 Future</span><br><a href="downloads/parity_wildbits_k2_v8_rc18.zip" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;" download title="Full future kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC18</code></a><br>core built 2026-09-25<br>future kit built 2026-09-25 14:43</th><th style="background:#262b33;padding:6px 10px;text-align:left;border-bottom:2px solid #7a3b12;color:#f0d9c8;font-size:13px;text-align:center;text-transform:none;letter-spacing:normal;"><span style="color:#f0d9c8;">Jr2 Future</span><br><a href="downloads/parity_wildbits_jr2_v8_rc18.zip" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;" download title="Full future kit package: core, disks, FEU blocks, install scripts, docs"><code style="color:inherit;background:none;border:none;text-decoration:none;">V8_RC18</code></a><br>core built 2026-09-24<br>future kit built 2026-09-25 14:44</th></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Memory / bus: 1,792 KB RAM (rc18 + max-RAM kernel), shaped flash/cart writes and RTC write-strobe handling, turbo fast RAM writes (24-tick write frames, full-length E), DIP-switchable turbo stretch mode (~1.4x, reads-fast frames)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 
 
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Video / Graphics: sprite engine fixes, 640 × 240 × 16-color bitmaps, and readable text color LUT registers; OS-9 friendly font and palette are built in (saving over 2K of bootfile space if needed)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
@@ -12,17 +11,21 @@
 
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Mach-speed: DMA, FPU, math coprocessor</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Communications: exact DriveWire baud (BAUDCE) - WizFi RX/TX interrupts</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">UART baud timing and reset-sequencing improvements; $FF9x sound aliases (legacy $C4 retained)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">RP2040 supervisor: RPDrv/rp mailbox driver and fpga command for status, image listing, SD upload and flash programming</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td></tr>
 <tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Bells and whistles: Mouse cursor hides properly (no leftover block after unplug + reset)</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Hardware key-repeat (typematic) engine</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td></tr>
-<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">W6100 ethernet port</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#6b7280;">&mdash;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Hardware key-repeat (typematic) engine</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td></tr>
+<tr><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">W6100 ethernet port</td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td></tr>
 
 
 
 
 <!-- OSFEAT START -->
-<tr><td colspan="5" style="background:#262b33;padding:8px 10px 4px 10px;color:#f0d9c8;font-size:13px;font-weight:bold;border-bottom:2px solid #7a3b12;">Overlaid at build time &mdash; in the Future kits only (work branches, not in main)</td></tr>
-<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">K2 hardware-typematic keyboard: interrupt-driven keydrv with core key repeat <span style="font-size:11px;color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/k2_core_typematic_support</a> &middot; overlaid, 3 patches ahead of main &middot; tip 4943eaadc 2026-09-01</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#8a8f99;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#8a8f99;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#8a8f99;">&mdash;</span></td></tr>
-<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">DriveWire hardening: exact 230,400 baud, bounded transmit wait, abort handshake, stream resync <span style="font-size:11px;color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/DriveWireCompatible" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/DriveWireCompatible</a> &middot; overlaid, 3 patches ahead of main &middot; tip 4c0c547cb 2026-09-12</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#8a8f99;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#8a8f99;">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td colspan="5" style="background:#262b33;padding:8px 10px 4px 10px;color:#f0d9c8;font-weight:bold;border-bottom:2px solid #7a3b12;">Overlaid at build time &mdash; in the Future kits only (work branches, not in main)</td></tr>
+<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">K2 hardware-typematic keyboard: interrupt-driven keydrv with core key repeat <span style="color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/k2_core_typematic_support" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/k2_core_typematic_support</a> &middot; overlaid, 3 patches ahead of main &middot; tip 4943eaadc 2026-09-01</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td></tr>
+<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">DriveWire stability rework: dwio/rbdw error correction, bounded transmit wait, abort handshake, stream resync <span style="color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/drivewire_stability" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/drivewire_stability</a> &middot; overlaid, 1 patch ahead of main &middot; tip a7b82a99a 2026-08-28</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
+<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">RP2040 supervisor: <span style="color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/rp2040" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/rp2040</a> &middot; overlaid, 1 patch ahead of main &middot; tip 6fd7928c3 2026-09-25</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td></tr>
+<tr><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;">Updated hardware definitions and tests; Play improvements and Level 2 Play/View commands <span style="color:#8a8f99;"><a href="https://github.com/nitros9project/nitros9/tree/wb/nitrobotics" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;">wb/nitrobotics</a> &middot; overlaid, 2 patches ahead of main &middot; tip c61df81cd 2026-09-23</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span class="feature-unavailable">&mdash;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td><td style="background:#262b33;padding:5px 10px;border-bottom:1px solid #454b56;vertical-align:top;text-align:center;"><span style="color:#7ec87e;font-weight:bold;">&#10003;</span></td></tr>
 <!-- OSFEAT END -->
 </table></div></div></div></section><div class="wrap report" data-section="02" id="memory-atlas"><header>
 <h1 class="report-title">Memory Atlas</h1>
@@ -38,7 +41,7 @@
 <span><i class="sw" style="background:var(--atl-dead-bg);border-color:var(--atl-dead)"></i>Unreachable</span>
 <span class="note"><span class="tagv tv">verified</span> read from source <span class="tagv ti">inferred</span> from behavior/comments</span>
 </div>
-</header><div class="grid"><div class="mapcol"><div class="rail-title">Address path</div><div class="ladder"><div class="seg sys"><div class="body"><b>6809 CPU</b><div class="d">64 KB logical address space</div></div></div><div class="seg mmu"><div class="body"><b>MMU</b><div class="d">8 slots × 8 KB; task selects the table</div></div></div><div class="seg ram"><div class="body"><b>Physical target</b><div class="d">RAM, flash or VICKY register page</div></div></div><div class="seg io"><div class="body"><b>Fixed I/O</b><div class="d">$FD00–$FFFF stays visible</div></div></div></div></div><div class="report-detail">
+</header><div class="grid"><div class="report-detail">
 <h2><span class="no">1</span>The translation pipeline</h2>
 <p class="lede">Every CPU access goes through one of eight 8K slots. The slot’s LUT entry
 supplies the physical block; the entry’s top bits pick which bus answers.</p>
@@ -54,18 +57,18 @@ supplies the physical block; the entry’s top bits pick which bus answers.</p>
   expansion RAM, or a sectored I/O page. Block number becomes the high address bits.</p></div>
 </div>
 <div class="card">
-<b style="font-size:13.5px">LUT entry encoding</b> <span class="tagv tv">verified</span>
+<b>LUT entry encoding</b> <span class="tagv tv">verified</span>
 <span class="note">(TyVKy2K2x1_MMU_Register.v)</span>
 <div class="scroll"><table style="margin-top:8px">
 <tr><th class="m">entry bits</th><th>region</th><th class="m">blocks</th><th>size</th><th>physical</th></tr>
 <tr><td class="m" style="color:var(--atl-ram)">00xxxxxx</td><td><b>RAM</b></td><td class="m">$00–$3F</td><td>512 KB</td><td>SRAM (also the VKY video port)</td></tr>
 <tr><td class="m" style="color:var(--atl-flash)">01xxxxxx</td><td><b>Flash window</b></td><td class="m">$40–$7F</td><td>512 KB</td><td class="m">$08_0000–$0F_FFFF of the SST chip</td></tr>
 <tr><td class="m" style="color:var(--atl-exram)">100xxxxx</td><td><b>Expansion RAM</b></td><td class="m">$80–$9F</td><td>256 KB</td><td class="m">$10_0000–$13_FFFF</td></tr>
-<tr><td class="m" style="color:var(--atl-ram)">101xxxxx</td><td><b>RAM window A</b> <span class="note">rc15 cores</span></td><td class="m">$A0–$BF</td><td>256 KB</td><td class="m">$14_0000–$17_FFFF (block × $2000; Revision E)</td></tr>
+<tr><td class="m" style="color:var(--atl-ram)">101xxxxx</td><td><b>RAM window A</b></td><td class="m">$A0–$BF</td><td>256 KB</td><td class="m">$14_0000–$17_FFFF (block × $2000; Revision E)</td></tr>
 <tr><td class="m" style="color:var(--atl-io)">11000xxx</td><td><b>Sectored I/O pages</b></td><td class="m">$C0–$C4</td><td>5×8 KB</td><td>text / color / VKY / sound registers</td></tr>
-<tr><td class="m" style="color:var(--atl-ram)">$D0–$EF</td><td><b>RAM window B</b> <span class="note">rc15 cores</span></td><td class="m">$D0–$EF</td><td>256 KB</td><td class="m">$1A_0000–$1D_FFFF (block × $2000; identity since rc15)</td></tr>
+<tr><td class="m" style="color:var(--atl-ram)">$D0–$EF</td><td><b>RAM window B</b></td><td class="m">$D0–$EF</td><td>256 KB</td><td class="m">$1A_0000–$1D_FFFF (block × $2000)</td></tr>
 </table></div>
-<div class="warncall"><b>Current map: 1,792 KB of RAM on rc16 with FLASHDIS.</b> <a href="#physical-map">See the physical map</a> or <a href="#doc-flashdis">the register and boot sequence</a>.</div>
+<div class="warncall"><b>Current map: 1,792 KB of RAM on rc17 with FLASHDIS.</b> <a href="#physical-map">See the physical map</a> or <a href="#doc-flashdis">the register and boot sequence</a>.</div>
 <div class="warncall">Only 512 KB of flash is ever addressable: the flash chip gets 13 address bits from the CPU bus (the offset
   inside an 8 KB block) and six from the FPGA’s MMU-isolated lines (<span class="m">C816_MMU_A_o[5:0]</span> = LUT entry bits 5:0),
   19 bits in all. The absolute address’s bits 19–20 exist only inside the FPGA, where they select the flash chip; they are not
@@ -99,17 +102,17 @@ supplies the physical block; the entry’s top bits pick which bus answers.</p>
 <div class="seg exram mid"><div class="addr">$80<br/>⋮<br/>$9F</div>
 <div class="body"><b>Expansion RAM · 256 KB</b></div></div>
 <div class="seg ram"><div class="addr">$A0<br/>⋮<br/>$BF</div>
-<div class="body"><b>RAM window A · 256 KB</b> <span class="note">rc15 cores</span>
+<div class="body"><b>RAM window A · 256 KB</b>
 <div class="d">Absolute <span class="m">$14_0000–$17_FFFF</span> (block × $2000). Free blocks for the kernel (map entries 0) once
         <span class="m">wb/1mb_ram_upgrade</span> is in; VICKY and DMA use the same absolute address.</div></div></div>
 <div class="seg io"><div class="addr">$C0–$C4</div>
 <div class="body"><b>Sectored I/O pages</b>
-<div class="d">$C0/$C1 text+color, $C2 text screen, $C3 VKY/CLUT, $C4 sound — mapped into a slot on demand.</div></div></div>
+<div class="d">$C0 VICKY registers (gamma, text LUTs, bitmap, sprite, tile and line-draw registers), $C1 fonts and the graphics LUTs, $C2 text characters, $C3 text attributes, $C4 sound — mapped into a slot on demand (wildbits.d: TEXT_LUT_BLK, FONT_BLK, TEXT_RAM_BLK, COLOR_RAM_BLK).</div></div></div>
 <div class="seg dead"><div class="addr">$C5–$CF</div>
 <div class="body"><b>No decode</b><div class="d">Marked NotRAM in the 256-entry block map.</div></div></div>
 <div class="seg ram"><div class="addr">$D0<br/>⋮<br/>$EF</div>
-<div class="body"><b>RAM window B · 256 KB</b> <span class="note">rc15 cores</span>
-<div class="d">Absolute <span class="m">$1A_0000–$1D_FFFF</span> = block × $2000, like every other block (rc14 had it at $20_0000 behind a fold; corrected in rc15). Same rules as window A.</div></div></div>
+<div class="body"><b>RAM window B · 256 KB</b>
+<div class="d">Absolute <span class="m">$1A_0000–$1D_FFFF</span> = block × $2000, like every other block. Same rules as window A.</div></div></div>
 <div class="seg dead"><div class="addr">$F0–$FF</div>
 <div class="body"><b>No decode</b><div class="d">Marked NotRAM in the 256-entry block map.</div></div></div>
 </div>
@@ -117,7 +120,7 @@ supplies the physical block; the entry’s top bits pick which bus answers.</p>
 </div>
 <div>
 <div class="card">
-<b style="font-size:13.5px">Who maps what, at runtime</b>
+<b>Who maps what, at runtime</b>
 <div class="scroll"><table style="margin-top:8px">
 <tr><th>Code</th><th class="m">slot</th><th>maps in</th><th>Notes</th></tr>
 <tr><td class="m">vtio</td><td class="m">7 / 2</td><td class="m">$C0–$C4</td><td>video, CLUT, sound registers; bootlist warns it must init early to claim <span class="m">$E000+</span> safely</td></tr>
@@ -181,19 +184,19 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <div class="map" style="grid-template-columns:1fr">
 <div aria-label="Fixed I/O page blocks" class="stack">
 <div class="seg io"><span class="nm">Math coprocessor<br/><small>10 registers</small></span><span class="ad">$FEE0–$FEFB</span></div>
-<div class="seg io"><span class="nm">DMA engine<br/><small>7 registers</small></span><span class="ad">$FEC0–$FED7</span></div>
+<div class="seg mmu"><span class="nm">DMA engine<br/><small>9 registers</small></span><span class="ad">$FEC0–$FED7</span></div>
 <div class="seg io"><span class="nm">VIA0 (W65C22)<br/><small>10 registers</small></span><span class="ad">$FEB0–$FEBF</span></div>
-<div class="seg io"><span class="nm">Mouse pointer<br/><small>4 registers</small></span><span class="ad">$FEA0–$FEA8</span></div>
-<div class="seg io"><span class="nm">SD card 0 (SPI)<br/><small>2 registers</small></span><span class="ad">$FE90–$FE91</span></div>
-<div class="seg io"><span class="nm">IEC serial bus<br/><small>1 register</small></span><span class="ad">$FE80–$FE8F</span></div>
-<div class="seg io"><span class="nm">CODEC<br/><small>2 registers</small></span><span class="ad">$FE70–$FE72</span></div>
-<div class="seg io"><span class="nm">UART (DriveWire)<br/><small>8 registers</small></span><span class="ad">$FE60–$FE67</span></div>
+<div class="seg const"><span class="nm">Mouse pointer<br/><small>8 registers</small></span><span class="ad">$FEA0–$FEA8</span></div>
+<div class="seg ram"><span class="nm">SD card 0 (SPI)<br/><small>2 registers</small></span><span class="ad">$FE90–$FE91</span></div>
+<div class="seg mmu"><span class="nm">IEC serial bus<br/><small>1 register</small></span><span class="ad">$FE80–$FE8F</span></div>
+<div class="seg ram"><span class="nm">CODEC<br/><small>2 registers</small></span><span class="ad">$FE70–$FE72</span></div>
+<div class="seg regs"><span class="nm">UART (DriveWire)<br/><small>8 registers</small></span><span class="ad">$FE60–$FE67</span></div>
 <div class="seg io"><span class="nm">PS/2 ports<br/><small>5 registers</small></span><span class="ad">$FE50–$FE54</span></div>
-<div class="seg io"><span class="nm">Real-time clock<br/><small>11 registers</small></span><span class="ad">$FE40–$FE4F</span></div>
-<div class="seg io"><span class="nm">Timers 0 / 1<br/><small>4 registers</small></span><span class="ad">$FE30–$FE3F</span></div>
-<div class="seg io"><span class="nm">Interrupt controller<br/><small>8 registers</small></span><span class="ad">$FE20–$FE2F</span></div>
-<div class="seg io"><span class="nm">K2 optical keyboard<br/><small>6 registers</small></span><span class="ad">$FE10–$FE16</span></div>
-<div class="seg io"><span class="nm">System control<br/><small>7 registers</small></span><span class="ad">$FE00–$FE0F</span></div>
+<div class="seg regs"><span class="nm">Real-time clock<br/><small>16 registers</small></span><span class="ad">$FE40–$FE4F</span></div>
+<div class="seg io"><span class="nm">Timers 0 / 1<br/><small>2 × 4 registers</small></span><span class="ad">$FE30–$FE3F</span></div>
+<div class="seg mmu"><span class="nm">Interrupt controller<br/><small>16 registers</small></span><span class="ad">$FE20–$FE2F</span></div>
+<div class="seg io"><span class="nm">K2 optical keyboard<br/><small>7 registers</small></span><span class="ad">$FE10–$FE16</span></div>
+<div class="seg ram"><span class="nm">System control<br/><small>7 registers</small></span><span class="ad">$FE00–$FE0F</span></div>
 </div>
 </div>
 <div class="maplegend"><span><i class="sw io"></i>fixed I/O block</span></div>
@@ -219,7 +222,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FE10</td><td>key data (FIFO head)</td></tr>
 <tr><td class="addr">$FE11</td><td>status:<br/><span class="bit">b7 = 1 mechanical / 0 optical</span><br/><span class="bit">b0 = 1 FIFO empty</span></td></tr>
 <tr><td class="addr">$FE12/$FE13</td><td>FIFO count lo / hi</td></tr>
-<tr><td class="addr">$FE14</td><td>typematic initial delay in 60 Hz frames (reset 30 = 500 ms) — rc8+ cores</td></tr>
+<tr><td class="addr">$FE14</td><td>typematic initial delay in 60 Hz frames (reset 30 = 500 ms)</td></tr>
 <tr><td class="addr">$FE15</td><td>typematic repeat period in frames (reset 5 = 12 cps)</td></tr>
 <tr><td class="addr">$FE16</td><td>b0 = 1 enables hardware key repeat (reset 0 = off, so older disks see stock behavior)</td></tr>
 <tr><td class="addr">—</td><td class="src">all three typematic registers read back; write-then-readback of $FE14 is keydrv’s core probe; a hardware reset clears $FE16, a software restart does not</td></tr>
@@ -332,8 +335,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FEBF</td><td>port A, no handshake</td></tr>
 <tr><td class="addr">—</td><td class="src">the joystick ports hang off this VIA</td></tr>
 </table></div>
-<h3>$FEC0–$FED7 · DMA engine</h3>
-<p class="src">used by: wild, VDMA users</p>
+<h3 id="doc-dma">$FEC0–$FED7 · DMA engine</h3>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
 <tr><td class="addr">$FEC0</td><td>control:<br/><span class="bit">b0 enable</span><br/><span class="bit">b1 2D mode</span><br/><span class="bit">b2 fill</span><br/><span class="bit">b3 interrupt enable</span><br/><span class="bit">b5:4 byte-lane mask — either bit set and the transfer completes writing nothing</span><br/><span class="bit">b6 double speed, and fill takes the 16-bit word</span><br/><span class="bit">b7 start transfer</span></td></tr>
@@ -344,11 +346,16 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FECC / $FECD</td><td>X size hi / lo</td></tr>
 <tr><td class="addr">$FECE / $FECF</td><td>Y size hi / lo — 2D only</td></tr>
 <tr><td class="addr">$FED0–$FED3</td><td>source stride hi/lo, destination stride hi/lo — 2D only</td></tr>
-<tr><td class="addr">$FED4–$FED7</td><td>read and write as ordinary bytes but drive nothing</td></tr>
-<tr><td class="addr">—</td><td class="src">the 1D length is <b>not contiguous</b>: bits 23:16 come from $FECF, bits 15:8 from $FECC and bits 7:0 from $FECD. $FECE is ignored in 1D mode</td></tr>
-<tr><td class="addr">—</td><td class="src">enabled in v8 cores; DMA_RDY holds the CPU while a transfer runs</td></tr>
+<tr><td class="addr">$FED4</td><td><code>DMA_OP_REG</code> (rc17): <span class="bit">b2:0 operation — <code>DMA_OP_COPY</code> 0, <code>DMA_OP_OR</code> 1, <code>DMA_OP_AND</code> 2, <code>DMA_OP_XOR</code> 3, <code>DMA_OP_MASK</code> 4 (per nibble: a source nibble of 0 keeps the destination’s)</span><br/><span class="bit">b3 <code>DMA_OP_NOT</code> — the result inverted (NOR, NAND, XNOR with the others)</span><br/><span class="bit">b7 <code>DMA_OP_Implemented</code>, read-only: 1 on a core that has the ops (probe it first)</span><br/><span class="bit">reset 0 = a plain copy</span></td></tr>
+<tr><td class="addr">$FED5–$FED7</td><td>read and write as ordinary bytes but drive nothing</td></tr>
+<tr><td colspan="2">the 1D length is <b>not contiguous</b>: bits 23:16 come from $FECF, bits 15:8 from $FECC and bits 7:0 from $FECD. $FECE is ignored in 1D mode</td></tr>
+<tr><td colspan="2">DMA_RDY holds the CPU while a transfer runs; the bus grant / DMA active / drain handshake keeps a transfer and the CPU out of the same SRAM slot, and the $FED4 logic ops apply to 1D and 2D copies and to fills alike</td></tr>
+<tr><td colspan="2"><b>Read-back.</b> Those are the write addresses, and they are not the read addresses. Every multi-byte field is big endian, high byte at the low address. Writes land directly, but the read decode hands back a <i>different</i> register for sixteen of the thirty-two bytes: both address quads come back reversed, and all four size and stride pairs come back swapped. A driver that reads a register back to check what it wrote will not recognise its own values unless that permutation is built in. The <span class="m">tests/dma</span> probe writes each address’s own low byte into itself and prints what comes back, which identifies whether the fitted core matches this decode or a later one.</td></tr>
+<tr><td colspan="2">The map above was corrected on 2026-09-09 against the core RTL. What was documented before that was wrong from $FEC4 down: both address quads were one byte low, and the whole size and stride block was four bytes high.</td></tr>
+<tr><td colspan="2"><b>Driving it</b> (read out of the core RTL): <ol style="margin:4px 0 0 0;padding:0 0 0 20px;"><li style="margin:0 0 3px;"><b>Start is a rising edge on bit 7</b>, not a level, and bit 0 must already be high when the edge lands. Nothing in the hardware ever clears bit 7, so the CPU has to write it back to 0 before it can start another transfer — storing $81 twice in a row does one transfer, not two. Set everything up, store the control byte with bit 7 clear, then store it again with bit 7 set.</li><li style="margin:0 0 3px;"><b>Completion is a self-clearing level</b> in status bit 7. There is no acknowledge and no write-1-to-clear. Poll until it goes low.</li><li style="margin:0 0 3px;"><b>Transfers only run during vertical blanking</b> — about the first 43 scanlines of each frame, roughly 8% of the time. One started just after the window closes moves no bytes for most of a frame, so a timeout has to be at least two frames, around 40 ms, not microseconds.</li><li style="margin:0 0 3px;"><b>A fill longer than about 130 KB stops early and still reports success.</b> Chunk fills well under 100 KB.</li><li style="margin:0 0 3px;"><b>The engine goes straight to the SRAM and does not pass through the MMU.</b> Addresses are flat 24-bit physical, and only bits 20:1 reach the memory pins, so the space aliases every 2 MB. A logical $xxxx address will land on the wrong page: work out block number × 8192 + offset first.</li><li style="margin:0 0 3px;"><b>Logic operations.</b> <code>DMA_OP_REG</code> ($FED4) picks what a copy or a fill writes: bits 2:0 <code>DMA_OP_COPY</code> 0, <code>DMA_OP_OR</code> 1, <code>DMA_OP_AND</code> 2, <code>DMA_OP_XOR</code> 3, <code>DMA_OP_MASK</code> 4 (per nibble: a source nibble of 0 keeps the destination’s, so color 0 is paper); bit 3 <code>DMA_OP_NOT</code> inverts the result, giving NOR, NAND and XNOR with the others. With an op selected every byte becomes three bus steps — the source byte (or the fill byte) is read, the destination byte is read, and S op D is written — so an op transfer takes about two and a half times as long as a plain copy. It works in 1D and 2D and with fills. Bit 7 reads 1 (<code>DMA_OP_Implemented</code>) on a core that has the ops; probe it before relying on them, since an older core writes a plain copy whatever the register holds.</li><li style="margin:0 0 3px;"><b>Bus handshake.</b> The engine asks for the bus and starts only when the scheduler has granted it and the previous halt acknowledgement has cleared; after the last byte it keeps the request up for eight more clocks so its output pipeline drains before the CPU resumes. Every resumed burst repeats that handshake. A transfer and the CPU therefore never write the same SRAM slot.</li></ol></td></tr>
+<tr><td colspan="2"><span class="m">Danger.</span> Starting a transfer halts the CPU and waits for BA and BS to come back together, with no timeout. If that handshake does not complete, the state machine stops there permanently, the status bit stays $80, and the CPU is re-halted every vertical blank for the rest of the session. That state is unrecoverable without a reset. The <span class="m">tests/dma</span> probe on the disk deliberately never starts a transfer for this reason; <span class="m">dmaxfer</span> in the level 2 CMDS does run transfers — 1D and 2D copies and fills, the read-back permutation check, and the logic-op tests (OR, AND, XOR, NOT, MASK, NOR fills and copies, a 2D OR) after probing $FED4 bit 7.</td></tr>
 </table></div>
-<p class="note">Read-back permutation, how to drive it, and the halt hazard: see <a href="#doc-dma">Documentation · DMA engine</a>.</p>
+
 <h3>$FEE0–$FEFB · Math coprocessor</h3>
 <p class="src">used by: wild (sprites, CLUT math)</p>
 <div class="tblwrap"><table>
@@ -363,29 +370,11 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FEF4 / $FEF5</td><td>quotient (read)</td></tr>
 <tr><td class="addr">$FEF6 / $FEF7</td><td>remainder (read)</td></tr>
 <tr><td class="addr">$FEF8–$FEFB</td><td>32-bit sum (read)</td></tr>
-<tr><td class="addr">—</td><td class="src">F256 math-block layout at base $FEE0; <b>wild</b> also parks scratch pointers in the add registers</td></tr>
+<tr><td colspan="2">F256 math-block layout at base $FEE0; <b>wild</b> also parks scratch pointers in the add registers</td></tr>
+<tr><td colspan="2">Fixed I/O on both boards, so it needs no MMU work from any task. Everything is big endian, which suits the 6809: a 16-bit <code>std</code> or <code>ldd</code> lands the right way round. The <code>XYMATH_*</code> block once documented at $D300 does not exist in these cores — nothing decodes that address.</td></tr>
+<tr><td colspan="2"><b>Write the operands, then read the result, and only write below $FEF0.</b> The write decode keys on address bit 3 alone and ignores bit 4, so a write to $FEF0–$FEF7 lands in the multiply and divide operands, and a write to $FEF8–$FEFF lands in the adder’s inputs. Storing to a result address silently destroys an operand. Operands read back at their own addresses.</td></tr>
+<tr><td colspan="2">The multiply is combinational and needs no wait. It is unsigned, 16×16, and the full 32-bit product survives, because 32 bits is the exact width a 16×16 product needs — nothing is truncated. FFFF×FFFF returns FFFE0001; a signed multiplier would return 00000001. The divider is a different matter: it is pipelined with a latency of 12 clocks and both its valid inputs tied high, so it re-divides every clock. Allow at least 12 CPU clocks after writing the operands before reading.</td></tr>
 </table></div>
-<p class="note">Fixed I/O on both boards, so it needs no MMU work from any task. Everything is big endian,
-which suits the 6809: a 16-bit <code>std</code> or <code>ldd</code> lands the right way round. The
-<code>XYMATH_*</code> block once documented at $D300 does not exist in these cores — nothing decodes
-that address.</p>
-<p class="note"><b>Write the operands, then read the result, and only write below $FEF0.</b> The write decode
-keys on address bit 3 alone and ignores bit 4, so a write to $FEF0–$FEF7 lands in the multiply and
-divide operands, and a write to $FEF8–$FEFF lands in the adder’s inputs. Storing to a result
-address silently destroys an operand. Operands read back at their own addresses.</p>
-<p class="note">The multiply is combinational and needs no wait. It is unsigned, 16×16, and the full
-32-bit product survives, because 32 bits is the exact width a 16×16 product needs — nothing is
-truncated. FFFF×FFFF returns FFFE0001; a signed multiplier would return 00000001. The divider is a
-different matter: it is pipelined with a latency of 12 clocks and both its valid inputs tied high, so it
-re-divides every clock. Allow at least 12 CPU clocks after writing the operands before reading.</p>
-<div class="warncall"><span class="m">The remainder at $FEF6 is wired wrong.</span> The RTL concatenates
-two slices that overlap at bit 8, so a 16-bit value becomes a 17-bit expression and the top bit is silently
-dropped. What reaches the CPU has bit 15 lost, bits 14:8 shifted up one place, and bit 8 duplicated. A
-remainder below 256 therefore reads back exactly right, and 256 or more is wrong — $0200 comes back as
-$0400. Dividing by a 320 or 640 row pitch lands squarely in the broken range. It is not a precision trade:
-16 bits is already the full width of a remainder, so nothing was bought. The fix belongs in rc14 or later
-and is one character. Until a core carries it, do not trust the remainder above 255. The quotient is
-unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report which core is fitted.</div>
 </div>
 </div>
 <p class="note">Fixed I/O decodes identically in every map — which is why LED probes and
@@ -397,20 +386,20 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <div class="map" style="grid-template-columns:1fr">
 <div aria-label="System page blocks" class="stack">
 <div class="seg io"><span class="nm">6809 vectors<br/><small>8 registers</small></span><span class="ad">$FFF0–$FFFF</span></div>
-<div class="seg io"><span class="nm">Floating-point unit<br/><small>8 registers</small></span><span class="ad">$FFE0–$FFEF</span></div>
-<div class="seg io"><span class="nm">VICKY master control<br/><small>12 registers</small></span><span class="ad">$FFC0–$FFDF</span></div>
-<div class="seg io"><span class="nm">VIA1 (W65C22)<br/><small>1 register</small></span><span class="ad">$FFB0–$FFBF</span></div>
-<div class="seg io"><span class="nm">MMU (TinyVicky)<br/><small>3 registers</small></span><span class="ad">$FFA0–$FFAF</span></div>
-<div class="seg io"><span class="nm">DIP switches<br/><small>1 register</small></span><span class="ad">$FF90</span></div>
-<div class="seg io"><span class="nm">NES / SNES pads<br/><small>2 registers</small></span><span class="ad">$FF80–$FF8F</span></div>
-<div class="seg io"><span class="nm">Logo LCD (SPI)<br/><small>4 registers</small></span><span class="ad">$FF70–$FF74</span></div>
-<div class="seg io"><span class="nm">I2C master (HDMI)<br/><small>1 register</small></span><span class="ad">$FF60–$FF6F</span></div>
+<div class="seg ram"><span class="nm">Floating-point unit<br/><small>10 registers</small></span><span class="ad">$FFE0–$FFEF</span></div>
+<div class="seg const"><span class="nm">VICKY master control<br/><small>16 registers</small></span><span class="ad">$FFC0–$FFDF</span></div>
+<div class="seg regs"><span class="nm">VIA1 (W65C22)<br/><small>16 registers</small></span><span class="ad">$FFB0–$FFBF</span></div>
+<div class="seg ram"><span class="nm">MMU (TinyVicky)<br/><small>10 registers</small></span><span class="ad">$FFA0–$FFAF</span></div>
+<div class="seg const"><span class="nm">DIP switches<br/><small>1 register</small></span><span class="ad">$FF90</span></div>
+<div class="seg mmu"><span class="nm">NES / SNES pads<br/><small>2 registers</small></span><span class="ad">$FF80–$FF8F</span></div>
+<div class="seg const"><span class="nm">Logo LCD (SPI)<br/><small>4 registers</small></span><span class="ad">$FF70–$FF74</span></div>
+<div class="seg ram"><span class="nm">I2C master (HDMI)<br/><small>1 register</small></span><span class="ad">$FF60–$FF6F</span></div>
 <div class="seg io"><span class="nm">VS1053b audio codec<br/><small>8 registers</small></span><span class="ad">$FF50–$FF5F</span></div>
-<div class="seg io"><span class="nm">WizNet W6100 ethernet<br/><small>7 registers</small></span><span class="ad">$FF40–$FF48</span></div>
-<div class="seg io"><span class="nm">SAM2695 MIDI synth<br/><small>4 registers</small></span><span class="ad">$FF30–$FF35</span></div>
-<div class="seg io"><span class="nm">WizFi360 WiFi UART<br/><small>6 registers</small></span><span class="ad">$FF20–$FF29</span></div>
-<div class="seg io"><span class="nm">Splash / SPI flash DMA<br/><small>6 registers</small></span><span class="ad">$FF10–$FF18</span></div>
-<div class="seg io"><span class="nm">SD card 1 (SPI)<br/><small>2 registers</small></span><span class="ad">$FF00–$FF01</span></div>
+<div class="seg mmu"><span class="nm">WizNet W6100 ethernet<br/><small>9 registers</small></span><span class="ad">$FF40–$FF48</span></div>
+<div class="seg io"><span class="nm">SAM2695 MIDI synth<br/><small>6 registers</small></span><span class="ad">$FF30–$FF39</span></div>
+<div class="seg mmu"><span class="nm">WizFi360 WiFi UART<br/><small>6 registers</small></span><span class="ad">$FF20–$FF29</span></div>
+<div class="seg const"><span class="nm">Splash / SPI flash DMA<br/><small>6 registers</small></span><span class="ad">$FF10–$FF18</span></div>
+<div class="seg ram"><span class="nm">SD card 1 (SPI)<br/><small>2 registers</small></span><span class="ad">$FF00–$FF01</span></div>
 </div>
 </div>
 <div class="maplegend"><span><i class="sw io"></i>fixed I/O block</span></div>
@@ -451,7 +440,7 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <p class="src">used by: MIDI tools</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FF30</td><td>control / status (register layout ed.2, rc11 and later):<br/><span class="bit">read: b3 TX FIFO empty · b2 RX FIFO empty · b7:4 and b1:0 read back the control byte</span><br/><span class="bit">write: b1 = 1 holds both FIFOs in reset (FIFO reset only, as on the WizFi; the synth chip is untouched) · b0 unused (no rate select)</span></td></tr>
+<tr><td class="addr">$FF30</td><td>control / status (register layout ed.2):<br/><span class="bit">read: b3 TX FIFO empty · b2 RX FIFO empty · b7:4 and b1:0 read back the control byte</span><br/><span class="bit">write: b1 = 1 holds both FIFOs in reset (FIFO reset only, as on the WizFi; the synth chip is untouched) · b0 unused (no rate select)</span></td></tr>
 <tr><td class="addr">$FF31</td><td>FIFO data port: write = next byte to the synth (TX FIFO), read = next received byte (RX FIFO)</td></tr>
 <tr><td class="addr">$FF32/$FF33</td><td>RX FIFO count hi / lo — bytes waiting to be read (hi = bits 10:8, 11-bit count)</td></tr>
 <tr><td class="addr">$FF34/$FF35</td><td>RX FIFO write-side count hi / lo (the UART’s view of the same FIFO; normally equal to $FF32/$FF33)</td></tr>
@@ -470,7 +459,7 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <tr><td class="addr">$FF44/$FF45</td><td>W6100 address lo / hi</td></tr>
 <tr><td class="addr">$FF46/$FF47</td><td>read: RX FIFO count lo / hi (11-bit); write: transfer size lo / hi</td></tr>
 <tr><td class="addr">$FF48</td><td>FIFO port</td></tr>
-<tr><td class="addr">—</td><td class="src">FIFO events on INT group 3 b3; the 8-bit bus fix shipped in rc6 (K2)</td></tr>
+<tr><td class="addr">—</td><td class="src">FIFO events on INT group 3 b3</td></tr>
 </table></div>
 <h3>$FF50–$FF5F · VS1053b audio codec</h3>
 <p class="src">used by: vs (in main); MP3 / audio streaming (K2 and Jr2)</p>
@@ -522,7 +511,7 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
 <tr><td class="addr">$FFA0</td><td>memory control — <code>MMU_MEM_CTRL</code> / <code>DAT.Task</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b5:4 which LUT edits write</span><br/><span class="bit">b1:0 active LUT (reset 0)</span></td></tr>
-<tr><td class="addr">$FFA1</td><td>I/O control — <code>MMU_IO_CTRL</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b0 internal RAM at $FD00–$FDFF</span><br/><span class="bit">b1 internal RAM at $FFF0–$FFFF (vectors)</span><br/><span class="bit">b2 <code>FLASHDIS</code> (rc16+): 1 = LUT blocks $40–$9F are RAM (768 KB, chip bytes $08_0000–$13_FFFF); 0 = flash at $40–$7F and the expansion connector at $80–$9F</span><br/><span class="bit">b7 <code>FLASHDIS.OK</code>, read-only: 1 when FLASHDIS is implemented (older cores read back 0)</span><br/>All bits cleared by reset, so the machine always boots from flash. <b>Read-modify-write only</b> once a kernel runs: a bare store clears b2 and pulls 768 KB of live RAM away. See <a href="#doc-flashdis">Documentation · FLASHDIS</a>.</td></tr>
+<tr><td class="addr">$FFA1</td><td>I/O control — <code>MMU_IO_CTRL</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b0 internal RAM at $FD00–$FDFF</span><br/><span class="bit">b1 internal RAM at $FFF0–$FFFF (vectors)</span><br/><span class="bit">b2 <code>FLASHDIS</code>: 1 = LUT blocks $40–$9F are RAM (768 KB, chip bytes $08_0000–$13_FFFF); 0 = flash at $40–$7F and the expansion connector at $80–$9F</span><br/><span class="bit">b7 <code>FLASHDIS.OK</code>, read-only: 1 when FLASHDIS is implemented (older cores read back 0)</span><br/>All bits cleared by reset, so the machine always boots from flash. <b>Read-modify-write only</b> once a kernel runs: a bare store clears b2 and pulls 768 KB of live RAM away. See <a href="#doc-flashdis">Documentation · FLASHDIS</a>.</td></tr>
 <tr><td class="addr">$FFA8–$FFAF</td><td>slot 0–7 block registers of the LUT selected for editing (8K slots at $0000, $2000 … $E000); reset = identity 0–7 with slot 7 on flash block $7F in boot mode; writes are captured on the 25 MHz side during the CPU’s data-valid window</td></tr>
 <tr><td class="addr">—</td><td class="src">reads of $FFA0–$FFAF return the register copies (used by pmap, the crash dump, F$SetTsk)</td></tr>
 </table></div>
@@ -542,7 +531,8 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <tr><td class="addr">$FFC4</td><td>border:<br/><span class="bit">b0 enable</span><br/><span class="bit">b6:4 X scroll offset</span></td></tr>
 <tr><td class="addr">$FFC5–$FFC7</td><td>border color B / G / R</td></tr>
 <tr><td class="addr">$FFC8/$FFC9</td><td>border X / Y size (0–32, default 32)</td></tr>
-<tr><td class="addr">$FFCB</td><td>GFX MODE (rc14+; <code>VKY_GFX_MODE</code>):<br/><span class="bit">b0 HIRES4 — every bitmap plane 640 × 240 at four bits per dot</span><br/><span class="bit">b3:1 GROUP — the 16-entry CLUT slice the nibbles index</span><br/>A plane alone: bit 4 of its bitmap control byte. Sprites, tiles and text stay 320-wide. Details: <a href="#doc-hires4">Documentation · 640 × 240 × 16-color mode</a>. Reset 0 = rc13 behaviour.</td></tr>
+<tr><td class="addr">$FFCA</td><td><code>VKY_DRAWLINE_REG</code>: b0 <code>VKY_DRAWLINE_EN</code> — queued line-draw pixels reach SRAM only while it is set</td></tr>
+<tr><td class="addr">$FFCB</td><td>GFX MODE (<code>VKY_GFX_MODE</code>):<br/><span class="bit">b0 HIRES4 — every bitmap plane 640 × 240 at four bits per dot</span><br/><span class="bit">b3:1 GROUP — the 16-entry CLUT slice the nibbles index</span><br/>A plane alone: bit 4 of its bitmap control byte. Sprites, tiles and text stay 320-wide. Details: <a href="#doc-hires4">Documentation · 640 × 240 × 16-color mode</a>. Reset 0 = the 320-wide modes.</td></tr>
 <tr><td class="addr">$FFCD–$FFCF</td><td>background color B / G / R (graphics mode, pixel value 0)</td></tr>
 <tr><td class="addr">$FFD0</td><td>cursor control: b0 text-cursor enable</td></tr>
 <tr><td class="addr">$FFD1</td><td>text buffer start offset</td></tr>
@@ -550,6 +540,7 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <tr><td class="addr">$FFD4–$FFD7</td><td>cursor X hi/lo, Y hi/lo</td></tr>
 <tr><td class="addr">$FFD8</td><td>line-interrupt control: b0 enable (write-only)</td></tr>
 <tr><td class="addr">$FFD9/$FFDA</td><td>line compare hi / lo (write); reads return the current pixel X / raster Y position</td></tr>
+<tr><td class="addr">$FFDC–$FFDF</td><td>read-only core version: <code>VKY_VERSION_LO</code>, <code>VKY_VERSION_HI</code>, <code>VKY_SUBVER_LO</code>, <code>VKY_SUBVER_HI</code></td></tr>
 <tr><td class="addr">—</td><td class="src">SOL line interrupt arrives on INT group 0 b1</td></tr>
 </table></div>
 <h3>$FFE0–$FFEF · Floating-point unit</h3>
@@ -562,7 +553,7 @@ unaffected, and <span class="m">tests/math</span> divides 512 by 1000 to report 
 <tr><td class="addr">$FFE8–$FFEB</td><td>input A (32-bit, big-endian; 20.12 fixed or IEEE float)</td></tr>
 <tr><td class="addr">$FFEC–$FFEF</td><td>input B</td></tr>
 <tr><td class="addr">$FFE4–$FFE7 (read)</td><td>status: multiply, divide (b3 divide-by-zero), add/sub, float→int converter; each has a result-valid bit plus zero/underflow/overflow flags</td></tr>
-<tr><td class="addr">$FFE8–$FFEB (read)</td><td>add/sub result</td></tr>
+<tr><td class="addr">$FFE8–$FFEB (read)</td><td><code>FPMATH_OUT</code>: the result selected by control 1</td></tr>
 <tr><td class="addr">$FFEC–$FFEF (read)</td><td>fixed-point converter result</td></tr>
 </table></div>
 <p class="note">IEEE-754 single precision, 32 bits, big endian, in fixed I/O on both boards, so like the
@@ -691,7 +682,7 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <tr><td class="addr">3</td><td><code>Mouse_int_PulSe[3]</code></td><td>PS/2 mouse event pulse</td><td><code>INT_PS2_MOUSE</code> %00001000</td><td>MATCH</td></tr>
 <tr><td class="addr">4</td><td><code>~Timer0_i</code></td><td>Timer 0 reached target</td><td><code>INT_TIMER_0</code> %00010000</td><td>MATCH</td></tr>
 <tr><td class="addr">5</td><td><code>~Timer1_i</code></td><td>Timer 1 reached target</td><td><code>INT_TIMER_1</code> %00100000</td><td>MATCH</td></tr>
-<tr><td class="addr">6</td><td><code>DMA_INT_i</code></td><td>DMA engine interrupt</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
+<tr><td class="addr">6</td><td><code>DMA_INT_i</code></td><td>DMA engine interrupt</td><td><code>INT_DMA</code> %01000000</td><td>MATCH</td></tr>
 <tr><td class="addr">7</td><td><code>CRT_IRQn_Sync</code></td><td>Cartridge (“CRT”) IRQ line from the expansion port</td><td><code>INT_CARTRIDGE</code> %10000000</td><td>MATCH</td></tr>
 </table></div>
 <h2><i class="sw ram" style="display:inline-block;vertical-align:-1px;margin-right:8px"></i>Group 1 — peripherals (bits 15:8)</h2>
@@ -716,16 +707,16 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
     (see group 3 bit 2 below).</p>
 </div>
 <h2><i class="sw ex" style="display:inline-block;vertical-align:-1px;margin-right:8px"></i>Group 2 — IEC bus + module IRQ pins (bits 23:16)</h2>
-<p class="src">PENDING $FE22 · POLARITY $FE26 · EDGE $FE2A · MASK $FE2E — wildbits.d says <strong>“not used”</strong></p>
+<p class="src">PENDING $FE22 · POLARITY $FE26 · EDGE $FE2A · MASK $FE2E</p>
 <div class="tblwrap"><table>
 <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
 <tr><td class="addr">0</td><td><code>IEC_DATA_i_Sync</code></td><td>IEC serial bus DATA in</td><td><code>IEC_DATA_i</code> %00000001</td><td>MATCH</td></tr>
 <tr><td class="addr">1</td><td><code>IEC_CLK_i_Sync</code></td><td>IEC serial bus CLK in</td><td><code>IEC_CLK_i</code> %00000010</td><td>MATCH</td></tr>
 <tr><td class="addr">2</td><td><code>IEC_ATN_i_Sync</code></td><td>IEC serial bus ATN in</td><td><code>IEC_ATN_i</code> %00000100</td><td>MATCH</td></tr>
 <tr><td class="addr">3</td><td><code>IEC_SREQ_i_Sync</code></td><td>IEC serial bus SREQ in</td><td><code>IEC_SREQ_i</code> %00001000</td><td>MATCH</td></tr>
-<tr><td class="addr">4</td><td><code>NET_IRQn_Sync</code></td><td>Ethernet (WizNet module) IRQ pin</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
-<tr><td class="addr">5</td><td><code>WIFI_IRQn_Sync</code></td><td>WiFi module IRQ pin (the module’s own line, not the FIFOs)</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
-<tr><td class="addr">6</td><td><code>HDMI_IRQn_Sync</code></td><td>HDMI encoder IRQ pin</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
+<tr><td class="addr">4</td><td><code>NET_IRQn_Sync</code></td><td>Ethernet (WizNet module) IRQ pin</td><td><code>INT_NET_PIN</code> %00010000</td><td>MATCH</td></tr>
+<tr><td class="addr">5</td><td><code>WIFI_IRQn_Sync</code></td><td>WiFi module IRQ pin (the module’s own line, not the FIFOs)</td><td><code>INT_WIFI_PIN</code> %00100000</td><td>MATCH</td></tr>
+<tr><td class="addr">6</td><td><code>HDMI_IRQn_Sync</code></td><td>HDMI encoder IRQ pin</td><td><code>INT_HDMI_PIN</code> %01000000</td><td>MATCH</td></tr>
 <tr><td class="addr">7</td><td>constant <code>1'b0</code></td><td>unused</td><td>—</td><td>n/a</td></tr>
 </table></div>
 <div class="callout">
@@ -735,14 +726,14 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
     (<code>IRQ_Controller_Jr.v:427</code>), not just IRQ.</p>
 </div>
 <h2><i class="sw io" style="display:inline-block;vertical-align:-1px;margin-right:8px"></i>Group 3 — FIFO events: WiFi / keyboard / MIDI / WizNet (bits 31:24)</h2>
-<p class="src">PENDING $FE23 · POLARITY $FE27 · EDGE $FE2B · MASK $FE2F — wildbits.d says <strong>“not used”</strong></p>
+<p class="src">PENDING $FE23 · POLARITY $FE27 · EDGE $FE2B · MASK $FE2F</p>
 <div class="tblwrap"><table>
 <tr><th>Bit</th><th>Hardware signal (RTL)</th><th>What it is</th><th>wildbits.d</th><th>Status</th></tr>
 <tr><td class="addr">0</td><td><code>NEW_Rx_FIFO_WIFI_Sync</code></td><td>WiFi RX FIFO went non-empty</td><td><code>INT_WIZFI_RX</code> %00000001</td><td>MATCH</td></tr>
-<tr><td class="addr">1</td><td><code>NEW_Rx_FIFO_MIDI_Sync</code></td><td>MIDI RX FIFO went non-empty</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
-<tr><td class="addr">2</td><td><code>NEW_Optical_Kbd_Sync</code></td><td><strong>K2 optical keyboard</strong> FIFO went non-empty (latches on every keystroke; Jr2 never wires this)</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
-<tr><td class="addr">3</td><td><code>NEW_WizNet_FIFO_Sync</code></td><td>WizNet (Ethernet) FIFO event</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
-<tr><td class="addr">4</td><td><code>NEW_Rx_FIFO_MIDI_VS_Sync</code></td><td>MIDI synth (VS) RX FIFO went non-empty</td><td>— no equate</td><td><strong>MISSING</strong></td></tr>
+<tr><td class="addr">1</td><td><code>NEW_Rx_FIFO_MIDI_Sync</code></td><td>MIDI RX FIFO went non-empty</td><td><code>INT_MIDI_RX</code> %00000010</td><td>MATCH</td></tr>
+<tr><td class="addr">2</td><td><code>NEW_Optical_Kbd_Sync</code></td><td><strong>K2 optical keyboard</strong> FIFO went non-empty (latches on every keystroke; Jr2 never wires this)</td><td><code>INT_OPT_KBD</code> %00000100</td><td>MATCH</td></tr>
+<tr><td class="addr">3</td><td><code>NEW_WizNet_FIFO_Sync</code></td><td>WizNet (Ethernet) FIFO event</td><td><code>INT_WIZNET</code> %00001000</td><td>MATCH</td></tr>
+<tr><td class="addr">4</td><td><code>NEW_Rx_FIFO_MIDI_VS_Sync</code></td><td>MIDI synth (VS) RX FIFO went non-empty</td><td><code>INT_MIDI_VS_RX</code> %00010000</td><td>MATCH</td></tr>
 <tr><td class="addr">5</td><td><code>NEW_Tx_FIFO_WIFI_Sync</code></td><td>WiFi TX FIFO drained to empty</td><td><code>INT_WIZFI_TX</code> %00100000</td><td>MATCH</td></tr>
 <tr><td class="addr">6–7</td><td>constant <code>2'b00</code></td><td>unused</td><td>—</td><td>n/a</td></tr>
 </table></div>
@@ -763,14 +754,10 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <li><strong>PENDING is write-1-to-clear;</strong> reads are side-effect-free. MASK is a plain read/write register.</li>
 <li><strong>OS init gap:</strong> the clock module clears/masks only groups 0 and 1 at init (and with a read-modify-write on MASK_0 on the campaign branches — the committed freeze fix on <code>wb/sd_dw</code> makes it an absolute store). Groups 2 and 3 are never initialized by the OS.</li>
 </ul>
-<h2>Recommended wildbits.d patch</h2>
+<h2>wildbits.d status</h2>
 <ul>
-<li>Delete the “not used” comments on the group 2/3 register equates.</li>
-<li>Fix <code>INT_SDC_INS</code> to %10000000.</li>
-<li>Group 0: add <code>INT_DMA</code> %01000000.</li>
-<li>Group 2: add equates for NET (%00010000), WiFi module pin (%00100000), HDMI (%01000000).</li>
-<li>Group 3: add <code>INT_MIDI_RX</code> %00000010, <code>INT_OPT_KBD</code> %00000100, <code>INT_WIZNET</code> %00001000, <code>INT_MIDI_VS_RX</code> %00010000; note K2-only on the keyboard bit.</li>
-<li>Correct the <code>INT_VIA1</code> comment: F256K mechanical keyboard only — the K2 optical keyboard is group 3 bit 2.</li>
+<li>Done on <a href="https://github.com/nitros9project/nitros9/tree/wb/nitrobotics" style="color:#ff4136 !important;text-decoration:none !important;border-bottom:none !important;"><code>wb/nitrobotics</code></a>: the group 2/3 register equates carry their real roles (<code>INT_PENDING_2</code> IEC bus + module IRQ pins, <code>INT_PENDING_3</code> FIFO events), <code>INT_SDC_INS</code> is %10000000, group 0 has <code>INT_DMA</code> %01000000, group 2 has <code>INT_NET_PIN</code>, <code>INT_WIFI_PIN</code> and <code>INT_HDMI_PIN</code>, group 3 has <code>INT_MIDI_RX</code>, <code>INT_OPT_KBD</code> (K2 only), <code>INT_WIZNET</code> and <code>INT_MIDI_VS_RX</code>.</li>
+<li>Still without equates: the three TinyVicky interrupts 2–4 (group 1 bits 1–3) — <code>wildbits.d</code> defines only <code>INT_VKY_SOF</code> and <code>INT_VKY_SOL</code>.</li>
 </ul>
 <h2>Where this comes from</h2>
 <p class="src">• IRQ_Controller_Jr.v lines 153–156 (input latch), 172–190 (trigger/edge logic), 383–427 (output/NMI), reset block (pol/edgen/mask/pending defaults).<br/>
@@ -786,10 +773,10 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <header>
 <div class="eyebrow">WildBits K2 / Jr2 · FNX6809 core · hardware reference · companion to the 64K Memory Map</div>
 <h1 class="report-title">WildBits Physical Memory Map</h1>
-<p class="sub">The current rc16 map with FLASHDIS enabled: 224 allocatable RAM blocks, two reserved gaps, and one address rule for CPU, VICKY and DMA. Boot allocations reduce the memory shown as free.</p>
+<p class="sub">The current rc17 map with FLASHDIS enabled: 224 allocatable RAM blocks, two reserved gaps, and one address rule for CPU, VICKY and DMA. Boot allocations reduce the memory shown as free.</p>
 </header>
 <div class="grid">
-<div class="mapcol"><figure class="diagram"><figcaption>SRAM address space · 8 KB per block</figcaption><svg aria-label="1792 KB accessible RAM: 1536 KB at blocks 00 to BF and 256 KB at D0 to EF, with two 128 KB gaps" role="img" viewbox="0 0 440 330"><rect fill="#193d42" height="172" rx="8" stroke="#65d6bd" width="392" x="24" y="30"></rect><text fill="#a0f1df" x="44" y="64">$00–$BF · 1,536 KB RAM</text><text x="44" y="92">$000000–$17FFFF</text><text x="44" y="123">CPU · VICKY · DMA</text><text x="44" y="177">FLASHDIS opens $40–$9F</text><rect fill="#3b2d49" height="28" rx="4" width="392" x="24" y="212"></rect><text x="44" y="232">$C0–$CF · I/O / reserved · 128 KB</text><rect fill="#203951" height="40" rx="4" width="392" x="24" y="250"></rect><text x="44" y="276">$D0–$EF · 256 KB RAM · $1A0000</text><text x="44" y="317">$F0–$FF · undecoded · 128 KB</text></svg></figure><div class="callout"><h3>One address rule</h3><p><code>block × $2000 + offset</code></p><p>1,792 KB mapped from a 2,048 KB SRAM chip. The I/O and undecoded gaps account for the other 256 KB.</p></div></div>
+<div class="mapcol"><div class="rail-title" style="margin-top:18px;">SRAM address space · 8 KB per block</div><div class="ladder" style="margin-bottom:20px;"><div class="seg ram"><div class="addr">$00–$BF</div><div class="body"><b>1,536 KB RAM</b><div class="d">$000000–$17FFFF · CPU, VICKY and DMA alike · FLASHDIS opens $40–$9F</div></div></div><div class="seg io"><div class="addr">$C0–$CF</div><div class="body"><b>I/O and reserved</b><div class="d">128 KB</div></div></div><div class="seg ram"><div class="addr">$D0–$EF</div><div class="body"><b>256 KB RAM</b><div class="d">$1A0000–$1DFFFF</div></div></div><div class="seg dead"><div class="addr">$F0–$FF</div><div class="body"><b>Undecoded</b><div class="d">128 KB</div></div></div></div><div class="callout"><h3>One address rule</h3><p><code>block × $2000 + offset</code></p><p>1,792 KB mapped from a 2,048 KB SRAM chip. The I/O and undecoded gaps account for the other 256 KB.</p></div></div>
 <div>
 <h2>System RAM — who owns what at run time</h2>
 <div class="tblwrap"><table>
@@ -801,8 +788,8 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <tr><td class="addr">$A0–$BF</td><td>General RAM · 256 KB</td><td>The upper end of the contiguous $00–$BF RAM run when FLASHDIS is enabled. Physical addresses $140000–$17FFFF.</td></tr>
 <tr><td class="addr">$D0–$EF</td><td>General RAM · 256 KB</td><td>A second RAM run at $1A0000–$1DFFFF. Uses the same block × $2000 address calculation.</td></tr>
 <tr><td class="addr">$C0–$CF, $F0–$FF</td><td>Not RAM · 256 KB</td><td>I/O pages and undecoded blocks stay outside the allocator. With FLASHDIS enabled, $40–$9F are RAM instead of flash/expansion.</td></tr>
-<tr><td class="addr">$40–$9F</td><td>General RAM · 768 KB</td><td>rc16 plus the max-RAM kernel enables FLASHDIS at boot, joining $00–$3F and $A0–$BF into one 1,536 KB RAM run.</td></tr></table></div>
-<p>Memory sizing starts with the boot map. <code>krnp2</code> expands the block table to 256 entries, checks <code>FLASHDIS.OK</code>, and enables the extra RAM on rc16. The current pool has <strong>224 blocks (1,792 KB)</strong>; $C0–$CF and $F0–$FF are marked NotRAM. Older cores retain the compatible 128-block map.</p>
+<tr><td class="addr">$40–$9F</td><td>General RAM · 768 KB</td><td>rc17 plus the max-RAM kernel enables FLASHDIS at boot, joining $00–$3F and $A0–$BF into one 1,536 KB RAM run.</td></tr></table></div>
+<p>Memory sizing starts with the boot map. <code>krnp2</code> expands the block table to 256 entries, checks <code>FLASHDIS.OK</code>, and enables the extra RAM on rc17. The current pool has <strong>224 blocks (1,792 KB)</strong>; $C0–$CF and $F0–$FF are marked NotRAM. Older cores retain the compatible 128-block map.</p>
 <div class="callout">
 <h3>The trampoline</h3>
 <p>When <code>bootos9</code> (re)boots the system, running code is about to yank the MMU out from under
@@ -836,7 +823,7 @@ strobe policy covers all three.</p>
 <h2>Sectored I/O pages ($C0+)</h2>
 <div class="tblwrap"><table>
 <tr><th>Block</th><th>Contents</th></tr>
-<tr><td class="addr">$C0</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000–$0BFF gamma tables B / G / R (3 × 1 KB, readable)</span><br/><span class="bit">$0C00–$0FFF mouse pointer graphic</span><br/><span class="bit">$1000–$10FF bitmap layer registers (three 8-byte sets at $1000 / $1008 / $1010; the line-draw accelerator at $1080–$1087, see the sprite chapter) · $1100–$11FF tile registers · $1200–$12FF memtext registers</span><br/><span class="bit">$1300–$16FF sprite attribute records (128 × 8 bytes, see the sprite chapter)</span><br/><span class="bit">$1700–$173F text foreground color LUT · $1740–$177F text background color LUT (16 entries × 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable since rc13</b> through shadow copies — before rc13 the CPU could only write them)</span></td></tr>
+<tr><td class="addr">$C0</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000–$0BFF gamma tables B / G / R (3 × 1 KB, readable)</span><br/><span class="bit">$0C00–$0FFF mouse pointer graphic</span><br/><span class="bit">$1000–$10FF bitmap layer registers (three 8-byte sets at $1000 / $1008 / $1010; the line-draw accelerator at $1080–$1087, see the sprite chapter) · $1100–$11FF tile registers · $1200–$12FF memtext registers</span><br/><span class="bit">$1300–$16FF sprite attribute records (128 × 8 bytes, see the sprite chapter)</span><br/><span class="bit">$1700–$173F text foreground color LUT · $1740–$177F text background color LUT (16 entries × 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable</b> through shadow copies)</span></td></tr>
 <tr><td class="addr">$C1</td><td>Font memory at $0000–$0FFF (FONT_BLK); the four graphics CLUTs at $1000–$1FFF (256 entries × 4 bytes each, LUTn at $1000 + $400×n; readable; all zero at power-up until a program loads them)</td></tr>
 <tr><td class="addr">$C2</td><td>Text screen memory (what vtio and the flash-ID debug display map in)</td></tr>
 <tr><td class="addr">$C3</td><td>Text color attribute memory (one byte per character cell: foreground index in the high nibble, background in the low)</td></tr>
@@ -844,17 +831,64 @@ strobe policy covers all three.</p>
 </table></div>
 <p>These are VICKY-internal pages, not RAM — mapping one into a slot windows the device, and the
 MMU entry pattern <code>1100 0xxx</code> routes there instead of to memory.</p>
-<h2>Where this comes from</h2>
-<p class="src">
-• <code>level2/modules/kernel/krn.asm:340–660</code> — block map at $0200, ghost-test memory
-sizing, block-0 and kernel-block reservation.<br/>
-• <code>level1/wildbits/cmds/bootos9.as</code> — staging blocks (8−n)…7, the block-1 copy
-window (<code>MMU_COPY_BLOCK</code>), and the $0600 trampoline (<code>RELOC_ADDR</code>/<code>RelocStart</code>).<br/>
-• <code>level1/wildbits/feu/os9boot.as</code> — the FEU-side loader with the same staging math.<br/>
-• <code>level1/wildbits/modules/rbmemdesc.asm</code> — drive base blocks: f1=$40, f0=$78, c0=$80, c1=$90.<br/>
-• <code>recipes/…/bulk.csv</code> — booter/f0 flash sector layout ($38–$3F).<br/>
-• <code>defs/wildbits.d</code> — I/O page block numbers, MMU registers; entry encoding per
-<code>TyVKy2K2x1_MMU_Register.v</code> (see the companion 64K Memory Map report).</p>
+<h3 id="doc-1mb">RAM windows</h3>
+<p class="note"><b>1 MB of SRAM in two windows</b> (K2 and Jr2): the two
+  RAM windows put the SRAM’s unused upper half behind LUT entries <span class="m">$A0–$BF</span> and
+  <span class="m">$D0–$EF</span>, at absolute addresses that follow the rule of every other block, block × $2000:
+  <span class="m">$14_0000–$17_FFFF</span> and <span class="m">$1A_0000–$1D_FFFF</span>, for the CPU, VICKY,
+  DMA and the debug port alike, and the SRAM pins carry the absolute address / 2 with no translation anywhere. The kernel side
+  (<span class="m">wb/1mb_ram_upgrade</span>, overlaid, both machines): krnp2 grows the block map to all 256 entries and marks
+  <span class="m">$40–$9F</span>, <span class="m">$C0–$CF</span> and <span class="m">$F0–$FF</span> NotRAM;
+  vtio’s <span class="m">Blk2Addr</span> is block × $2000 for every block. The kernel (both machines) adds the flash window to the pool as well: see FLASHDIS below.
+  Open: DMA into a window (the engine drops high address bits).</p>
+<div class="callout"><h3>Memory and external-bus writes</h3><p>With the max-RAM kernel, FLASHDIS maps 1,792 KB of SRAM. Flash and cartridge accesses use the shaped write pulse when FLASHDIS is clear; when set, those MMU blocks select SRAM instead. RTC accesses retain the raw CPU write signal for their wait-stretched cycles. DMA remains a separate physical-address engine; the DMA sequencing and limitations above still apply.</p><p class="src">Source: shared TyVKy2K2turbo_MMU_FNX6809.v write-strobe logic and TyVKy2K2x1_MMU_Register.v FLASHDIS decode, used by both projects.</p></div>
+<h3 id="doc-flashdis">FLASHDIS — the flash window as RAM: <code>MMU_IO_CTRL</code> ($FFA1) bit 2</h3>
+<p class="lede"><b>768 KB more RAM</b> (K2 and Jr2). The SRAM is 2 MB, but the flash chip and the expansion
+  connector sat in front of its middle third: LUT entries <span class="m">$40–$7F</span> selected the flash and
+  <span class="m">$80–$9F</span> the expansion, so chip bytes <span class="m">$08_0000–$13_FFFF</span> were never
+  reachable. One bit swaps them out.</p>
+<div class="cols">
+<div>
+<p class="note" style="margin:0 0 6px"><b>FLASHDIS = 0</b> — reset or the 1 MB kernel</p>
+<div class="ladder">
+<div class="seg ram"><div class="addr">$00–$3F</div><div class="body"><b>System RAM · 512 KB</b><div class="d">$00_0000–$07_FFFF</div></div></div>
+<div class="seg flash"><div class="addr">$40–$7F</div><div class="body"><b>Flash · 512 KB</b><div class="d">the FEU and the flash drives; chip bytes $08_0000–$0F_FFFF hidden behind it</div></div></div>
+<div class="seg exram"><div class="addr">$80–$9F</div><div class="body"><b>Expansion · 256 KB</b><div class="d">the connector; chip bytes $10_0000–$13_FFFF hidden behind it</div></div></div>
+<div class="seg ram"><div class="addr">$A0–$BF</div><div class="body"><b>RAM window A · 256 KB</b><div class="d">$14_0000–$17_FFFF</div></div></div>
+<div class="seg io"><div class="addr">$C0–$CF</div><div class="body"><b>I/O pages</b><div class="d">not RAM</div></div></div>
+<div class="seg ram"><div class="addr">$D0–$EF</div><div class="body"><b>RAM window B · 256 KB</b><div class="d">$1A_0000–$1D_FFFF</div></div></div>
+<div class="seg dead"><div class="addr">$F0–$FF</div><div class="body"><b>Undecoded</b><div class="d">not RAM</div></div></div>
+</div>
+<p class="note" style="margin:6px 0 0">128 RAM blocks · <span class="m">mfree</span> 928K after boot</p>
+</div>
+<div>
+<p class="note" style="margin:0 0 6px"><b>FLASHDIS = 1</b> — with the max-RAM kernel</p>
+<div class="ladder">
+<div class="seg ram tall"><div class="addr">$00–$BF</div><div class="body"><b>System RAM · 1536 KB</b><div class="d">$00_0000–$17_FFFF, one run: the first 512K, the 768K that sat behind the flash and the expansion connector ($08_0000–$13_FFFF), and what was window A ($14_0000–$17_FFFF) — block × $2000 throughout, for the CPU, VICKY, DMA and the debug port alike</div></div></div>
+<div class="seg io"><div class="addr">$C0–$CF</div><div class="body"><b>I/O pages</b><div class="d">not RAM</div></div></div>
+<div class="seg ram"><div class="addr">$D0–$EF</div><div class="body"><b>RAM window B · 256 KB</b><div class="d">$1A_0000–$1D_FFFF</div></div></div>
+<div class="seg dead"><div class="addr">$F0–$FF</div><div class="body"><b>Undecoded</b><div class="d">not RAM</div></div></div>
+</div>
+<p class="note" style="margin:6px 0 0">224 RAM blocks · <span class="m">mfree</span> 1696K after boot · 1792 KB in all (1536 KB + window B)</p>
+</div>
+</div>
+<div class="tblwrap" style="margin-top:16px"><table>
+<tr><th style="width:18ch">Register</th><th style="width:8ch">Bit</th><th style="width:16ch">Name (defs/wildbits.d)</th><th>Meaning</th></tr>
+<tr><td class="addr">$FFA1 <code>MMU_IO_CTRL</code></td><td class="addr">7</td><td><code>FLASHDIS.OK</code></td><td>Read-only. 1 on a core that implements FLASHDIS, 0 on one that does not — they hand back what was stored, and nothing stores a 1 there. The kernel tests this bit before touching bit 2.</td></tr>
+<tr><td class="addr"></td><td class="addr">2</td><td><code>FLASHDIS</code></td><td>1 = LUT blocks $40–$9F are RAM. 0 = flash at $40–$7F and the expansion connector at $80–$9F, as always. Cleared by reset, so the machine boots from flash every time; the FEU trampoline runs from flash and stores $00 / $02 here, and is unaffected.</td></tr>
+<tr><td class="addr"></td><td class="addr">1</td><td>—</td><td>Internal RAM at $FFF0–$FFFF (the vector page); unchanged.</td></tr>
+<tr><td class="addr"></td><td class="addr">0</td><td>—</td><td>Internal RAM at $FD00–$FDFF; unchanged.</td></tr>
+</table></div>
+<p class="note" style="margin:6px 0 0">The register is readable; names as in <code>defs/wildbits.d</code> (equates <code>FLASHDIS</code> = %00000100, <code>FLASHDIS.OK</code> = %10000000).</p>
+<p style="margin:18px 0 4px"><b>What the kernel does at boot</b> (krnp2 on main, both machines, before anything is forked):</p>
+<div class="pipe">
+<div class="stage"><h4>1 · read</h4><p><span class="m">lda &gt;MMU_IO_CTRL</span> — one read of $FFA1.</p></div>
+<div class="arrow">→</div>
+<div class="stage"><h4>2 · FLASHDIS.OK set</h4><p>ORs <span class="m">FLASHDIS</span> in (read-modify-write, bits 0/1 kept) and walks the gap table <em>without</em> $40–$9F: the pool is 224 blocks, <span class="m">mfree</span> 1696K.</p></div>
+<div class="arrow">→</div>
+<div class="stage"><h4>2′ · FLASHDIS.OK clear</h4><p>The register is not written and the gap table is the 1 MB map’s, byte for byte: 128 blocks, <span class="m">mfree</span> 928K. One disk serves both cores.</p></div>
+</div>
+<div class="warncall"><b>Rules.</b> After boot <b>nobody stores an absolute value to <span class="m">MMU_IO_CTRL</span></b> — a bare store clears bit 2 and pulls 768 KB of live RAM out from under the kernel; read-modify-write only. While FLASHDIS is set the FEU blocks in flash are unreachable; they come back with a reset, which clears the bit.</div>
 <footer class="report-source">WildBits K2 / Jr2 · FNX6809 v8-era cores · compiled 2026-08-30. Companion: WildBits 64K Memory Map.</footer>
 </div>
 </div>
@@ -879,17 +913,17 @@ window (<code>MMU_COPY_BLOCK</code>), and the $0600 trampoline (<code>RELOC_ADDR
 <div class="seg mmu"><span class="nm">Slot 4</span><span class="ad">$8000–$9FFF</span></div>
 <div class="seg mmu"><span class="nm">Slot 5</span><span class="ad">$A000–$BFFF</span></div>
 <div class="seg mmu"><span class="nm">Slot 6</span><span class="ad">$C000–$DFFF</span></div>
-<div class="seg mmu carve" style="min-height:74px"><span class="nm">Slot 7<br/><span style="font-weight:500;font-size:11px">top carved out →</span></span><span class="ad">$E000–$FFFF</span></div>
+<div class="seg mmu carve" style="min-height:74px"><span class="nm">Slot 7<br/><span style="font-weight:500;">top carved out →</span></span><span class="ad">$E000–$FFFF</span></div>
 </div>
 <div class="zoomlink" role="presentation"></div>
 <!-- right: zoom of $FD00-$FFFF, bottom = $FD00 -->
 <div aria-label="Zoom of FD00 to FFFF" class="stack">
-<div class="seg const" style="min-height:52px"><span class="nm">Constant RAM<br/><span style="font-weight:500;font-size:11px">switchable · $FFA1 bit 0</span></span><span class="ad">$FD00–$FDFF</span></div>
+<div class="seg const" style="min-height:52px"><span class="nm">Constant RAM<br/><span style="font-weight:500;">switchable · $FFA1 bit 0</span></span><span class="ad">$FD00–$FDFF</span></div>
 <div class="seg io" style="min-height:52px"><span class="nm">Fixed I/O</span><span class="ad">$FE00–$FEFF</span></div>
 <div class="seg io"><span class="nm">Fixed I/O</span><span class="ad">$FF00–$FF9F</span></div>
 <div class="seg regs"><span class="nm">MMU registers</span><span class="ad">$FFA0–$FFAF</span></div>
 <div class="seg io"><span class="nm">Fixed I/O</span><span class="ad">$FFB0–$FFEF</span></div>
-<div class="seg const"><span class="nm">Constant RAM · vectors<br/><span style="font-weight:500;font-size:11px">switchable · $FFA1 bit 1</span></span><span class="ad">$FFF0–$FFFF</span></div>
+<div class="seg const"><span class="nm">Constant RAM · vectors<br/><span style="font-weight:500;">switchable · $FFA1 bit 1</span></span><span class="ad">$FFF0–$FFFF</span></div>
 </div>
 </div>
 <div class="maplegend">
@@ -932,7 +966,7 @@ can be touched at those addresses.</p>
 <div class="tblwrap"><table>
 <tr><th>Register</th><th>Address</th><th>Function</th></tr>
 <tr><td>MMU_MEM_CTRL</td><td class="addr">$FFA0</td><td>Bits 1:0 select the <em>active</em> LUT (0–3); bits 5:4 select the LUT being <em>edited</em> through the slot registers.</td></tr>
-<tr><td>MMU_IO_CTRL</td><td class="addr">$FFA1</td><td>Bit 0 enables constant RAM at $FD00–$FDFF; bit 1 enables constant RAM at $FFF0–$FFFF; bit 2 <code>FLASHDIS</code> (rc16+) turns LUT blocks $40–$9F from flash/expansion into 768 KB of RAM; bit 7 <code>FLASHDIS.OK</code> (read-only) reads 1 when FLASHDIS exists. Readable; read-modify-write it. Names as in <code>defs/wildbits.d</code>.</td></tr>
+<tr><td>MMU_IO_CTRL</td><td class="addr">$FFA1</td><td>Bit 0 enables constant RAM at $FD00–$FDFF; bit 1 enables constant RAM at $FFF0–$FFFF; bit 2 <code>FLASHDIS</code> turns LUT blocks $40–$9F from flash/expansion into 768 KB of RAM; bit 7 <code>FLASHDIS.OK</code> (read-only) reads 1 when FLASHDIS exists. Readable; read-modify-write it. Names as in <code>defs/wildbits.d</code>.</td></tr>
 <tr><td>MMU_SLOT_0–7</td><td class="addr">$FFA8–$FFAF</td><td>One LUT entry per 8K slot ($FFA8 → $0000–$1FFF … $FFAF → $E000–$FFFF).</td></tr>
 </table></div>
 <h3>Slot-entry encoding (physical target select)</h3>
@@ -963,38 +997,38 @@ can be touched at those addresses.</p>
 • <code>TyVKy2K2x1_MMU_Register.v:61–89</code> — <code>RAM_Access_Inhibit</code> (the master “not subject to the MMU” term), slot-entry target encoding, and the two $FFA1 enable bits.<br/>
 • <code>defs/wildbits.d:131–199, 156–166</code> — register names, device addresses, and the constant-RAM retention note.<br/>
 One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> — when the hardware debugger owns the bus, these carve-outs are bypassed.</p>
-<footer class="report-source">WildBits K2 / Jr2 · FNX6809 v8-era cores · compiled 2026-08-30 from RTL at rc4/rc5 source level.</footer>
+<footer class="report-source">WildBits K2 / Jr2 · FNX6809 v8-era cores · compiled from the v8 RTL.</footer>
 </div>
 </div>
 <!-- style block of the Interrupt Groups section (moved above the 1MB Physical Map on 2026-09-10): it stays HERE
      because its :root tokens are the last ones in the cascade and every section below inherits them -->
 <!-- ===== WildBits_Sprite_Engine.htm (restyled 2026-09-03 to match the 64K Memory Map section; its private style blocks were removed) ===== -->
-<!-- ===== Block RAM ledger (2026-09-10, Jr2 refreshed 2026-09-12): what the K2 and Jr2 rc14 cores keep in the FPGA's own memory; from Vivado's report_utilization on the routed checkpoints ===== -->
+<!-- ===== Block RAM ledger (2026-09-10, Jr2 refreshed 2026-09-12): what the K2 and Jr2 cores keep in the FPGA's own memory; from Vivado's report_utilization on the routed checkpoints ===== -->
 </div><div class="wrap report" data-section="06" id="sprites" style="padding-left:0;padding-right:0">
 <header>
 <div class="eyebrow">WildBits K2 / Jr2 · FNX6809 core · hardware reference · companion to the 64K Memory Map</div>
 <h1 class="report-title">WildBits Sprite Engine</h1>
-<p class="sub">Hardware reference for the 128-sprite engine in the 6809 cores: register map, attribute format, coordinate system, the minimum programming recipe for putting a sprite on screen — and the resolution of the missing-sprites investigation (rc7, both machines verified).</p>
+<p class="sub">Hardware reference for the 128-sprite engine in the 6809 cores: register map, attribute format, coordinate system, the minimum programming recipe for putting a sprite on screen — and the resolution of the missing-sprites investigation (both machines verified).</p>
 </header>
 <div class="grid">
 <div class="mapcol">
 <div class="map">
 <!-- left: VICKY page $C0 (8K), bottom = offset $0000 -->
 <div aria-label="VICKY page C0" class="stack">
-<div class="seg io" style="min-height:52px"><span class="nm">Gamma tables B / G / R<br/><span style="font-weight:500;font-size:11px">3 × 256 bytes</span></span><span class="ad">$0000–$0BFF</span></div>
+<div class="seg io" style="min-height:52px"><span class="nm">Gamma tables B / G / R<br/><span style="font-weight:500;">3 × 256 bytes</span></span><span class="ad">$0000–$0BFF</span></div>
 <div class="seg io"><span class="nm">Mouse pointer graphic</span><span class="ad">$0C00–$0FFF</span></div>
 <div class="seg regs"><span class="nm">Bitmap + line-draw regs</span><span class="ad">$1000–$10FF</span></div>
 <div class="seg regs"><span class="nm">Tile map regs</span><span class="ad">$1100–$11FF</span></div>
-<div class="seg regs"><span class="nm">MEMTEXT regs<br/><span style="font-weight:500;font-size:11px">future</span></span><span class="ad">$1200–$12FF</span></div>
-<div class="seg mmu carve" style="min-height:74px"><span class="nm">Sprite attributes<br/><span style="font-weight:500;font-size:11px">128 × 8 bytes, 4 banks of 32 · record →</span></span><span class="ad">$1300–$16FF</span></div>
-<div class="seg const"><span class="nm">Text color LUTs<br/><span style="font-weight:500;font-size:11px">foreground $1700, background $1740</span></span><span class="ad">$1700–$177F</span></div>
+<div class="seg regs"><span class="nm">MEMTEXT regs<br/><span style="font-weight:500;">future</span></span><span class="ad">$1200–$12FF</span></div>
+<div class="seg mmu carve" style="min-height:74px"><span class="nm">Sprite attributes<br/><span style="font-weight:500;">128 × 8 bytes, 4 banks of 32 · record →</span></span><span class="ad">$1300–$16FF</span></div>
+<div class="seg const"><span class="nm">Text color LUTs<br/><span style="font-weight:500;">foreground $1700, background $1740</span></span><span class="ad">$1700–$177F</span></div>
 <div class="seg io"><span class="nm">Reserved</span><span class="ad">$1780–$1FFF</span></div>
 </div>
 <div class="zoomlink" role="presentation"></div>
 <!-- right: one 8-byte attribute record, bottom = +0 -->
 <div aria-label="One sprite attribute record" class="stack">
-<div class="seg regs" style="min-height:52px"><span class="nm">CTRL<br/><span style="font-weight:500;font-size:11px">b0 enable · b2:1 LUT · b4:3 depth · b6:5 size</span></span><span class="ad">+0</span></div>
-<div class="seg mmu" style="min-height:52px"><span class="nm">ADDR hi / mid / lo<br/><span style="font-weight:500;font-size:11px">pixel data, 24-bit, big-endian</span></span><span class="ad">+1–+3</span></div>
+<div class="seg regs" style="min-height:52px"><span class="nm">CTRL<br/><span style="font-weight:500;">b0 enable · b2:1 LUT · b4:3 depth · b6:5 size</span></span><span class="ad">+0</span></div>
+<div class="seg mmu" style="min-height:52px"><span class="nm">ADDR hi / mid / lo<br/><span style="font-weight:500;">pixel data, 24-bit, big-endian</span></span><span class="ad">+1–+3</span></div>
 <div class="seg const"><span class="nm">X hi / lo</span><span class="ad">+4–+5</span></div>
 <div class="seg const"><span class="nm">Y hi / lo</span><span class="ad">+6–+7</span></div>
 </div>
@@ -1056,7 +1090,7 @@ One caveat: all fixed decodes are qualified by <code>!Dbg_Mode_i</code> — when
 <p>Multi-byte fields are <b>big-endian</b> (high byte first, 6809-friendly), so a single 16-bit
 <code>STD</code> at the high offset stores X or Y correctly in one instruction:</p>
 <p class="src">Worth knowing if you are reading other documentation: pre-rework cores and the official 65C02
-material describe these fields as little-endian. The 6809 rework changed it, confirmed on rc7 silicon, and
+material describe these fields as little-endian. The 6809 rework changed it, confirmed on the hardware, and
 the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <div class="tblwrap"><table>
 <tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
@@ -1087,21 +1121,21 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">LUT3</td><td class="addr">$1C00–$1FFF</td><td class="addr">$5C00–$5FFF</td><td class="addr">$5C00 + 4×i</td></tr>
 </table></div>
 <h3>Text color LUTs — VICKY page $C0, offsets $1700 (foreground) and $1740 (background)</h3>
-<p>Text and the banner font take their colors from two 16-entry tables in page <code>$C0</code>, the sprite-record page: foreground at $1700–$173F, background at $1740–$177F, 4 bytes per entry ordered <b>B, G, R, A</b>, indexed by the two nibbles of the character’s attribute byte. The core loads both with the OS-9 palette when the bitstream comes up, so they survive a reset; a power cycle restores them. Up to rc12 they were write-only block RAM. <b>Since rc13 the CPU reads them back</b> (each table has a shadow copy written on the same strobe), so a program can save the tables it is about to change and put them back on exit. <code>lutrd</code> on the kit disks dumps both, plus the graphics CLUTs and the gamma tables.</p>
+<p>Text and the banner font take their colors from two 16-entry tables in page <code>$C0</code>, the sprite-record page: foreground at $1700–$173F, background at $1740–$177F, 4 bytes per entry ordered <b>B, G, R, A</b>, indexed by the two nibbles of the character’s attribute byte. The core loads both with the OS-9 palette when the bitstream comes up, so they survive a reset; a power cycle restores them. <b>The CPU reads them back</b> (each table has a shadow copy written on the same strobe), so a program can save the tables it is about to change and put them back on exit. <code>lutrd</code> on the kit disks dumps both, plus the graphics CLUTs and the gamma tables.</p>
 <div class="tblwrap"><table>
 <tr><th>Table</th><th>Page offset</th><th>Entries</th><th>Access</th></tr>
-<tr><td class="addr">text FG</td><td class="addr">$1700–$173F</td><td>16 × B G R A</td><td>read / write (read-back since rc13)</td></tr>
-<tr><td class="addr">text BG</td><td class="addr">$1740–$177F</td><td>16 × B G R A</td><td>read / write (read-back since rc13)</td></tr>
+<tr><td class="addr">text FG</td><td class="addr">$1700–$173F</td><td>16 × B G R A</td><td>read / write</td></tr>
+<tr><td class="addr">text BG</td><td class="addr">$1740–$177F</td><td>16 × B G R A</td><td>read / write</td></tr>
 <tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 × 256 bytes</td><td>read / write</td></tr>
 <tr><td class="addr">graphics LUT0–3</td><td class="addr">page $C1 $1000 + $400×n</td><td>256 × B G R A each</td><td>read / write</td></tr>
 </table></div>
-<h3>Line-draw accelerator — VICKY page $C0, offsets $1080–$1087 (wildbits.d: TyVKY_LD_*)</h3>
-<p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$C0</code> in slot 7, so these are $F080–$F087). Write the two end points and a color, raise the go bit, and the engine walks the line at 100 MHz, queueing every pixel as {color, address} into a 4096-entry FIFO that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y×320 + x</b>: the 320-wide 8-bit bitmap modes only, nothing for the rc14 HIRES4 nibble layout.</p>
+<h3 id="doc-linedraw">Line-draw accelerator — VICKY page $C0, offsets $1080–$1087 (wildbits.d: TyVKY_LD_*)</h3>
+<p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$C0</code> in slot 7, so these are $F080–$F087). Write the two end points and a color, raise the go bit, and the engine walks the line at 100 MHz, queueing every pixel as {color, address} into a 4096-entry FIFO that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y×320 + x</b> in the 320-wide 8-bit modes; in HIRES4 (<code>GFX_HIRES4</code>) X runs to 639 (<code>TyVKY_LD_XMAX4</code>) and the low nibble of the color is the dot. Pixels reach SRAM only while <code>VKY_DRAWLINE_REG</code> ($FFCA) bit 0 is set.</p>
 <div class="tblwrap"><table>
 <tr><th>Offset</th><th>wildbits.d</th><th>Write</th><th>Read</th></tr>
-<tr><td class="addr">$1080</td><td class="addr">TyVKY_LD_CTRL_REG</td><td>bit 0 <code>LD_ENABLE</code> · bit 1 <code>LD_GO</code> · bits 3:2 target bitmap (<code>LD_BM0</code> $00, <code>LD_BM1</code> $04, <code>LD_BM2</code> $08) · bit 4 <code>LD_FIFO_RESET</code></td><td>bit 7 <code>LD_BUSY</code>, bits 6:0 the control bits</td></tr>
-<tr><td class="addr">$1081</td><td class="addr">TyVKY_LD_COLOR</td><td>8-bit CLUT index</td><td>the color</td></tr>
-<tr><td class="addr">$1082</td><td class="addr">TyVKY_LD_X0_H</td><td>X0 bits 9:8</td><td><code>TyVKY_LD_COUNT_H</code>: pixels still queued, bits 12:8</td></tr>
+<tr><td class="addr">$1080</td><td class="addr">TyVKY_LD_CTRL</td><td>bit 0 <code>TyVKY_LD_ENABLE</code> (legacy; the write gate is $FFCA bit 0) · bit 1 <code>TyVKY_LD_GO</code> · bits 3:2 target bitmap (<code>TyVKY_LD_BM0</code> $00, <code>TyVKY_LD_BM1</code> $04, <code>TyVKY_LD_BM2</code> $08; $0C falls back to base $001000) · bit 4 <code>TyVKY_LD_RESET</code></td><td>bit 7 <code>TyVKY_LD_DONE</code> (1 = the generator is done, not busy), bits 6:0 the control bits</td></tr>
+<tr><td class="addr">$1081</td><td class="addr">TyVKY_LD_COLOR</td><td>8-bit CLUT index (HIRES4: bits 3:0)</td><td>the color</td></tr>
+<tr><td class="addr">$1082</td><td class="addr">TyVKY_LD_X0_H</td><td>X0 bits 9:8</td><td><code>TyVKY_LD_COUNT_H</code>: pixels still queued, bits 13:8</td></tr>
 <tr><td class="addr">$1083</td><td class="addr">TyVKY_LD_X0_L</td><td>X0 bits 7:0</td><td><code>TyVKY_LD_COUNT_L</code>: pixels still queued, bits 7:0</td></tr>
 <tr><td class="addr">$1084</td><td class="addr">TyVKY_LD_X1_H</td><td>X1 bits 9:8</td><td>X1 bits 7:0 (the read order is swapped)</td></tr>
 <tr><td class="addr">$1085</td><td class="addr">TyVKY_LD_X1_L</td><td>X1 bits 7:0</td><td>X1 bits 9:8</td></tr>
@@ -1109,13 +1143,23 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">$1087</td><td class="addr">TyVKY_LD_Y1</td><td>Y1 (8 bits)</td><td>Y0 (swapped)</td></tr>
 </table></div>
 <ul>
-<li><b>Accepted range:</b> X0 and X1 below 320, Y0 and Y1 below 240 — a go with any end point outside is ignored (the engine stays idle, busy never rises).</li>
-<li><b>Handshake:</b> the go bit starts the line on its rising edge and the engine parks in its done state <em>until the go bit is written back to 0</em>; drop it before the next line. Busy (bit 7 on read) covers both the walk and the queued pixels; the FIFO count at $1082/$1083 says how many are still waiting.</li>
-<li><b>Read-back quirks:</b> X0 cannot be read (its two bytes return the FIFO count), and the X1 and Y read order is the reverse of the write order — both are in <span class="mono">TinyVicky_BM_Registers.v</span>’s read multiplexer. The RTL comment puts busy at bit 6; the multiplexer puts it at bit 7.</li>
+<li><b>Accepted range:</b> X0 and X1 below 320 (640 in HIRES4), Y0 and Y1 below 240 (<code>TyVKY_LD_XMAX8</code>, <code>TyVKY_LD_XMAX4</code>, <code>TyVKY_LD_YMAX</code>) — a go with any end point outside is ignored (the engine stays idle, done never rises).</li>
+<li><b>Handshake:</b> the go bit starts the line on its rising edge and the engine parks in its done state <em>until the go bit is written back to 0</em>; drop it before the next line. Done (bit 7 on read) says the walk has finished; the FIFO count at $1082/$1083 says how many pixels are still queued. Since rc17 the pops never land in a CPU-owned SRAM slot, so no pixel is lost.</li>
+<li><b>Read-back quirks:</b> X0 cannot be read (its two bytes return the FIFO count), and the X1 and Y read order is the reverse of the write order — both are in <span class="mono">TinyVicky_BM_Registers.v</span>’s read multiplexer. Bit 7 on read is <code>TyVKY_LD_DONE</code>.</li>
 <li><b>Target address:</b> bits 3:2 pick which bitmap layer’s start address ($1001–$1003 / $1009–$100B / $1011–$1013) the pixel addresses are built on; the layer does not have to be displayed.</li>
 <li><b>Cost:</b> the pixel FIFO is the largest block RAM in the core (4 × RAMB36, 144 Kbit; see the block RAM ledger above).</li>
 </ul>
 <p class="src">Sources: TinyVicky_BM_Registers.v (LINE_DRAWING_REG, the write decode on address bit 7, the read multiplexer), LineDraw.v (X0_Ok/Y0_Ok limits, the IDLE/RUN/DONE machine, Addy_Addyx_Offset), TinyVickyCoreModule.v:444 (the LINEDRAWING_Reg64 wiring), TinyVKY2K2_IO_Page0_Devices.v:744 (CS_VICKY_BITMAP = $18_1000–$18_10FF; the Jr2 decode is identical).</p>
+<h3 id="doc-hires4">640 × 240 × 16-color bitmap mode — GFX MODE $FFCB</h3>
+<p>The bitmap engine’s native picture is 320 × 240 with one byte per dot, each dot shown twice across. HIRES4 keeps every byte where it is and reads it as <b>two dots of four bits</b>, the high nibble on the left, so a 320-byte row becomes 640 dots and the frame stays 76,800 bytes: same RAM, same fetch bandwidth, same raster, nothing for an old monitor to notice. Two ways to switch it on, OR’d together:</p>
+<div class="tblwrap"><table>
+<tr><th style="width:22ch">Where</th><th>Bits</th></tr>
+<tr><td class="addr">$FFCB (fixed I/O)</td><td>bit 0 <code>GFX_HIRES4</code>: every bitmap plane · bits 3:1 <code>GFX_GROUP</code>: which 16-entry slice of the plane’s CLUT the nibbles index. Pokeable from any task, no page $C0 mapping needed; reset value 0 = the 320-wide behaviour.</td></tr>
+<tr><td class="addr">bitmap control byte ($F000 / $F008 / $F010 with page $C0 in slot 7)</td><td>bit 4 <code>BM0_HIRES4</code>: this plane alone · bits 7:5 <code>BM0_GROUP</code>: its CLUT slice. Bits 3:0 (enable, LUT number) unchanged.</td></tr>
+</table></div>
+<p><b>Colors.</b> A dot’s CLUT entry is group × 16 + nibble, in the CLUT the plane’s LUT bits select; the sixteen entries of the slice are the whole palette of that plane. Nibble 0 is transparent, as byte 0 is in the 320 mode, so it shows the layer behind or VICKY’s background color ($FFCD–$FFCF). Transparency is per 640 dot: the two halves of one byte can show through to different things.</p>
+<p><b>What it does not change.</b> Sprites, tiles and text are not part of it. They fetch and draw exactly as before, at 320 dots doubled, and are composited with the 640-wide bitmap dots in the usual layer order ($FFC2/$FFC3): a sprite or tile dot always covers a pair of bitmap dots, and its X position is still a 320-column unit, so it cannot sit on an odd 640 column. Each plane decides for itself, so a 640-wide picture and a 320-wide one can share the frame. The dot order inside a pair is fixed by the design (a blanking-aligned phase, not a sampled clock), so it is the same on every build.</p>
+<p><b>On the Jr2</b> the mode costs a second CLUT copy and a second color line in block RAM (see the block-RAM budget below); both cores carry it.</p>
 <h2>Coordinates</h2>
 <p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320×240 area spans sprite coordinates (32,32) to (351,271):</p>
 <div style="margin:16px 0;overflow-x:auto">
@@ -1166,9 +1210,9 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <div class="eyebrow">WildBits K2 / Jr2 · FNX6809 core · hardware reference · the FPGA's own memory</div>
 <h1 class="report-title">How the cores spend their block RAM</h1>
 <p class="sub">Every RAMB36/RAMB18 tile and every LUT used as RAM in the two routed builds, what each one holds, and how much of it is real content. The 2 MB external SRAM (the CPU's memory and the video RAM) is not FPGA memory and is outside this ledger.</p>
-</header><div class="grid"><div class="mapcol"><div class="rail-title">Inside the FPGA</div><div class="ladder"><div class="seg mmu"><div class="body"><b>Graphics</b><div class="d">CLUTs, sprite attributes and line buffers</div></div></div><div class="seg const"><div class="body"><b>Text</b><div class="d">Character matrix, colors and font</div></div></div><div class="seg io"><div class="body"><b>I/O</b><div class="d">FIFOs between the CPU and peripherals</div></div></div><div class="seg ram"><div class="body"><b>External SRAM</b><div class="d">2 MB chip; separate from block RAM</div></div></div></div><figure class="diagram"><figcaption>Block RAM use · rc14 report snapshot</figcaption><svg aria-label="K2 used 40 of 365 block RAM tiles, Jr2 used 36 of 50, in the rc14 report" role="img" viewbox="0 0 420 180"><text x="16" y="28">K2 · 40 / 365 tiles</text><rect fill="#293645" height="22" rx="4" width="388" x="16" y="42"></rect><rect fill="#65d6bd" height="22" rx="4" width="43" x="16" y="42"></rect><text x="16" y="105">Jr2 · 36 / 50 tiles</text><rect fill="#293645" height="22" rx="4" width="388" x="16" y="120"></rect><rect fill="#ad98ea" height="22" rx="4" width="279" x="16" y="120"></rect></svg></figure></div><div class="report-detail">
-<p class="src">Source: <code>report_utilization</code> on the routed checkpoints <code>CFP95139K2_Top_routed.dcp</code> (K2 rc14, built 2026-09-10 17:04) and <code>CFP95139AJR2_Top_routed.dcp</code> (Jr2 rc14, built 2026-09-12 14:33), every BMEM/DMEM primitive listed by hierarchical instance, and the memory IP configurations (<code>.xci</code>) for the logical sizes. Kbit = 1,024 bits; a RAMB36 tile is 36 Kbit, a RAMB18 half-tile 18 Kbit.</p>
-<h2>K2 (xc7a200t, core rc14)</h2>
+</header><div class="grid"><div class="mapcol"><div class="rail-title">Inside the FPGA</div><div class="ladder"><div class="seg mmu"><div class="body"><b>Graphics</b><div class="d">CLUTs, sprite attributes and line buffers</div></div></div><div class="seg const"><div class="body"><b>Text</b><div class="d">Character matrix, colors and font</div></div></div><div class="seg io"><div class="body"><b>I/O</b><div class="d">FIFOs between the CPU and peripherals</div></div></div><div class="seg ram"><div class="body"><b>External SRAM</b><div class="d">2 MB chip; separate from block RAM</div></div></div></div><figure class="diagram"><figcaption>Block RAM use · report snapshot</figcaption><svg aria-label="K2 used 40 of 365 block RAM tiles, Jr2 used 36 of 50, in the report" role="img" viewbox="0 0 420 180"><text x="16" y="28">K2 · 40 / 365 tiles</text><rect fill="#293645" height="22" rx="4" width="388" x="16" y="42"></rect><rect fill="#65d6bd" height="22" rx="4" width="43" x="16" y="42"></rect><text x="16" y="105">Jr2 · 36 / 50 tiles</text><rect fill="#293645" height="22" rx="4" width="388" x="16" y="120"></rect><rect fill="#ad98ea" height="22" rx="4" width="279" x="16" y="120"></rect></svg></figure><div class="rail-title" style="margin-top:18px;">Notes</div><div class="ladder"><div class="seg const"><div class="body"><b><a href="#doc-hires4">640-pixel bitmaps</a></b><div class="d">HIRES4 control and composition</div></div></div><div class="seg regs"><div class="body"><b><a href="#doc-linedraw">Line-draw accelerator</a></b><div class="d">the Bresenham engine at $1080</div></div></div></div><div class="rail-title" style="margin-top:18px;">Notes</div><div class="ladder"><div class="seg ram"><div class="body"><b><a href="#doc-flashdis">FLASHDIS</a></b><div class="d">Current RAM mode and safe register writes</div></div></div><div class="seg io"><div class="body"><b><a href="#doc-1mb">RAM windows</a></b><div class="d">the two 256 KB windows behind the LUT</div></div></div></div></div><div class="report-detail">
+<p class="src">Source: <code>report_utilization</code> on the routed checkpoints <code>CFP95139K2_Top_routed.dcp</code> (K2, built 2026-09-10 17:04) and <code>CFP95139AJR2_Top_routed.dcp</code> (Jr2, built 2026-09-12 14:33), every BMEM/DMEM primitive listed by hierarchical instance, and the memory IP configurations (<code>.xci</code>) for the logical sizes. Kbit = 1,024 bits; a RAMB36 tile is 36 Kbit, a RAMB18 half-tile 18 Kbit.</p>
+<h2>K2 (xc7a200t)</h2>
 <div class="tblwrap"><table>
 <tr><th>At a glance</th><th>Detail</th></tr>
 <tr><td class="addr">40 / 365</td><td>block RAM tiles used (11.0%)</td></tr>
@@ -1201,11 +1245,11 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">BACKGROUND_LUT</td><td>16-entry text background palette</td><td>64 × 8 / 32</td><td class="addr" style="text-align:right">0.5</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
 <tr><td colspan="6"><b>Graphics engine</b></td></tr>
 <tr><td class="addr">LUT_4Tables_H</td><td>the four graphics CLUTs (4 × 256 entries × 4 bytes)</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
-<tr><td class="addr">LUT_4Tables_L</td><td>rc14: a second copy of the CLUTs so HIRES4 looks up both dots of a byte in one cycle</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">LUT_4Tables_L</td><td>a second copy of the CLUTs so HIRES4 looks up both dots of a byte in one cycle</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
 <tr><td class="addr">Layer0/1/2_DPMem</td><td>one scan line of pixels for each of the three bitmap/tile layers</td><td>3 × (256 × 32 / 16)</td><td class="addr" style="text-align:right">24</td><td>3 × RAMB36</td><td class="addr" style="text-align:right">108</td></tr>
 <tr><td class="addr">Sprite_DPMem</td><td>the composed sprite line</td><td>512 × 18</td><td class="addr" style="text-align:right">9</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">OUTPUT_RGB_H</td><td>the final RGB pixel line handed to the output</td><td>512 × 32, simple dual port</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
-<tr><td class="addr">OUTPUT_RGB_L</td><td>rc14: the second dot of each HIRES4 pair, one color line of its own</td><td>512 × 32, simple dual port</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">OUTPUT_RGB_L</td><td>the second dot of each HIRES4 pair, one color line of its own</td><td>512 × 32, simple dual port</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">TileMapCapture</td><td>two tile-map lines captured as 16-bit entries</td><td>512 × 16, simple dual port</td><td class="addr" style="text-align:right">8</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">MousePointerMem</td><td>the hardware mouse pointer image</td><td>1024 × 8, true dual port</td><td class="addr" style="text-align:right">8</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">Sprite_Reg_Block_inst</td><td>the 128 sprite attribute records (page $C0, $1300–$16FF); the engine reads a whole 64-bit record per cycle</td><td>1024 × 8 / 64</td><td class="addr" style="text-align:right">8</td><td>2 × RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
@@ -1242,10 +1286,10 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <h3>Distributed (LUT) RAM</h3>
 <ul>
 <li><b>Splash flash read FIFO</b> — the SPI splash-screen loader's 2048 × 8 FIFO is configured as distributed RAM and takes 480 LUT-RAM cells, almost all of the 488 LUTs the placed report counts as distributed RAM.</li>
-<li><b>OPL3 channel storage</b> (132 cells), the <b>SuperIO</b> block (35) and the two 64-byte <b>text palette read-back shadows</b> added in rc13 (16 cells: <code>TEXT_FG_Shadow</code>, <code>TEXT_BG_Shadow</code>) make up the rest.</li>
+<li><b>OPL3 channel storage</b> (132 cells), the <b>SuperIO</b> block (35) and the two 64-byte <b>text palette read-back shadows</b> (16 cells: <code>TEXT_FG_Shadow</code>, <code>TEXT_BG_Shadow</code>) make up the rest.</li>
 <li>197 LUTs are shift registers (SRL16/SRL32): FIFO reset synchronisers and pipeline delays, not storage.</li>
 </ul>
-<h2>Jr2 (xc7a35t, core rc14)</h2>
+<h2>Jr2 (xc7a35t)</h2>
 <div class="tblwrap"><table>
 <tr><th>At a glance</th><th>Detail</th></tr>
 <tr><td class="addr">36 / 50</td><td>block RAM tiles used (72.0%)</td></tr>
@@ -1256,7 +1300,7 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <h3>By purpose</h3>
 <div class="tblwrap"><table>
 <tr><th>Purpose</th><th style="text-align:right">Kbit</th><th colspan="2" style="text-align:right">Share · Of the 1,296 Kbit</th><th>Difference from the K2</th></tr>
-<tr><td>Graphics engine (VICKY)</td><td class="addr" style="text-align:right">396</td><td class="addr" colspan="2" style="text-align:right">30.6%<div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:30.6%;background:var(--io)"></div></div></td><td>same blocks: rc14 brought the HIRES4 pair (second CLUT copy, second RGB line, +54 Kbit over rc13)</td></tr>
+<tr><td>Graphics engine (VICKY)</td><td class="addr" style="text-align:right">396</td><td class="addr" colspan="2" style="text-align:right">30.6%<div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:30.6%;background:var(--io)"></div></div></td><td>same blocks: the HIRES4 pair (second CLUT copy, second RGB line, +54 Kbit)</td></tr>
 <tr><td>Text display</td><td class="addr" style="text-align:right">252</td><td class="addr" colspan="2" style="text-align:right">19.4%<div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:19.4%;background:var(--exram)"></div></div></td><td>same blocks</td></tr>
 <tr><td>MemText (VRAM text mode)</td><td class="addr" style="text-align:right">180</td><td class="addr" colspan="2" style="text-align:right">13.9%<div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:13.9%;background:var(--amber)"></div></div></td><td>same blocks</td></tr>
 <tr><td>Line-draw accelerator FIFO</td><td class="addr" style="text-align:right">144</td><td class="addr" colspan="2" style="text-align:right">11.1%<div style="height:10px;min-width:160px;background:var(--line);border-radius:2px"><div style="height:100%;width:11.1%;background:var(--warn)"></div></div></td><td>same block</td></tr>
@@ -1275,11 +1319,11 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">FOREGROUND_LUT, BACKGROUND_LUT</td><td>text palettes</td><td>2 × (64 × 8 / 32)</td><td class="addr" style="text-align:right">1</td><td>2 × RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
 <tr><td colspan="6"><b>Graphics engine</b></td></tr>
 <tr><td class="addr">LUT_4Tables_H</td><td>the four graphics CLUTs (4 × 256 entries × 4 bytes)</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
-<tr><td class="addr">LUT_4Tables_L</td><td>rc14: the second copy of the CLUTs for HIRES4’s two dots per byte (as the K2)</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
+<tr><td class="addr">LUT_4Tables_L</td><td>the second copy of the CLUTs for HIRES4’s two dots per byte (as the K2)</td><td>4096 × 8 / 32</td><td class="addr" style="text-align:right">32</td><td>1 × RAMB36</td><td class="addr" style="text-align:right">36</td></tr>
 <tr><td class="addr">Layer0/1/2_DPMem</td><td>three layer line buffers</td><td>3 × (256 × 32 / 16)</td><td class="addr" style="text-align:right">24</td><td>3 × RAMB36</td><td class="addr" style="text-align:right">108</td></tr>
 <tr><td class="addr">Sprite_DPMem</td><td>the composed sprite line</td><td>512 × 18</td><td class="addr" style="text-align:right">9</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">OUTPUT_RGB_H</td><td>the final RGB pixel line handed to the output</td><td>512 × 32</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
-<tr><td class="addr">OUTPUT_RGB_L</td><td>rc14: the second dot of each HIRES4 pair, one color line of its own</td><td>512 × 32</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
+<tr><td class="addr">OUTPUT_RGB_L</td><td>the second dot of each HIRES4 pair, one color line of its own</td><td>512 × 32</td><td class="addr" style="text-align:right">16</td><td>1 × RAMB18</td><td class="addr" style="text-align:right">18</td></tr>
 <tr><td class="addr">TileMapCapture, MousePointerMem</td><td>tile-map line capture; mouse pointer image</td><td>512 × 16; 1024 × 8</td><td class="addr" style="text-align:right">16</td><td>2 × RAMB18</td><td class="addr" style="text-align:right">36</td></tr>
 <tr><td class="addr">Sprite_Reg_Block_inst</td><td>the 128 sprite attribute records</td><td>1024 × 8 / 64</td><td class="addr" style="text-align:right">8</td><td>2 × RAMB36</td><td class="addr" style="text-align:right">72</td></tr>
 <tr><td class="addr">GAMMA_R / G / B</td><td>gamma tables</td><td>3 × (256 × 8)</td><td class="addr" style="text-align:right">6</td><td>3 × RAMB18</td><td class="addr" style="text-align:right">54</td></tr>
@@ -1300,104 +1344,10 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <p class="src">Distributed RAM on the Jr2 is the same 488 LUTs for the same reasons (the splash flash FIFO, the OPL3 channels, SuperIO, the palette shadows); with only 9,600 LUTs able to act as memory on the 35T that is 5.1% of them.</p>
 <h2>What this means</h2>
 <ul>
-<li><b>The Jr2 is the constrained board.</b> 14 tiles (504 Kbit) remain on the 35T now that rc14 carries the HIRES4 pair (a second CLUT copy and a second RGB line: one RAMB36 + one RAMB18, exactly as budgeted); a second line-draw-sized FIFO (4 tiles) would still fit, a third would not with any margin.</li>
+<li><b>The Jr2 is the constrained board.</b> 14 tiles (504 Kbit) remain on the 35T with the HIRES4 pair (a second CLUT copy and a second RGB line: one RAMB36 + one RAMB18, exactly as budgeted); a second line-draw-sized FIFO (4 tiles) would still fit, a third would not with any margin.</li>
 <li><b>The K2 has 325 tiles free</b> (4,680 Kbit). Block RAM is nowhere near a limit there; the K2 core's timing closure (the 200 MHz scheduler, the SRAM strobe constraints) is the constraint, not memory.</li>
 <li><b>About 40% of the allocated block RAM is primitive granularity, not data.</b> The four palette-style LUTs (text foreground/background, MemText foreground/background) occupy 144 Kbit for 33 Kbit of contents because their video-side ports are 32 bits wide; the sprite register block takes 72 Kbit for 8 because its engine port is 64 bits wide; the three gamma tables take 54 Kbit for 6. None of that is worth reclaiming on the K2; on the Jr2 the two text palettes (72 Kbit for 1) would be the first place to look if tiles ever run short.</li>
 <li><b>No ILA or VIO debug cores are in either routed build.</b> The <code>MC6809_ILA</code>, <code>Chipscope144_3x12</code> and <code>vio_0</code> IPs exist in both projects but occupy no block RAM in these bitstreams.</li>
 <li><b>The text screen lives in the FPGA, the graphics do not.</b> The 8 KB character matrix, 8 KB color matrix and 4 KB font are block RAM (which is why the text pages sit at fixed addresses), while bitmaps, tiles and sprite images stream from the external 2 MB SRAM through the line buffers listed above.</li>
 </ul>
-</div></div></div><div class="wrap report" data-section="08" id="documentation"><header><div class="eyebrow">Programming reference</div><h1>Documentation</h1><p class="sub">Registers, sequencing and compatibility details.</p></header><div class="grid"><div class="mapcol"><div class="rail-title">Mode reference</div><div class="ladder"><div class="seg mmu"><div class="body"><b><a href="#doc-dma">DMA engine</a></b><div class="d">Transfer setup, completion and address rules</div></div></div><div class="seg const"><div class="body"><b><a href="#doc-hires4">640-pixel bitmaps</a></b><div class="d">HIRES4 control and composition</div></div></div><div class="seg ram"><div class="body"><b><a href="#doc-flashdis">FLASHDIS</a></b><div class="d">Current RAM mode and safe register writes</div></div></div><div class="seg io"><div class="body"><b><a href="#doc-1mb">Earlier RAM windows</a></b><div class="d">rc14 / rc15 compatibility history</div></div></div></div></div><div class="report-detail">
-<p class="lede">The long-form notes. The tables above say what a register is; this is how the thing behaves and how to drive it.</p>
-<h3 id="doc-dma">DMA engine — $FEC0–$FED7</h3>
-<p class="note"><b>Those are the write addresses, and they are not the read addresses.</b> Every multi-byte
-field is big endian, high byte at the low address. Writes land directly, but the read decode hands back a
-<i>different</i> register for sixteen of the thirty-two bytes: both address quads come back reversed, and all
-four size and stride pairs come back swapped. A driver that reads a register back to check what it wrote will
-not recognise its own values unless that permutation is built in. The <span class="m">tests/dma</span> probe
-writes each address’s own low byte into itself and prints what comes back, which identifies whether the
-fitted core matches this decode or a later one.</p>
-<p class="note">The map above was corrected on 2026-09-09 against the core RTL. What was documented before
-that was wrong from $FEC4 down: both address quads were one byte low, and the whole size and stride block
-was four bytes high.</p>
-<p class="note"><b>Driving it.</b> Read out of the core RTL, 2026-09-09.</p>
-<ol class="note">
-<li><b>Start is a rising edge on bit 7</b>, not a level, and bit 0 must already be high when the edge lands. Nothing in the hardware ever clears bit 7, so the CPU has to write it back to 0 before it can start another transfer — storing $81 twice in a row does one transfer, not two. Set everything up, store the control byte with bit 7 clear, then store it again with bit 7 set.</li>
-<li><b>Completion is a self-clearing level</b> in status bit 7. There is no acknowledge and no write-1-to-clear. Poll until it goes low.</li>
-<li><b>Transfers only run during vertical blanking</b> — about the first 43 scanlines of each frame, roughly 8% of the time. One started just after the window closes moves no bytes for most of a frame, so a timeout has to be at least two frames, around 40 ms, not microseconds.</li>
-<li><b>A fill longer than about 130 KB stops early and still reports success.</b> Chunk fills well under 100 KB.</li>
-<li><b>The engine goes straight to the SRAM and does not pass through the MMU.</b> Addresses are flat 24-bit physical, and only bits 20:1 reach the memory pins, so the space aliases every 2 MB. A logical $xxxx address will land on the wrong page: work out block number × 8192 + offset first.</li>
-</ol>
-<div class="warncall"><span class="m">Danger.</span> Starting a transfer halts the CPU and waits for BA and BS to come back together, with no timeout. If that handshake does not complete, the state machine stops there permanently, the status bit stays $80, and the CPU is re-halted every vertical blank for the rest of the session. That state is unrecoverable without a reset. The <span class="m">tests/dma</span> probe on the disk deliberately never starts a transfer for this reason.</div>
-<h3 id="doc-hires4">640 × 240 × 16-color bitmap mode — GFX MODE $FFCB (rc14 cores)</h3>
-<p>The bitmap engine’s native picture is 320 × 240 with one byte per dot, each dot shown twice across. HIRES4 keeps every byte where it is and reads it as <b>two dots of four bits</b>, the high nibble on the left, so a 320-byte row becomes 640 dots and the frame stays 76,800 bytes: same RAM, same fetch bandwidth, same raster, nothing for an old monitor to notice. Two ways to switch it on, OR’d together:</p>
-<div class="tblwrap"><table>
-<tr><th style="width:22ch">Where</th><th>Bits</th></tr>
-<tr><td class="addr">$FFCB (fixed I/O)</td><td>bit 0 <code>GFX_HIRES4</code>: every bitmap plane · bits 3:1 <code>GFX_GROUP</code>: which 16-entry slice of the plane’s CLUT the nibbles index. Pokeable from any task, no page $C0 mapping needed; reset value 0 = the 320-wide behaviour.</td></tr>
-<tr><td class="addr">bitmap control byte ($F000 / $F008 / $F010 with page $C0 in slot 7)</td><td>bit 4 <code>BM0_HIRES4</code>: this plane alone · bits 7:5 <code>BM0_GROUP</code>: its CLUT slice. Bits 3:0 (enable, LUT number) unchanged.</td></tr>
-</table></div>
-<p><b>Colors.</b> A dot’s CLUT entry is group × 16 + nibble, in the CLUT the plane’s LUT bits select; the sixteen entries of the slice are the whole palette of that plane. Nibble 0 is transparent, as byte 0 is in the 320 mode, so it shows the layer behind or VICKY’s background color ($FFCD–$FFCF). Transparency is per 640 dot: the two halves of one byte can show through to different things.</p>
-<p><b>What it does not change.</b> Sprites, tiles and text are not part of it. They fetch and draw exactly as before, at 320 dots doubled, and are composited with the 640-wide bitmap dots in the usual layer order ($FFC2/$FFC3): a sprite or tile dot always covers a pair of bitmap dots, and its X position is still a 320-column unit, so it cannot sit on an odd 640 column. Each plane decides for itself, so a 640-wide picture and a 320-wide one can share the frame. The dot order inside a pair is fixed by the design since rc14 (a blanking-aligned phase, not a sampled clock), so it is the same on every build.</p>
-<p><b>On the Jr2</b> the mode costs a second CLUT copy and a second color line in block RAM (see the block-RAM budget below); the Jr2 rc14 core carries it (deployed 2026-09-12 with the K2’s).</p>
-<h3 id="doc-1mb">Earlier RAM windows · rc14 / rc15 compatibility</h3>
-<p class="note"><b>1 MB of SRAM since rc14, at its final addresses since rc15</b> (K2 and Jr2, 2026-09-12): the two
-  RAM windows put the SRAM’s unused upper half behind LUT entries <span class="m">$A0–$BF</span> and
-  <span class="m">$D0–$EF</span>, at absolute addresses that follow the rule of every other block, block × $2000:
-  <span class="m">$14_0000–$17_FFFF</span> and <span class="m">$1A_0000–$1D_FFFF</span>, for the CPU, VICKY,
-  DMA and the debug port alike, and the SRAM pins carry the absolute address / 2 with no translation anywhere. The kernel side
-  (<span class="m">wb/1mb_ram_upgrade</span>, overlaid, both machines): krnp2 grows the block map to all 256 entries and marks
-  <span class="m">$40–$9F</span>, <span class="m">$C0–$CF</span> and <span class="m">$F0–$FF</span> NotRAM;
-  vtio’s <span class="m">Blk2Addr</span> is block × $2000 for every block. rc14 had put window B at $20_0000 (a mis-edited
-  row of the map sheet, one bit past the SRAM’s A19) behind a +$30 and a bit-20 fold; rc15 removed all of it, so an rc14 core
-  wants an rc14 disk and rc15 an rc15 disk where window-B screens are concerned. Since 2026-09-14 (rc16 cores, both machines) the kernel adds the flash window to the pool as well: see FLASHDIS below.
-  Open: DMA into a window (the engine drops high address bits).</p>
-<div class="callout"><h3>rc16 memory and external-bus writes</h3><p>With the max-RAM kernel, FLASHDIS maps 1,792 KB of SRAM. Flash and cartridge accesses use the shaped write pulse when FLASHDIS is clear; when set, those MMU blocks select SRAM instead. RTC accesses retain the raw CPU write signal for their wait-stretched cycles. DMA remains a separate physical-address engine; the DMA sequencing and limitations above still apply.</p><p class="src">Source: shared TyVKy2K2turbo_MMU_FNX6809.v write-strobe logic and TyVKy2K2x1_MMU_Register.v FLASHDIS decode, used by the rc16 projects.</p></div>
-<h3 id="doc-flashdis">FLASHDIS — the flash window as RAM: <code>MMU_IO_CTRL</code> ($FFA1) bit 2 (rc16 cores)</h3>
-<p class="lede"><b>768 KB more RAM since rc16</b> (K2 and Jr2, 2026-09-14). The SRAM is 2 MB, but the flash chip and the expansion
-  connector sat in front of its middle third: LUT entries <span class="m">$40–$7F</span> selected the flash and
-  <span class="m">$80–$9F</span> the expansion, so chip bytes <span class="m">$08_0000–$13_FFFF</span> were never
-  reachable. One bit swaps them out.</p>
-<div class="cols">
-<div>
-<p class="note" style="margin:0 0 6px"><b>FLASHDIS = 0</b> — reset, rc15 and earlier, or the 1 MB kernel</p>
-<div class="ladder">
-<div class="seg ram"><div class="addr">$00–$3F</div><div class="body"><b>System RAM · 512 KB</b><div class="d">$00_0000–$07_FFFF</div></div></div>
-<div class="seg flash"><div class="addr">$40–$7F</div><div class="body"><b>Flash · 512 KB</b><div class="d">the FEU and the flash drives; chip bytes $08_0000–$0F_FFFF hidden behind it</div></div></div>
-<div class="seg exram"><div class="addr">$80–$9F</div><div class="body"><b>Expansion · 256 KB</b><div class="d">the connector; chip bytes $10_0000–$13_FFFF hidden behind it</div></div></div>
-<div class="seg ram"><div class="addr">$A0–$BF</div><div class="body"><b>RAM window A · 256 KB</b><div class="d">$14_0000–$17_FFFF</div></div></div>
-<div class="seg io"><div class="addr">$C0–$CF</div><div class="body"><b>I/O pages</b><div class="d">not RAM</div></div></div>
-<div class="seg ram"><div class="addr">$D0–$EF</div><div class="body"><b>RAM window B · 256 KB</b><div class="d">$1A_0000–$1D_FFFF</div></div></div>
-<div class="seg dead"><div class="addr">$F0–$FF</div><div class="body"><b>Undecoded</b><div class="d">not RAM</div></div></div>
-</div>
-<p class="note" style="margin:6px 0 0">128 RAM blocks · <span class="m">mfree</span> 928K after boot</p>
-</div>
-<div>
-<p class="note" style="margin:0 0 6px"><b>FLASHDIS = 1</b> — rc16 cores with the max-RAM kernel</p>
-<div class="ladder">
-<div class="seg ram tall"><div class="addr">$00–$BF</div><div class="body"><b>System RAM · 1536 KB</b><div class="d">$00_0000–$17_FFFF, one run: the first 512K, the 768K that sat behind the flash and the expansion connector ($08_0000–$13_FFFF), and what was window A ($14_0000–$17_FFFF) — block × $2000 throughout, for the CPU, VICKY, DMA and the debug port alike</div></div></div>
-<div class="seg io"><div class="addr">$C0–$CF</div><div class="body"><b>I/O pages</b><div class="d">not RAM</div></div></div>
-<div class="seg ram"><div class="addr">$D0–$EF</div><div class="body"><b>RAM window B · 256 KB</b><div class="d">$1A_0000–$1D_FFFF</div></div></div>
-<div class="seg dead"><div class="addr">$F0–$FF</div><div class="body"><b>Undecoded</b><div class="d">not RAM</div></div></div>
-</div>
-<p class="note" style="margin:6px 0 0">224 RAM blocks · <span class="m">mfree</span> 1696K after boot · 1792 KB in all (1536 KB + window B)</p>
-</div>
-</div>
-<div class="tblwrap" style="margin-top:16px"><table>
-<tr><th style="width:18ch">Register</th><th style="width:8ch">Bit</th><th style="width:16ch">Name (defs/wildbits.d)</th><th>Meaning</th></tr>
-<tr><td class="addr">$FFA1 <code>MMU_IO_CTRL</code></td><td class="addr">7</td><td><code>FLASHDIS.OK</code></td><td>Read-only. 1 on a core that implements FLASHDIS (rc16+), 0 on every earlier core — they hand back what was stored, and nothing stores a 1 there. The kernel tests this bit before touching bit 2.</td></tr>
-<tr><td class="addr"></td><td class="addr">2</td><td><code>FLASHDIS</code></td><td>1 = LUT blocks $40–$9F are RAM. 0 = flash at $40–$7F and the expansion connector at $80–$9F, as always. Cleared by reset, so the machine boots from flash every time; the FEU trampoline runs from flash and stores $00 / $02 here, and is unaffected.</td></tr>
-<tr><td class="addr"></td><td class="addr">1</td><td>—</td><td>Internal RAM at $FFF0–$FFFF (the vector page); unchanged.</td></tr>
-<tr><td class="addr"></td><td class="addr">0</td><td>—</td><td>Internal RAM at $FD00–$FDFF; unchanged.</td></tr>
-</table></div>
-<p class="note" style="margin:6px 0 0">The register is readable; names as in <code>defs/wildbits.d</code> (equates <code>FLASHDIS</code> = %00000100, <code>FLASHDIS.OK</code> = %10000000).</p>
-<p style="margin:18px 0 4px"><b>What the kernel does at boot</b> (krnp2 on main, both machines, before anything is forked):</p>
-<div class="pipe">
-<div class="stage"><h4>1 · read</h4><p><span class="m">lda &gt;MMU_IO_CTRL</span> — one read of $FFA1.</p></div>
-<div class="arrow">→</div>
-<div class="stage"><h4>2 · FLASHDIS.OK set</h4><p>ORs <span class="m">FLASHDIS</span> in (read-modify-write, bits 0/1 kept) and walks the gap table <em>without</em> $40–$9F: the pool is 224 blocks, <span class="m">mfree</span> 1696K.</p></div>
-<div class="arrow">→</div>
-<div class="stage"><h4>2′ · FLASHDIS.OK clear</h4><p>The register is not written and the gap table is the 1 MB map’s, byte for byte: 128 blocks, <span class="m">mfree</span> 928K. One disk serves both cores.</p></div>
-</div>
-<div class="warncall"><b>Rules.</b> After boot <b>nobody stores an absolute value to <span class="m">MMU_IO_CTRL</span></b> — a bare store clears bit 2 and pulls 768 KB of live RAM out from under the kernel; read-modify-write only. While FLASHDIS is set the FEU blocks in flash are unreachable; they come back with a reset, which clears the bit.</div>
-<p class="note"><b>Proof.</b> <span class="m">/dd/tests/memtest</span> (TESTS on every disk) walks the kernel’s block map, writes a mark into every free block, reads the first mark slot of every block and reports any block showing another block’s mark: 224 RAM blocks, 0 ghosts on an rc16 core with this kernel — the $40–$9F SRAM is its own memory, not a mirror of the first 512K.</p>
-<footer class="report-source">WildBits K2 / Jr2 · FNX6809 v8-era cores · compiled 2026-08-31 · companion to the 64K Memory Map and Physical Memory Map reports.</footer>
 </div></div></div></main><footer class="sitefooter"><a href="#top">Back to top ↑</a><span>WildBits · K2 and Jr2 hardware reports</span></footer></body></html>
