@@ -55,3 +55,13 @@ body{font-family:var(--sans);font-size:var(--type-body);line-height:1.65}
 .hero h1{font-family:var(--sans);font-size:var(--type-title);line-height:1.22;font-weight:650;letter-spacing:-.025em}
 .hero .sub{font-size:var(--type-body);line-height:1.65}
 @media(max-width:760px){:root{--type-title:28px;--type-section:22px;--type-subsection:19px}.hero h1{font-size:var(--type-title)}}
+
+/* 2026-09-24 (user): one size and style for copy and write-ups; headings and uppercase labels keep theirs */
+.report p,.report li,.report .note,.report .src,.report .lede,.report .sub,.report .callout,.report .warncall,.report .card,.report td,.report figcaption,.report dd,.report dt,.report .report-source{font-family:var(--sans);font-size:14px!important;line-height:1.6}
+.report td code,.report td .m,.report p code,.report li code,.report .note code,.report .m,.report code{font-size:13px!important}
+.report td li,.report td ol,.report td ul,.report .warncall li,.report .callout li{max-width:none!important}
+:root{--type-body:14px}
+.report td[colspan]{white-space:normal!important;overflow-wrap:anywhere;max-width:none}
+.ladder.whatsnew .addr{flex-basis:10%;width:10%;white-space:normal}
+
+.parity td > .feature-unavailable{color:#6b7280!important}
