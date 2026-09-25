@@ -65,3 +65,5 @@ body{font-family:var(--sans);font-size:var(--type-body);line-height:1.65}
 .ladder.whatsnew .addr{flex-basis:10%;width:10%;white-space:normal}
 
 .parity td > .feature-unavailable{color:#6b7280!important}
+p,li{max-width:none!important}
+.hero h1 a,.hero h1 a:hover{color:inherit;text-decoration:underline;background:transparent}
