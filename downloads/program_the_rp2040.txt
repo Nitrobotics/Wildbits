@@ -1,0 +1,24 @@
+Power off K2
+Open cover
+Attach 3-wire USB cable (D+ D- GND type)
+Attach USB cable to PC (also works with Windows 11)
+Hold down button (S3) next to RP2040 USB header
+Power up K2
+Release S3 button
+PC should have a new drive
+Copy or drag the .uf2 firmware file to the drive
+Power cycle the K2
+The RP2040 firmware should now be updated and compatible with K2 core V8_RC18 and higher
+
+Commands to try:
+
+fpga list 3  
+fpga status
+fpga log
+fpga list
+fpga list 3                          (show what's in context 3, slot 3, "CNTX3")
+fpga program 3 {file}                write a core file to SD card CNTX3 folder
+fpga program 3 /dd/cores/core.bin
+fpga flash 3 /dd/cores/core.bin.gz   write a core file to RP2040 Flash context/slot 3
+fpga abort
+
