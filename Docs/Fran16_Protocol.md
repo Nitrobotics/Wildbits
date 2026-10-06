@@ -132,3 +132,22 @@ Arguments are listed in order. "hi,lo" = a 16-bit value in two bytes. "â€“" = no
 - **`$B8 nboxa` without double buffering** (no DMA, as under MAME): the two inversions cancel out, so no hover shows.
 - **Error text on the reply pipe:** when a window's background save fails to allocate, Fran prints `al%d`, and `$C7` can print `**Can't free`. Both go on path 1, where UMusE3 can read them as a menu answer.
 - **`$C9 yesno`** draws the buttons but never reports the choice.
+
+### S9 toolbox image drag extension — 2026-10-05
+Command $99 still consumes exactly three bytes: Y, flag1, flag2. Normal
+flag1 values retain the toolbox drawing behavior. flag1=$80 captures the
+complete already-rendered toolbox once (Y/flag2 unused); flag1=$81 moves
+it to Y by restoring the old background, saving the new background and
+pasting the captured image. No reply. Other flag1 values with bit 7 set
+are ignored. The caller sends $CD/CR to flush and its mouse poll sends
+$CA to present the completed hidden page. Drag release requires no redraw.
+
+Movable toolbox origin (2026-10-05): ToolX owns two appended editor bytes;
+FrToolX owns two appended GUI bytes. Both initialize to column 16. Dragging
+clamps the left column to 0..32, so the 48-column rectangle always fits the
+80-column screen. Main-frame hit testing, icon picking, brush-box placement,
+icon rendering and pixel-line decorations all derive X from this origin.
+The four-byte drag frame holds Y and X-column grab deltas; each is documented
+as a STACK OFFSET. ToolHide restores the background before FrToolX changes.
+The $99 drag protocol carries Y, phase ($80 capture/$81 move), and X column.
+No RAM blocks or modules were added; allocation/unloading remains unchanged.
