@@ -106,7 +106,7 @@ supplies the physical block; the entry’s top bits pick which bus answers.</p>
 <div class="seg exram mid"><div class="addr">$80<br/>⋮<br/>$9F</div>
 <div class="body"><b>Expansion RAM · 256 KB</b></div></div>
 <div class="seg ram"><div class="addr">$A0–$FB</div><div class="body"><b>System RAM · 736 KB</b><div class="d">$14_0000–$1F_7FFF · block × $2000 throughout; includes the former $Cx and $F0–$FB gaps.</div></div></div>
-<div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9E.</div></div></div>
+<div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9F.</div></div></div>
 </div>
 <p class="note">At reset: 156 RAM blocks (1,248 KB). Block numbers are what you write into a slot register; fixed CPU register addresses are separate.</p>
 </div>
@@ -182,7 +182,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <div class="seg io"><span class="nm">VS1053b audio codec<br/><small>fixed decode range</small></span><span class="ad">$FF50–$FF5F</span></div>
 <div class="seg mmu"><span class="nm">WizNet W6100 ethernet<br/><small>fixed decode range</small></span><span class="ad">$FF40–$FF48</span></div>
 <div class="seg io"><span class="nm">MIDI FIFO + SAM2695 Synth<br/><small>fixed decode range</small></span><span class="ad">$FF30–$FF39</span></div>
-<div class="seg mmu"><span class="nm">WizFi360 WiFi UART<br/><small>fixed decode range</small></span><span class="ad">$FF20–$FF2A</span></div>
+<div class="seg mmu"><span class="nm">WizFi360 WiFi UART<br/><small>fixed decode range</small></span><span class="ad">$FF20–$FF2F</span></div>
 <div class="seg const"><span class="nm">Splash / SPI flash DMA<br/><small>fixed decode range</small></span><span class="ad">$FF10–$FF18</span></div>
 <div class="seg ram"><span class="nm">SD card 1 (SPI)<br/><small>fixed decode range</small></span><span class="ad">$FF00–$FF01</span></div>
 <div class="seg io"><span class="nm">Math coprocessor<br/><small>fixed decode range</small></span><span class="ad">$FEE0–$FEFB</span></div>
@@ -191,7 +191,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <div class="seg const"><span class="nm">Mouse pointer<br/><small>fixed decode range</small></span><span class="ad">$FEA0–$FEA8</span></div>
 <div class="seg mmu"><span class="nm">K2 RP2040 mailbox<br/><small>16 registers · rc18</small></span><span class="ad"><a href="#rp2040-mailbox">$FE78–$FE7F<br/>$FE88–$FE8F</a></span></div>
 <div class="seg ram"><span class="nm">SD card 0 (SPI)<br/><small>fixed decode range</small></span><span class="ad">$FE90–$FE91</span></div>
-<div class="seg mmu"><span class="nm">IEC serial bus<br/><small>1 register; K2 rc18 upper half is mailbox</small></span><span class="ad">$FE80–$FE87 K2<br/>$FE80–$FE8F Jr2</span></div>
+<div class="seg mmu"><span class="nm">IEC serial bus<br/><small>2 registers; K2 rc18 upper half is mailbox</small></span><span class="ad">$FE80–$FE87 K2<br/>$FE80–$FE8F Jr2</span></div>
 <div class="seg ram"><span class="nm">CODEC<br/><small>fixed decode range</small></span><span class="ad">$FE70–$FE72</span></div>
 <div class="seg regs"><span class="nm">UART (DriveWire)<br/><small>fixed decode range</small></span><span class="ad">$FE60–$FE67</span></div>
 <div class="seg io"><span class="nm">PS/2 ports<br/><small>fixed decode range</small></span><span class="ad">$FE50–$FE54</span></div>
@@ -274,11 +274,11 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <p class="src">used by: mousedrv, keydrv_ps2 (Jr2)</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FE50</td><td>control:<br/><span class="bit">b5 mouse FIFO clear</span><br/><span class="bit">b4 keyboard FIFO clear</span><br/><span class="bit">b3 mouse write</span><br/><span class="bit">b1 keyboard write</span></td></tr>
+<tr><td class="addr">$FE50</td><td>control (only $FE50/$FE51 are writable, RC25):<br/><span class="bit">b7 mouse framing (RC25): whole 3-byte packets only</span><br/><span class="bit">b6 keyboard framing (RC25): whole scan-code groups only</span><br/><span class="bit">b5 mouse FIFO clear</span><br/><span class="bit">b4 keyboard FIFO clear</span><br/><span class="bit">b3 mouse write</span><br/><span class="bit">b1 keyboard write</span></td></tr>
 <tr><td class="addr">$FE51</td><td>byte to send</td></tr>
 <tr><td class="addr">$FE52</td><td>keyboard input</td></tr>
 <tr><td class="addr">$FE53</td><td>mouse input</td></tr>
-<tr><td class="addr">$FE54</td><td>status:<br/><span class="bit">b7/b6 keyboard ack/nak</span><br/><span class="bit">b5/b4 mouse ack/nak</span><br/><span class="bit">b1 mouse FIFO empty</span><br/><span class="bit">b0 keyboard FIFO empty</span></td></tr>
+<tr><td class="addr">$FE54</td><td>status:<br/><span class="bit">b7/b6 keyboard ack/nak</span><br/><span class="bit">b5/b4 mouse ack/nak</span><br/><span class="bit">b3/b2 mouse/keyboard error (RC25, sticky): parity, start/stop or FIFO overrun; cleared by the FIFO clear bits</span><br/><span class="bit">b1 mouse FIFO empty</span><br/><span class="bit">b0 keyboard FIFO empty</span></td></tr>
 </table></div>
 <h3>$FE60–$FE67 · UART (DriveWire)</h3>
 <p class="src">used by: dwinit / dwread / dwwrite</p>
@@ -311,7 +311,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <p class="src">K2 rc18 and later; used by RPDrv/rp and the fpga command. Jr2 has no onboard RP2040 supervisor. Register names follow defs/wildbits.d on wb/rp2040.</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FE78</td><td><code>RP.Control</code> — Read/write; reset <code>$01</code>.<br/><span class="bit">b0 enable mailbox polling and command transfer</span><br/><span class="bit">b1 clear last error when written as 1</span><br/><span class="bit">b7 clear TX and RX FIFOs when written as 1</span><br/>FIFO clear does not abort a supervisor operation.</td></tr>
+<tr><td class="addr">$FE78</td><td><code>RP.Control</code> — Read/write; reset <code>$01</code>.<br/><span class="bit">b0 enable mailbox polling and command transfer</span><br/><span class="bit">b1 clear last error when written as 1 (until the next poll)</span><br/><span class="bit">b7 clear TX and RX FIFOs when written as 1</span><br/>All 8 bits read back: write b1/b7 back to 0. FIFO clear does not abort a supervisor operation and is not reliable while status b3 is set.</td></tr>
 <tr><td class="addr">$FE79</td><td><code>RP.Status</code> — Read-only; reset <code>$20</code>.<br/><span class="bit">b7 error present</span><br/><span class="bit">b6 RX FIFO has data</span><br/><span class="bit">b5 TX FIFO empty</span><br/><span class="bit">b4 TX FIFO full</span><br/><span class="bit">b3 command pending or in flight</span><br/><span class="bit">b2 supervisor SD-present flag</span><br/><span class="bit">b1 supervisor upload-active flag</span><br/><span class="bit">b0 supervisor seen online</span></td></tr>
 <tr><td class="addr">$FE7A</td><td><code>RP.Command</code> — Write a command byte to submit the TX payload; read back the most recently accepted command. Submit only while status b3 is clear. Reset <code>$00</code>.</td></tr>
 <tr><td class="addr">$FE7B</td><td><code>RP.Remote</code> — Read-only raw status byte from the latest valid supervisor response. Reset <code>$00</code>.</td></tr>
@@ -323,10 +323,10 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FE8B</td><td><code>RP.ADC1</code> — Read-only supervisor ADC channel 1 sample; reset <code>$00</code>.</td></tr>
 <tr><td class="addr">$FE8C</td><td><code>RP.ADC2</code> — Read-only supervisor ADC channel 2 sample; reset <code>$00</code>.</td></tr>
 <tr><td class="addr">$FE8D</td><td><code>RP.ADC3</code> — Read-only supervisor ADC channel 3 sample; reset <code>$00</code>.</td></tr>
-<tr><td class="addr">$FE8E</td><td><code>RP.Error</code> — Read-only last error; <code>$00</code> = none. Local errors: <code>$E1</code> command submitted while busy, <code>$E2</code> TX payload too long, <code>$E3</code> RX FIFO overflow. Valid supervisor responses also update this byte.</td></tr>
+<tr><td class="addr">$FE8E</td><td><code>RP.Error</code> — Read-only last error; <code>$00</code> = none. Local errors: <code>$E1</code> command submitted while busy, <code>$E2</code> TX payload too long, <code>$E3</code> RX FIFO overflow. Every valid supervisor frame (about every 1.6 ms) overwrites it, so local codes are short-lived.</td></tr>
 <tr><td class="addr">$FE8F</td><td><code>RP.FwMajor</code> — Read-only supervisor firmware major version from its response; reset <code>$00</code>.</td></tr>
 </table></div>
-<p class="src">The 6809 count registers are big endian; multibyte command payload fields use the supervisor protocol’s little-endian order. Each FIFO holds 256 bytes; a command payload is at most 240 bytes. The current RPDrv waits one 60 Hz tick after busy clears before copying the response, because RX FIFO filling can still be in progress.</p>
+<p class="src">The 6809 count registers are big endian; multibyte command payload fields use the supervisor protocol’s little-endian order. Each FIFO holds 256 bytes; a command payload is at most 240 bytes. The current RPDrv waits one 60 Hz tick after busy clears before copying the response, because RX FIFO filling can still be in progress. The mailbox has no interrupt: software polls.</p>
 <h3>$FE90–$FE91 · SD card 0 (SPI)</h3>
 <p class="src">used by: llwbsd (/s0, /s1)</p>
 <div class="tblwrap"><table>
@@ -417,17 +417,18 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <tr><td class="addr">$FF17</td><td>Low byte of the 24-bit flash source address (see $FF15–$FF17).</td></tr>
 <tr><td class="addr">$FF18</td><td>FIFO data port (read pops one byte)</td></tr>
 </table></div>
-<h3>$FF20–$FF2A · WizFi360 WiFi UART</h3>
+<h3>$FF20–$FF2F · WizFi360 WiFi UART</h3>
 <p class="src">used by: wizfi (WizCon4), wizi, ntptime, wizupdate, modem -R</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FF20</td><td>control/status, reset $0A:<br/><span class="bit">b4–b0 rate code 0–16: the WizFi360's actual rates, 600.006 to 2,000,000 baud (10 = 115,273.8 default, 13 = 930,232.6; nominal names remain 115200 and 921600)</span><br/><span class="bit">b5 reserved (reads 0)</span><br/><span class="bit">b6 RX FIFO empty (read)</span><br/><span class="bit">b7 TX FIFO empty (read)</span></td></tr>
-<tr><td class="addr">$FF21</td><td>reset, reset $80 (each bit holds its reset while set):<br/><span class="bit">b0 WizFi360 chip reset</span><br/><span class="bit">b1 TX and RX FIFO reset</span><br/><span class="bit">b2 TX and RX UART reset</span><br/><span class="bit">b7 reads 1: the register exists</span></td></tr>
-<tr><td class="addr">$FF22</td><td>data: write pushes to the 2K TX FIFO, read pops the 2K RX FIFO</td></tr>
-<tr><td class="addr">$FF23/$FF24</td><td>RX FIFO read count (16-bit)</td></tr>
-<tr><td class="addr">$FF25/$FF26</td><td>RX FIFO write count</td></tr>
-<tr><td class="addr">$FF27/$FF28</td><td>TX FIFO read count</td></tr>
-<tr><td class="addr">$FF29/$FF2A</td><td>TX FIFO write count</td></tr>
+<tr><td class="addr">$FF20</td><td>control/status, reset $0A:<br/><span class="bit">b4–b0 rate code 0–16: the WizFi360's actual rates, 600.006 to 2,000,000 baud (10 = 115,273.8 default, 13 = 930,232.6; nominal names remain 115200 and 921600); codes 17–31 run as 10</span><br/><span class="bit">b5 reads 0; written b7–b5 are ignored</span><br/><span class="bit">b6 RX FIFO empty (read)</span><br/><span class="bit">b7 TX FIFO empty (read; the last byte may still be sending)</span></td></tr>
+<tr><td class="addr">$FF21</td><td>reset, reset $80 (each bit holds its reset while set):<br/><span class="bit">b0 WizFi360 chip reset (Jr2: also the SAM2695 MIDI synth, a shared reset net)</span><br/><span class="bit">b1 TX and RX FIFO reset</span><br/><span class="bit">b2 TX and RX UART reset</span><br/><span class="bit">b6–b3 read 0</span><br/><span class="bit">b7 reads 1: the register exists</span></td></tr>
+<tr><td class="addr">$FF22</td><td>data: write pushes to the 2K TX FIFO, read pops the 2K RX FIFO; a write while the TX FIFO is full is lost (no full flag)</td></tr>
+<tr><td class="addr">$FF23/$FF24</td><td>RX FIFO fill, read side: 11 bits, high byte first</td></tr>
+<tr><td class="addr">$FF25/$FF26</td><td>RX FIFO fill, write side (24 Mhz clock: the two bytes can differ in time)</td></tr>
+<tr><td class="addr">$FF27/$FF28</td><td>TX FIFO fill, read side (24 Mhz clock)</td></tr>
+<tr><td class="addr">$FF29/$FF2A</td><td>TX FIFO fill, write side</td></tr>
+<tr><td class="addr">$FF2B–$FF2F</td><td>read $55; writes ignored</td></tr>
 <tr><td class="addr">—</td><td class="src">RX non-empty and TX drained edges arrive on INT group 3<br/><span class="bit">b0 / b5</span></td></tr>
 </table></div>
 <p class="src">RC24 uses the same 24 Mhz serial clock and fractional bit-period settings for WizFi TX and RX. These rates follow the W600 divisor values; nominal names do not state the exact baud.</p>
@@ -506,7 +507,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <p class="src">used by: wildspeed, wbinfo, feu</p>
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
-<tr><td class="addr">$FF90</td><td>read-only:<br/><span class="bit">b7 gamma on</span><br/><span class="bit">b6:4 user 2..0</span><br/><span class="bit">b3:0 boot mode 3..0</span><br/><span class="bit">b0 (SW_BOOT_MODE0) is the <b>turbo gate</b> on RC24: 1 selects the faster SRAM schedule, live-flippable; actual CPU rate depends on read/write/I/O cycles and video arbitration</span></td></tr>
+<tr><td class="addr">$FF90</td><td>read-only:<br/><span class="bit">b7 gamma on</span><br/><span class="bit">b6:4 user 2..0</span><br/><span class="bit">b3:0 boot mode 3..0</span><br/><span class="bit">b0 (SW_BOOT_MODE0) is the <b>turbo gate</b>: 0 (switch ON) allows the faster SRAM schedule, 1 = stock timing, live-flippable; actual CPU rate depends on read/write/I/O cycles and video arbitration</span></td></tr>
 </table></div>
 <h3>$FF91–$FF9F · PSG, OPL3, SID and PCM</h3>
 <p class="src">Fixed sound registers on K2 and Jr2; no sectored sound page is needed.</p>
@@ -524,7 +525,7 @@ switches maps by writing <span class="m">$FFA0[1:0]</span> from the LowSub tramp
 <div class="tblwrap"><table>
 <tr><th style="width:15ch">Register</th><th>Bits, reset values and notes</th></tr>
 <tr><td class="addr">$FFA0</td><td>memory control — <code>MMU_MEM_CTRL</code> / <code>DAT.Task</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b5:4 which LUT edits write</span><br/><span class="bit">b1:0 active LUT (reset 0)</span></td></tr>
-<tr><td class="addr">$FFA1</td><td>I/O control — <code>MMU_IO_CTRL</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b0 internal RAM at $FD00–$FDFF</span><br/><span class="bit">b1 internal RAM at $FFF0–$FFFF (vectors)</span><br/><span class="bit">b2 <code>FLASHDIS</code>: 1 = LUT blocks $40–$9F are RAM (768 KB, chip bytes $08_0000–$13_FFFF); 0 = flash at $40–$7F and the expansion connector at $80–$9F</span><br/><span class="bit">b3 <code>VICKYDIS</code> (RC25): 1 = LUT blocks $FC–$FF are SRAM ($1F_8000–$1F_FFFF, 32 KB) instead of the VICKY register, font/CLUT, text and color pages; global for every task, the device pages keep their contents and come back when it is cleared; video and DMA are not affected</span><br/><span class="bit">b6 <code>VICKYDIS.OK</code>, read-only: 1 when VICKYDIS is implemented (RC25; older cores read back the stored bit)</span><br/><span class="bit">b7 <code>FLASHDIS.OK</code>, read-only: 1 when FLASHDIS is implemented (older cores read back 0)</span><br/>All bits cleared by reset, so the machine always boots from flash. <b>Read-modify-write only</b> once a kernel runs: a bare store clears b2 and pulls 768 KB of live RAM away. See <a href="#doc-flashdis">Documentation · FLASHDIS</a>.</td></tr>
+<tr><td class="addr">$FFA1</td><td>I/O control — <code>MMU_IO_CTRL</code> (<code>defs/wildbits.d</code>):<br/><span class="bit">b0 internal RAM at $FD00–$FDFF</span><br/><span class="bit">b1 internal RAM at $FFF0–$FFFF (vectors)</span><br/><span class="bit">b2 <code>FLASHDIS</code>: 1 = LUT blocks $40–$9F are RAM (768 KB, chip bytes $08_0000–$13_FFFF); 0 = flash at $40–$7F and the expansion connector at $80–$9F</span><br/><span class="bit">b3 <code>VICKYDIS</code> (RC25): 1 = LUT blocks $FC–$FF are SRAM ($1F_8000–$1F_FFFF, 32 KB) instead of the VICKY register, font/CLUT, text and color pages; global for every task, the device pages keep their contents and come back when it is cleared; video and DMA are not affected</span><br/><span class="bit">b6 <code>VICKYDIS.OK</code>, read-only: 1 when VICKYDIS is implemented (RC25; older cores read back the stored bit)</span><br/><span class="bit">b7 <code>FLASHDIS.OK</code>, read-only: 1 when FLASHDIS is implemented (older cores read back 0)</span><br/>Bits 5–0 are cleared by reset (it reads $C0), so the machine always boots from flash. <b>Read-modify-write only</b> once a kernel runs: a bare store clears b2 and pulls 768 KB of live RAM away. See <a href="#doc-flashdis">Documentation · FLASHDIS</a>.</td></tr>
 <tr><td class="addr">$FFA8–$FFAF</td><td>slot 0–7 block registers of the LUT selected for editing (8K slots at $0000, $2000 … $E000); reset = identity 0–7 with slot 7 on flash block $7F in boot mode; writes are captured on the 25 Mhz side during the CPU’s data-valid window</td></tr>
 <tr><td class="addr">—</td><td class="src">reads of $FFA0–$FFAF return the register copies (used by pmap, the crash dump, F$SetTsk)</td></tr>
 </table></div>
@@ -760,7 +761,7 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <p class="sub">The Longview map with FLASHDIS enabled: 252 allocatable RAM blocks (2,016 KB), four device pages, and one address rule for CPU, VICKY and DMA. Boot and runtime allocations reduce the memory shown as free.</p>
 </header>
 <div class="grid">
-<div class="mapcol"><div class="rail-title" style="margin-top:18px;">SRAM address space · 8 KB per block</div><div class="ladder" style="margin-bottom:20px;"><div class="seg ram tall"><div class="addr">$00–$FB</div><div class="body"><b>System RAM · 2,016 KB</b><div class="d">$00_0000–$1F_7FFF · one contiguous run of 252 blocks with FLASHDIS set; block × $2000 + offset for CPU, VICKY, DMA and the debug port.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9E.</div></div></div></div><div class="callout"><h3>One address rule</h3><p><code>block × $2000 + offset</code></p><p>2,016 KB mapped from a 2,048 KB SRAM chip. The final four block entries select 32 KB of device address space instead of SRAM.</p></div></div>
+<div class="mapcol"><div class="rail-title" style="margin-top:18px;">SRAM address space · 8 KB per block</div><div class="ladder" style="margin-bottom:20px;"><div class="seg ram tall"><div class="addr">$00–$FB</div><div class="body"><b>System RAM · 2,016 KB</b><div class="d">$00_0000–$1F_7FFF · one contiguous run of 252 blocks with FLASHDIS set; block × $2000 + offset for CPU, VICKY, DMA and the debug port.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9F.</div></div></div></div><div class="callout"><h3>One address rule</h3><p><code>block × $2000 + offset</code></p><p>2,016 KB mapped from a 2,048 KB SRAM chip. The final four block entries select 32 KB of device address space instead of SRAM.</p></div></div>
 <div>
 <h2>System RAM — who owns what at run time</h2>
 <div class="tblwrap"><table>
@@ -801,7 +802,7 @@ strobe policy covers all three.</p>
 <h2>Sectored device pages ($FC–$FF)</h2>
 <div class="tblwrap"><table>
 <tr><th>Block</th><th>Contents</th></tr>
-<tr><td class="addr">$FC</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000–$0BFF gamma windows B / G / R (each has a 256-byte table mirrored through a 1 KB decode window, readable)</span><br/><span class="bit">$0C00–$0FFF mouse pointer graphic</span><br/><span class="bit">$1000–$10FF bitmap layer registers (three 8-byte sets at $1000 / $1008 / $1010; the line-draw accelerator at $1080–$1087, see the sprite chapter) · $1100–$11FF tile registers · $1200–$12FF memtext registers</span><br/><span class="bit">$1300–$16FF sprite attribute records (128 × 8 bytes, see the sprite chapter)</span><br/><span class="bit">$1700–$173F text foreground color LUT · $1740–$177F text background color LUT (16 entries × 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable</b> through shadow copies)</span></td></tr>
+<tr><td class="addr">$FC</td><td>VICKY registers and tables, by page offset: <span class="bit">$0000–$0BFF gamma windows B / G / R (each has a 256-byte table mirrored through a 1 KB decode window, readable)</span><br/><span class="bit">$0C00–$0FFF mouse pointer graphic</span><br/><span class="bit">$1000–$10FF bitmap layer registers (three 8-byte sets at $1000 / $1008 / $1010; the line-draw accelerator at $1080–$1087, see the sprite chapter) · $1100–$11FF tile registers (RC24: read back what was written; $33 before) · $1200–$12FF memtext registers</span><br/><span class="bit">$1300–$16FF sprite attribute records (128 × 8 bytes, see the sprite chapter)</span><br/><span class="bit">$1700–$173F text foreground color LUT · $1740–$177F text background color LUT (16 entries × 4 bytes each, B G R A; loaded with the OS-9 palette at power-up; <b>readable</b> through shadow copies)</span></td></tr>
 <tr><td class="addr">$FD</td><td>Font memory at $0000–$0FFF (FONT_BLK); the four graphics CLUTs at $1000–$1FFF (256 entries × 4 bytes each, LUTn at $1000 + $400×n; readable; all zero at power-up until a program loads them)</td></tr>
 <tr><td class="addr">$FE</td><td>Text screen memory; the device decode exposes offsets $0000–$12BF (4,800 bytes) in this 8 KB page.</td></tr>
 <tr><td class="addr">$FF</td><td>Text color attribute memory; offsets $0000–$12BF (4,800 bytes). One byte per character cell: foreground index in the high nibble, background in the low.</td></tr>
@@ -817,8 +818,8 @@ MMU entry pattern <code>1111 11xx</code> routes there instead of to memory.</p>
   <span class="m">$80–$9F</span> the expansion, so chip bytes <span class="m">$08_0000–$13_FFFF</span> were never
   reachable. One bit swaps them out.</p>
 <div class="cols">
-<div><p class="note" style="margin:0 0 6px"><b>FLASHDIS = 0</b> — Longview reset map</p><div class="ladder"><div class="seg ram"><div class="addr">$00–$3F</div><div class="body"><b>System RAM · 512 KB</b><div class="d">$00_0000–$07_FFFF</div></div></div><div class="seg flash"><div class="addr">$40–$7F</div><div class="body"><b>Flash · 512 KB</b><div class="d">FEU and flash drives; SRAM at $08_0000–$0F_FFFF is hidden</div></div></div><div class="seg exram"><div class="addr">$80–$9F</div><div class="body"><b>Expansion · 256 KB</b><div class="d">Expansion connector; SRAM at $10_0000–$13_FFFF is hidden</div></div></div><div class="seg ram"><div class="addr">$A0–$FB</div><div class="body"><b>System RAM · 736 KB</b><div class="d">$14_0000–$1F_7FFF · block × $2000 throughout; includes the former $Cx and $F0–$FB gaps.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9E.</div></div></div></div><p class="note" style="margin:6px 0 0">156 RAM blocks · 1,248 KB in all</p></div>
-<div><p class="note" style="margin:0 0 6px"><b>FLASHDIS = 1</b> — Longview RAM map</p><div class="ladder"><div class="seg ram tall"><div class="addr">$00–$FB</div><div class="body"><b>System RAM · 2,016 KB</b><div class="d">$00_0000–$1F_7FFF · one contiguous run of 252 blocks with FLASHDIS set; block × $2000 + offset for CPU, VICKY, DMA and the debug port.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9E.</div></div></div></div><p class="note" style="margin:6px 0 0">252 RAM blocks · 2,016 KB in all · free memory depends on allocations · with VICKYDIS ($FFA1 bit 3, RC25) also set, $FC–$FF are 32 KB more SRAM and the device pages leave the CPU’s map</p></div>
+<div><p class="note" style="margin:0 0 6px"><b>FLASHDIS = 0</b> — Longview reset map</p><div class="ladder"><div class="seg ram"><div class="addr">$00–$3F</div><div class="body"><b>System RAM · 512 KB</b><div class="d">$00_0000–$07_FFFF</div></div></div><div class="seg flash"><div class="addr">$40–$7F</div><div class="body"><b>Flash · 512 KB</b><div class="d">FEU and flash drives; SRAM at $08_0000–$0F_FFFF is hidden</div></div></div><div class="seg exram"><div class="addr">$80–$9F</div><div class="body"><b>Expansion · 256 KB</b><div class="d">Expansion connector; SRAM at $10_0000–$13_FFFF is hidden</div></div></div><div class="seg ram"><div class="addr">$A0–$FB</div><div class="body"><b>System RAM · 736 KB</b><div class="d">$14_0000–$1F_7FFF · block × $2000 throughout; includes the former $Cx and $F0–$FB gaps.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9F.</div></div></div></div><p class="note" style="margin:6px 0 0">156 RAM blocks · 1,248 KB in all</p></div>
+<div><p class="note" style="margin:0 0 6px"><b>FLASHDIS = 1</b> — Longview RAM map</p><div class="ladder"><div class="seg ram tall"><div class="addr">$00–$FB</div><div class="body"><b>System RAM · 2,016 KB</b><div class="d">$00_0000–$1F_7FFF · one contiguous run of 252 blocks with FLASHDIS set; block × $2000 + offset for CPU, VICKY, DMA and the debug port.</div></div></div><div class="seg io"><div class="addr">$FC–$FF</div><div class="body"><b>Sectored device pages · 32 KB</b><div class="d">$FC VICKY registers; $FD fonts and graphics CLUTs; $FE text; $FF text attributes. Device memory, not SRAM. Sound uses fixed CPU registers $FF91–$FF9F.</div></div></div></div><p class="note" style="margin:6px 0 0">252 RAM blocks · 2,016 KB in all · free memory depends on allocations · with VICKYDIS ($FFA1 bit 3, RC25) also set, $FC–$FF are 32 KB more SRAM and the device pages leave the CPU’s map</p></div>
 </div>
 <div class="tblwrap" style="margin-top:16px"><table>
 <tr><th style="width:18ch">Register</th><th style="width:8ch">Bit</th><th style="width:16ch">Name (defs/wildbits.d)</th><th>Meaning</th></tr>
@@ -938,9 +939,9 @@ can be touched at those addresses.</p>
 <tr><td class="addr">$FE90</td><td>SD card controller</td></tr>
 <tr><td class="addr">$FEB0</td><td>VIA0</td></tr>
 <tr><td class="addr">$FEC0</td><td>DMA controller</td></tr>
-<tr><td class="addr">$FF20–$FF2A</td><td>WizFi UART and reset controls</td></tr>
+<tr><td class="addr">$FF20–$FF2F</td><td>WizFi UART and reset controls</td></tr>
 <tr><td class="addr">$FF30–$FF39</td><td>MIDI FIFO + SAM2695 Synth</td></tr>
-<tr><td class="addr">$FF91–$FF99</td><td>PSG / OPL3 / SID sound ports</td></tr>
+<tr><td class="addr">$FF91–$FF9F</td><td>PSG / OPL3 / SID sound ports, PCM</td></tr>
 <tr><td class="addr">$FE78–$FE7F / $FE88–$FE8F</td><td>K2 RP2040 mailbox</td></tr>
 <tr><td class="addr">$FFC0</td><td>Text controller (TXT.Base)</td></tr>
 </table></div>
