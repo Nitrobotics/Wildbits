@@ -604,6 +604,21 @@ zero bit, so on this RTL <b>divide status bit 3 means divide-by-zero</b>, not �
 <tr><td class="addr">$FFFE</td><td>RESET</td></tr>
 <tr><td class="addr">—</td><td class="src">fetched from flash block $7F (the FEU) in boot mode; once $FFA1 b1 is set they come from the internal RAM overlay, which is how krn installs its own vectors (D.XSWI2 etc.)</td></tr>
 </table></div>
+<h3>K2 debug port (serial, no CPU registers)</h3>
+<p class="src">used by: FoenixMgr (the kits’ install.bat flashing), k2trap (RAM dumps, through FoenixMgr’s debug-port class) · source: DebugModuleK2.v</p>
+<div class="tblwrap"><table>
+<tr><th style="width:15ch">Item</th><th>Bits, reset values and notes</th></tr>
+<tr><td class="addr">Link</td><td>A serial port on the K2’s USB debug interface, not mapped into the 6809’s address space. It works while the CPU runs or is stopped, and reaches RAM and flash directly (24-bit addresses, block × $2000 + offset).</td></tr>
+<tr><td class="addr">Request</td><td><code>$55</code>, command byte, address (3 bytes, high first), size (2 bytes), the data for a write, then an LRC check byte.</td></tr>
+<tr><td class="addr">Reply</td><td><code>$AA</code>, status, the data for a read, LRC. An unknown command answers with status bit 2 (not supported).</td></tr>
+<tr><td class="addr">$00 / $01</td><td>read / write a memory block (RAM or flash)</td></tr>
+<tr><td class="addr">$10–$13</td><td>flash: set up programming, erase the chip, erase a sector, set the sector to program</td></tr>
+<tr><td class="addr">$20 / $21</td><td>breakpoint set / clear (the CPU is held through RDY)</td></tr>
+<tr><td class="addr">$80 / $81</td><td>stop the CPU (before any other command) / start it again</td></tr>
+<tr><td class="addr">$90 / $91</td><td>boot the MMU from RAM / from flash</td></tr>
+<tr><td class="addr">$FE / $FF</td><td>debug block revision (reads $03) / status</td></tr>
+<tr><td class="addr">—</td><td class="src">Commands named in the RTL but not accepted by its parser (they answer “not supported”): $02/$03 single register read/write, $14 cartridge program, $40–$42 fill and block copy, $82 release RDY. Keep a transfer to $40 bytes: a $64-byte one has wedged the engine until a power cycle.</td></tr>
+</table></div>
 </div>
 </div>
 <p class="note">Both pages retain their fixed addresses in every task map. The vector area at <span class="m">$FFF0–$FFFF</span> switches between boot flash and internal vector RAM under <span class="m">$FFA1</span> control.</p>
@@ -1066,6 +1081,7 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">11</td><td>8 × 8</td><td class="addr">$61</td></tr>
 </table></div>
 <p>The pixel-data address is a <b>physical</b> address in system RAM (block × $2000 + offset, for every SRAM block through $FB), pixels stored row-major, one byte per pixel, rows packed at the sprite’s width. Keep depth = <code>00</code> (8 bpp).</p>
+<p class="src"><b>Collision is not currently wired up.</b> VICKY’s sprite and bitmap collision interrupt outputs are left unconnected in TinyVickyCoreModule.v, so no sprite-to-sprite or sprite-to-layer hit is ever reported; test overlaps in software.</p>
 <h3>Graphics CLUTs — VICKY page $FD, offsets $1000–$1FFF</h3>
 <p>Sprites pick one of four CLUTs with CTRL bits 2:1. The CLUTs share page <code>$FD</code> with the font (font at $0000–$0FFF, CLUTs above it). Each CLUT is 256 entries × 4 bytes, ordered <b>B, G, R, A</b>. All four read back (the CPU port of a true dual-port RAM) and hold zeros at power-up: the shell’s colors come from the text color LUTs below, so nothing loads these until a bitmap viewer or a sprite program does.</p>
 <div class="tblwrap"><table>
@@ -1084,6 +1100,17 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <tr><td class="addr">gamma B / G / R</td><td class="addr">$0000 / $0400 / $0800</td><td>3 × 256 bytes</td><td>read / write</td></tr>
 <tr><td class="addr">graphics LUT0–3</td><td class="addr">page $FD $1000 + $400×n</td><td>256 × B G R A each</td><td>read / write</td></tr>
 </table></div>
+<h3 id="doc-bitmap">Bitmap layer registers — VICKY page $FC, offsets $1000–$1017</h3>
+<p>Three bitmap planes, BM0–BM2, one 8-byte set each at <code>$1000</code>, <code>$1008</code> and <code>$1010</code> (with page <code>$FC</code> in slot 7: <code>$F000</code>, <code>$F008</code>, <code>$F010</code>). A plane is drawn only where a layer slot of <code>$FFC2</code>/<code>$FFC3</code> names it (codes 0–2) and master control <code>$FFC0</code> has graphics and bitmap on. Every byte reads back; all are 0 after reset.</p>
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>Field</th><th>Contents</th></tr>
+<tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 plane on · bits 3:1 graphics CLUT · bit 4 <code>BM0_HIRES4</code> and bits 7:5 its CLUT slice (see the 640 × 240 mode below)</td></tr>
+<tr><td class="addr">+1</td><td>ADDR hi</td><td>picture start address bits 23:16 (physical: block × $2000 + offset)</td></tr>
+<tr><td class="addr">+2</td><td>ADDR mid</td><td>bits 15:8</td></tr>
+<tr><td class="addr">+3</td><td>ADDR lo</td><td>bits 7:0</td></tr>
+<tr><td class="addr">+4 – +7</td><td>spare</td><td>stored and read back; the bitmap engine does not use them</td></tr>
+</table></div>
+<p class="src">Read-back quirk: offsets +1 and +3 read back swapped (a read of +1 returns the low byte, +3 the high byte), as written in the register block’s read multiplexer; +0, +2 and +4–+7 read as written. The picture is 320 bytes a row, 240 rows (76,800 bytes). Sources: TinyVicky_BM_Registers.v (the write decode on address bits 4:3, the read multiplexer), TinyVickyCoreModule.v (BMn_Reg_Block64 bits 0, 3:1, 7:4 and 31:8 are the only ones used).</p>
 <h3 id="doc-linedraw">Line-draw accelerator — VICKY page $FC, offsets $1080–$1087 (wildbits.d: TyVKY_LD_*)</h3>
 <p>A Bresenham line engine sits at the top of the bitmap register block (<code>TyVKY_BM0_CTRL_REG</code> is $F000 with page <code>$FC</code> in slot 7, so these are $F080–$F087). Write the two end points and a color, raise the go bit, and the engine walks the line at 100 Mhz, queueing line writes into an <b>8,192-entry × 34-bit FIFO</b> (34 KB of queue data; 36 KB of allocated block RAM) that the memory manager drains into the chosen bitmap. It writes <b>one byte per pixel at bitmap start + y×320 + x</b> in the 320-wide 8-bit modes; in HIRES4 (<code>GFX_HIRES4</code>) X runs to 639 (<code>TyVKY_LD_XMAX4</code>) and the low nibble of the color is the dot. Pixels reach SRAM only while <code>VKY_DRAWLINE_REG</code> ($FFCA) bit 0 is set.</p>
 <div class="tblwrap"><table>
@@ -1115,6 +1142,61 @@ the NitrOS-9 equates were corrected to match on 2026-08-31.</p>
 <p><b>Colors.</b> A dot’s CLUT entry is group × 16 + nibble, in the CLUT the plane’s LUT bits select; the sixteen entries of the slice are the whole palette of that plane. Nibble 0 is transparent, as byte 0 is in the 320 mode, so it shows the layer behind or VICKY’s background color ($FFCD–$FFCF). Transparency is per 640 dot: the two halves of one byte can show through to different things.</p>
 <p><b>What it does not change.</b> Sprites, tiles and text are not part of it. They fetch and draw exactly as before, at 320 dots doubled, and are composited with the 640-wide bitmap dots in the usual layer order ($FFC2/$FFC3): a sprite or tile dot always covers a pair of bitmap dots, and its X position is still a 320-column unit, so it cannot sit on an odd 640 column. Each plane decides for itself, so a 640-wide picture and a 320-wide one can share the frame. The dot order inside a pair is fixed by the design (a blanking-aligned phase, not a sampled clock), so it is the same on every build.</p>
 <p><b>On the Jr2</b> the mode costs a second CLUT copy and a second color line in block RAM (see the block-RAM budget below); both cores carry it.</p>
+<h3 id="doc-tiles">Tile maps and tile sets — VICKY page $FC, offsets $1100–$11FF</h3>
+<p>Tile layers are drawn from a <b>map</b> (16-bit entries in system RAM, one per tile position) and up to eight <b>tile sets</b> (the tile pictures, one byte per dot). The registers hold four map sets of 12 bytes at <code>$1100</code>, <code>$110C</code>, <code>$1118</code> and <code>$1124</code>, and eight tile-set entries of 4 bytes from <code>$1180</code>. Since RC24 every byte reads back what was written (before, the block read $33). Only maps 0–2 can be shown: layer codes 4–6 in <code>$FFC2</code>/<code>$FFC3</code> select them, and no code selects map 3 (on the K2, code 3 is the GPU layer). Master control <code>$FFC0</code> needs graphics and tiles on.</p>
+<div class="tblwrap"><table>
+<tr><th>Map offset</th><th>Field</th><th>Contents</th></tr>
+<tr><td class="addr">+0</td><td>CTRL</td><td>bit 0 map on · bit 4 tile size: 1 = 8 × 8, 0 = 16 × 16 · bit 6 collision (not wired, see below)</td></tr>
+<tr><td class="addr">+1 – +3</td><td>MAP ADDR</td><td>the map’s address in system RAM, high byte first (24 bits)</td></tr>
+<tr><td class="addr">+4 / +5</td><td>WIDTH</td><td>map width, 10 bits: +4 bits 1:0, +5 bits 7:0</td></tr>
+<tr><td class="addr">+6 / +7</td><td>HEIGHT</td><td>map height, 10 bits, the same way</td></tr>
+<tr><td class="addr">+8 / +9</td><td>X WINDOW</td><td>a word, high byte first: bits 13:4 the window position, bits 3:0 the fine scroll (bit 15 a fifth scroll bit)</td></tr>
+<tr><td class="addr">+10 / +11</td><td>Y WINDOW</td><td>a word, high byte first: bits 13:4 the window position, bits 3:0 the fine scroll</td></tr>
+</table></div>
+<div class="tblwrap"><table>
+<tr><th>Tile set</th><th>Offset</th><th>Contents</th></tr>
+<tr><td class="addr">0 – 7</td><td class="addr">$1180 + 4×n</td><td>+0 bits 3:0 the set’s configuration: bit 3 = the set is a picture 16 tiles wide (256 dots for 16 × 16 tiles, 128 for 8 × 8); clear = one tile wide, tiles stacked · +1 – +3 the set’s address in system RAM, high byte first</td></tr>
+</table></div>
+<div class="tblwrap"><table>
+<tr><th>Map entry bits</th><th>Meaning</th></tr>
+<tr><td class="addr">7:0</td><td>tile number in its set (0–255)</td></tr>
+<tr><td class="addr">10:8</td><td>tile set 0–7</td></tr>
+<tr><td class="addr">13:11</td><td>graphics CLUT for this tile</td></tr>
+<tr><td class="addr">14</td><td>collision enable (not wired, see below)</td></tr>
+<tr><td class="addr">15</td><td>reserved</td></tr>
+</table></div>
+<p class="src"><b>Collision is not currently wired up.</b> The tile engine derives collision flags from CTRL bit 6 and map-entry bit 14, but their outputs (and VICKY’s sprite and bitmap collision interrupts) are left unconnected in TinyVickyCoreModule.v: setting those bits has no effect. Sources: TinyVicky_TL_Registers.v (the 64 + 32-byte register blocks, the read-back since RC24, the field assignments), TyVKY_TileMap_SM.v (tile size, the stride bit, the map-entry bits), TinyVickyCoreModule.v (layer codes 4–6).</p>
+<h3 id="doc-memtext">Memory text mode — VICKY page $FC, offsets $1200–$121F</h3>
+<p>A second text display that reads its characters and colors from <b>system RAM</b> instead of the text and color pages below, with its own cursor. It shows only while both <code>$FFC1</code> bit 6 (MemText enable) and bit 0 of <code>$1200</code> are set; <code>$FFC1</code> bit 7 picks whether its background shows. The 32 registers read back and repeat every 32 bytes through <code>$12FF</code>.</p>
+<div class="tblwrap"><table>
+<tr><th>Offset</th><th>Field</th><th>Contents (reset)</th></tr>
+<tr><td class="addr">$1200</td><td>CTRL</td><td>bit 0 memory text on · bit 1 character height: 1 = 8 × 16, 0 = 8 × 8 ($00)</td></tr>
+<tr><td class="addr">$1201</td><td>CURSOR</td><td>bit 0 cursor on · bits 2:1 blink rate · bits 4:3 font bank · bit 5 font size, as the RTL’s comments name them ($00)</td></tr>
+<tr><td class="addr">$1202 / $1203</td><td>CURSOR X / Y</td><td>the cursor’s column and row ($00)</td></tr>
+<tr><td class="addr">$1205 – $1207</td><td>TEXT ADDR</td><td>where the characters start in system RAM, high byte first ($000000)</td></tr>
+<tr><td class="addr">$1209 – $120B</td><td>COLOR ADDR</td><td>where the color bytes start, high byte first ($000000)</td></tr>
+<tr><td class="addr">$120C</td><td>—</td><td>reserved (pre-charge, $0A)</td></tr>
+<tr><td class="addr">$120D – $120F</td><td>CURSOR COLOR</td><td>blue, green, red ($20, $00, $20)</td></tr>
+<tr><td class="addr">$1210 – $121F</td><td>CURSOR SHAPE</td><td>16 rows of 8 dots, top first: the first 8 for an 8 × 8 cursor, all 16 for 8 × 16 (reset: rows 6 and 7 = $FF, an underline)</td></tr>
+<tr><td class="addr">$1204, $1208</td><td>—</td><td>not used (stored and read back)</td></tr>
+</table></div>
+<p class="src">Each text row is fetched as 160 bytes from the text address and 160 from the color address. No NitrOS-9 module turns it on (defs/wildbits.d names the <code>$FFC1</code> bits); the shell uses the text pages below. Source: F256x_MEMTEXT_SM.v (MEMTEXT_REG[0..31], the read-back, MemTextModeEnable), TinyVickyControl_Registers.v ($FFC1 bits 6 and 7).</p>
+<h3 id="doc-textpages">Text and color pages, font memory — VICKY pages $FE, $FF and $FD</h3>
+<p>The text display the shell uses. Each character position has a byte in the <b>text page</b> and a byte in the <b>color page</b>; the font turns the character byte into dots. All three are block RAM inside VICKY, read/write from the CPU (map the page into a slot, as for the sprite block).</p>
+<div class="tblwrap"><table>
+<tr><th>Memory</th><th>Page, offsets</th><th>Contents</th></tr>
+<tr><td class="addr">text</td><td class="addr">$FE $0000–$12BF</td><td>4,800 character bytes, row by row (80 × 60 at most)</td></tr>
+<tr><td class="addr">color</td><td class="addr">$FF $0000–$12BF</td><td>one byte per character: bits 7:4 the foreground entry, bits 3:0 the background entry of the text color LUTs above; background 0 lets graphics through in text overlay</td></tr>
+<tr><td class="addr">font</td><td class="addr">$FD $0000–$0FFF</td><td>two 8 × 8 fonts of 256 characters (8 bytes each): bank 0 at $0000, bank 1 at $0800, chosen by <code>$FFC1</code> bit 5</td></tr>
+</table></div>
+<div class="tblwrap"><table>
+<tr><th><code>$FFC1</code> bits 2:0</th><th>Screen</th><th>Text grid</th></tr>
+<tr><td class="addr">000 / 001</td><td>640 × 480 / 640 × 400</td><td>80 × 60 / 80 × 50</td></tr>
+<tr><td class="addr">010 / 011</td><td>320 × 480 / 320 × 400</td><td>40 × 60 / 40 × 50</td></tr>
+<tr><td class="addr">100 / 101</td><td>640 × 240 / 640 × 200</td><td>80 × 30 / 80 × 25</td></tr>
+<tr><td class="addr">110 / 111</td><td>320 × 240 / 320 × 200</td><td>40 × 30 / 40 × 25</td></tr>
+</table></div>
+<p class="src">The font page is shared with the graphics CLUTs ($FD $1000–$1FFF, above). Sources: TinyVKY2K2_IO_Page0_Devices.v (FONT_DP_MEM 4 KB at $FD, TEXT_MEM_BLK $FE $0000–$12BF, the color page and the FG/BG nibbles), Text_FONT_StateMachine.v (the grid limits per mode, the font address bank × 2 KB + character × 8 + row).</p>
 <h2>Coordinates</h2>
 <p>Sprite positions live in a space offset 32 pixels beyond the visible screen on the top and left, so sprites can slide off any edge. The visible 320×240 area spans sprite coordinates (32,32) to (351,271):</p>
 <div style="margin:16px 0;overflow-x:auto">
