@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>K2 GPU Cheat Sheet</title>
+<link href="assets/report.css" rel="stylesheet"/>
+<style>
+/* the cheat sheet's own pieces on top of the site's report.css: bit-field and byte diagrams, compact tables */
+:root{--f-ctl:#86dfc7;--f-ctl-bg:#193b37;--f-rec:#9abfff;--f-rec-bg:#223852;--f-mem:#f1bf78;--f-mem-bg:#42341f;--f-se:#c0a1ee;--f-se-bg:#342a45;--f-dim:#29323c}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:24px;align-items:start}
+.cs-grid>*{min-width:0}
+figure.diagram svg text{font:12px var(--mono);fill:#dbe8f2}
+figure.diagram svg .hd{font:600 12px var(--mono);fill:#ecf2f7}
+figure.diagram svg .sm{font:11px var(--mono);fill:#adbdcb}
+figure.diagram svg .ctl{fill:var(--f-ctl-bg);stroke:var(--f-ctl)}
+figure.diagram svg .rec{fill:var(--f-rec-bg);stroke:var(--f-rec)}
+figure.diagram svg .mem{fill:var(--f-mem-bg);stroke:var(--f-mem)}
+figure.diagram svg .se{fill:var(--f-se-bg);stroke:var(--f-se)}
+figure.diagram svg .dim{fill:var(--f-dim);stroke:#536575}
+figure.diagram svg .ar{stroke:#adbdcb;fill:none;stroke-width:1.5}
+figure.diagram svg .arh{fill:#adbdcb}
+.svgscroll{overflow-x:auto}
+.svgscroll svg{min-width:560px}
+.report td code,.report li code,.report p code{color:#9acafb}
+.kbd{font-family:var(--mono);font-size:.94em;color:#f1bf78}
+.tag{display:inline-block;font:600 11px/1.4 var(--mono);padding:1px 7px;border-radius:4px;border:1px solid var(--line);color:var(--ink-2);margin-left:6px;vertical-align:middle}
+.tag.se{color:var(--f-se);border-color:var(--f-se)}
+.tag.rn{color:var(--f-rec);border-color:var(--f-rec)}
+.report pre{font-size:13px!important;line-height:1.55}
+</style>
+</head>
+<body>
+<main id="top">
+
+<section class="wrap hero">
+<div class="eyebrow">WildBits K2 &middot; programmer's reference</div>
+<h1>K2 GPU Cheat Sheet</h1>
+<p class="sub">Everything a 6809 program needs to drive the K2's GPU: its two parts, the <b>SceneEngine</b> (display lists, transform, clipping, the point port) and the <b>Renderer</b> (records, meshes, triangles, textures, depth, haze), their registers, record formats, memory layouts and the arithmetic they do. <a href="index.html#gpu">Back to the resource page</a>.</p>
+<nav aria-label="Cheat sheet sections" class="report-nav">
+<a href="#overview">Overview</a><a href="#regs">Renderer registers</a><a href="#records">Records</a><a href="#coords">Coordinates &amp; depth</a><a href="#meshes">Meshes</a><a href="#shading">Shading &amp; LUT</a><a href="#textures">Textures</a><a href="#haze">Haze</a><a href="#upload">Upload</a><a href="#frame">A frame</a><a href="#scene">SceneEngine</a><a href="#points">Point port</a><a href="#irq">Interrupt</a><a href="#limits">Limits &amp; gotchas</a>
+</nav>
+<div class="metrics">
+<div><strong>640&times;240 / 320&times;240</strong><span>16 or 256 colors, double buffered, 16-bit depth</span></div>
+<div><strong>4,096</strong><span>resident mesh entries (64 KB)</span></div>
+<div><strong>256 KB</strong><span>texture memory, 8-bit texels</span></div>
+<div><strong>512</strong><span>records in the Renderer's FIFO</span></div>
+</div>
+</section>
+
+<!-- ================================================================== overview -->
+<section class="wrap report" id="overview">
+<header><div class="eyebrow">01 &middot; Overview</div><h2>Two parts, one GPU</h2></header>
+<figure class="diagram"><figcaption>Data flow</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 300" role="img" aria-label="The CPU feeds the SceneEngine and the Renderer; the SceneEngine feeds the Renderer through SEPORT; the Renderer draws into its frame buffers, which VICKY shows as a layer">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="arh"/></marker></defs>
+<rect x="10" y="110" width="150" height="80" rx="6" class="dim"/>
+<text x="85" y="140" text-anchor="middle" class="hd">6809 CPU</text>
+<text x="85" y="160" text-anchor="middle" class="sm">block $FC mapped</text>
+<text x="85" y="176" text-anchor="middle" class="sm">into a slot</text>
+<rect x="250" y="20" width="250" height="110" rx="6" class="se"/>
+<text x="375" y="46" text-anchor="middle" class="hd">SceneEngine  $FC:$1780</text>
+<text x="375" y="68" text-anchor="middle" class="sm">display-list walker</text>
+<text x="375" y="86" text-anchor="middle" class="sm">transform &#183; clip &#183; project</text>
+<text x="375" y="104" text-anchor="middle" class="sm">variable RAM 8 KB &#183; scene RAM 16 KB</text>
+<text x="375" y="121" text-anchor="middle" class="sm">point port $FED8-$FEDF</text>
+<rect x="250" y="170" width="250" height="110" rx="6" class="rec"/>
+<text x="375" y="196" text-anchor="middle" class="hd">Renderer  $FC:$1800</text>
+<text x="375" y="218" text-anchor="middle" class="sm">record FIFO (512) &#183; mesh unit</text>
+<text x="375" y="236" text-anchor="middle" class="sm">triangles &#183; z &#183; textures &#183; haze</text>
+<text x="375" y="254" text-anchor="middle" class="sm">mesh 64 KB &#183; textures 256 KB</text>
+<text x="375" y="271" text-anchor="middle" class="sm">shade LUT 16 KB</text>
+<rect x="600" y="170" width="170" height="110" rx="6" class="mem"/>
+<text x="685" y="196" text-anchor="middle" class="hd">frame buffers</text>
+<text x="685" y="218" text-anchor="middle" class="sm">front &#183; back</text>
+<text x="685" y="236" text-anchor="middle" class="sm">+ 16-bit depth</text>
+<text x="685" y="254" text-anchor="middle" class="sm">240 rows</text>
+<rect x="840" y="170" width="150" height="110" rx="6" class="dim"/>
+<text x="915" y="200" text-anchor="middle" class="hd">VICKY</text>
+<text x="915" y="222" text-anchor="middle" class="sm">a layer with</text>
+<text x="915" y="238" text-anchor="middle" class="sm">source 3 (%011)</text>
+<text x="915" y="256" text-anchor="middle" class="sm">rows doubled</text>
+<path d="M160 135 L245 80" class="ar" marker-end="url(#ah)"/>
+<text x="168" y="98" class="sm">GO, uploads</text>
+<path d="M160 165 L245 215" class="ar" marker-end="url(#ah)"/>
+<text x="150" y="218" class="sm">records $1840</text>
+<path d="M375 130 L375 165" class="ar" marker-end="url(#ah)"/>
+<text x="385" y="152" class="sm">SEPORT (GPU_CTRL b7)</text>
+<path d="M500 225 L595 225" class="ar" marker-end="url(#ah)"/>
+<path d="M770 225 L835 225" class="ar" marker-end="url(#ah)"/>
+<text x="775" y="215" class="sm">SWAP</text>
+<path d="M500 60 C 560 60, 560 20, 600 20 L 760 20" class="ar"/>
+<text x="610" y="40" class="sm">IRQ bit 9: a run stops, or SWAP/FENCE count moves</text>
+</svg>
+</div>
+</figure>
+<div class="cs-grid">
+<div>
+<h3>Where it lives</h3>
+<ul>
+<li>Both parts are in the VICKY I/O block <code>$FC</code>. Map that block into any 8 KB slot of the task; FS2 maps it at <code>$6000</code>, so there the SceneEngine is <code>$7780</code> and the Renderer <code>$7800</code>.</li>
+<li>The point port sits at the fixed I/O addresses <code>$FED8-$FEDF</code>, always visible.</li>
+<li><code>GPU_ID</code> (Renderer <code>+$1F</code>) reads <code>$34</code>; a core without the GPU reads <code>$FF</code>.</li>
+</ul>
+</div>
+<div>
+<h3>Three ways to draw</h3>
+<ul>
+<li><b>Records</b> <span class="tag rn">Renderer</span> &mdash; the CPU writes 8-byte units to the record window: 2D lines and fills, screen-space polygons, SWAP.</li>
+<li><b>Resident meshes</b> <span class="tag rn">Renderer</span> &mdash; vertices and faces uploaded once; per object per frame the CPU sends SETMAT and MESH and the mesh unit transforms, lights, clips and draws every face.</li>
+<li><b>Display lists</b> <span class="tag se">SceneEngine</span> &mdash; the walker runs a scenery list from its own RAM and, with SEPORT on, sends its polygons, lines and lights straight to the Renderer.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== registers -->
+<section class="wrap report" id="regs">
+<header><div class="eyebrow">02 &middot; Renderer</div><h2>Registers at $FC:$1800</h2></header>
+<figure class="diagram"><figcaption>GPU_CTRL (+$00) and GPU_STATUS (+$01)</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 190" role="img" aria-label="GPU_CTRL bits: 7 SEPORT, 6 TEXEN, 5 AUTOCLEAR, 4 RESET, 3 DITHER, 2 ZEN, 1 MODE, 0 EN. GPU_STATUS bits: 7 BUSY, 6 SWAP_PENDING, 5 FRONT, 4 FIFO_EMPTY, 3 IDLE, 2 MESHERR, 1 BADREC, 0 OVERFLOW">
+<text x="10" y="22" class="hd">GPU_CTRL  +$00  R/W</text>
+<g>
+<rect x="10" y="32" width="120" height="44" class="ctl"/><text x="70" y="52" text-anchor="middle" class="hd">SEPORT</text><text x="70" y="68" text-anchor="middle" class="sm">b7</text>
+<rect x="132" y="32" width="120" height="44" class="ctl"/><text x="192" y="52" text-anchor="middle" class="hd">TEXEN</text><text x="192" y="68" text-anchor="middle" class="sm">b6</text>
+<rect x="254" y="32" width="120" height="44" class="ctl"/><text x="314" y="52" text-anchor="middle" class="hd">AUTOCLEAR</text><text x="314" y="68" text-anchor="middle" class="sm">b5</text>
+<rect x="376" y="32" width="120" height="44" class="ctl"/><text x="436" y="52" text-anchor="middle" class="hd">RESET</text><text x="436" y="68" text-anchor="middle" class="sm">b4 write 1</text>
+<rect x="498" y="32" width="120" height="44" class="ctl"/><text x="558" y="52" text-anchor="middle" class="hd">DITHER</text><text x="558" y="68" text-anchor="middle" class="sm">b3</text>
+<rect x="620" y="32" width="120" height="44" class="ctl"/><text x="680" y="52" text-anchor="middle" class="hd">ZEN</text><text x="680" y="68" text-anchor="middle" class="sm">b2</text>
+<rect x="742" y="32" width="120" height="44" class="ctl"/><text x="802" y="52" text-anchor="middle" class="hd">MODE</text><text x="802" y="68" text-anchor="middle" class="sm">b1 0=640 1=320</text>
+<rect x="864" y="32" width="120" height="44" class="ctl"/><text x="924" y="52" text-anchor="middle" class="hd">EN</text><text x="924" y="68" text-anchor="middle" class="sm">b0</text>
+</g>
+<text x="10" y="112" class="hd">GPU_STATUS  +$01  R  (write 1 clears b2-b0)</text>
+<g>
+<rect x="10" y="122" width="120" height="44" class="rec"/><text x="70" y="142" text-anchor="middle" class="hd">BUSY</text><text x="70" y="158" text-anchor="middle" class="sm">b7</text>
+<rect x="132" y="122" width="120" height="44" class="rec"/><text x="192" y="142" text-anchor="middle" class="hd">SWAP_PEND</text><text x="192" y="158" text-anchor="middle" class="sm">b6</text>
+<rect x="254" y="122" width="120" height="44" class="rec"/><text x="314" y="142" text-anchor="middle" class="hd">FRONT</text><text x="314" y="158" text-anchor="middle" class="sm">b5</text>
+<rect x="376" y="122" width="120" height="44" class="rec"/><text x="436" y="142" text-anchor="middle" class="hd">FIFO_EMPTY</text><text x="436" y="158" text-anchor="middle" class="sm">b4</text>
+<rect x="498" y="122" width="120" height="44" class="rec"/><text x="558" y="142" text-anchor="middle" class="hd">IDLE</text><text x="558" y="158" text-anchor="middle" class="sm">b3</text>
+<rect x="620" y="122" width="120" height="44" class="rec"/><text x="680" y="142" text-anchor="middle" class="hd">MESHERR</text><text x="680" y="158" text-anchor="middle" class="sm">b2 sticky</text>
+<rect x="742" y="122" width="120" height="44" class="rec"/><text x="802" y="142" text-anchor="middle" class="hd">BADREC</text><text x="802" y="158" text-anchor="middle" class="sm">b1 sticky</text>
+<rect x="864" y="122" width="120" height="44" class="rec"/><text x="924" y="142" text-anchor="middle" class="hd">OVERFLOW</text><text x="924" y="158" text-anchor="middle" class="sm">b0 sticky</text>
+</g>
+</svg>
+</div>
+</figure>
+<div class="tblwrap"><table>
+<thead><tr><th>Offset</th><th>Name</th><th>R/W</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td class="addr">+$00</td><td>GPU_CTRL</td><td>R/W</td><td>EN, MODE (640&times;240&times;4 bpp or 320&times;240&times;8 bpp), ZEN depth test, DITHER, RESET (write 1), AUTOCLEAR (color and depth cleared at each SWAP), TEXEN, SEPORT (the SceneEngine's drawing goes to the Renderer)</td></tr>
+<tr><td class="addr">+$01</td><td>GPU_STATUS</td><td>R / W1C</td><td>BUSY, SWAP_PENDING, FRONT (which buffer shows), FIFO_EMPTY, IDLE; sticky errors MESHERR (a face or vertex index past entry 4,095), BADREC (an unknown op, a stray CONT, a record cut short), OVERFLOW</td></tr>
+<tr><td class="addr">+$02-$03</td><td>FIFO_FREE</td><td>R</td><td>0-512 free record units, big-endian; reading <code>+$02</code> latches <code>+$03</code></td></tr>
+<tr><td class="addr">+$04</td><td>SWAP_COUNT</td><td>R</td><td>frames flipped, mod 256</td></tr>
+<tr><td class="addr">+$05</td><td>FENCE_COUNT</td><td>R</td><td>FENCE records retired, mod 256</td></tr>
+<tr><td class="addr">+$06</td><td>VIEW_ROW0</td><td>R/W</td><td>the first layer row the GPU covers (reset 0)</td></tr>
+<tr><td class="addr">+$07</td><td>VIEW_ROWS</td><td>R/W</td><td>rows drawn and cleared, 1-240 (0 or above 240 act as 240)</td></tr>
+<tr><td class="addr">+$08</td><td>GPU_LUT</td><td>R/W</td><td>b2:0 LUT, b6:4 CLUT group (640 mode)</td></tr>
+<tr><td class="addr">+$09</td><td>CLEAR_COLOR</td><td>R/W</td><td>the AUTOCLEAR color index</td></tr>
+<tr><td class="addr">+$0A-$0C</td><td>UP_ADDR</td><td>R/W</td><td>upload address: b23:22 target, b21:0 byte address (<a href="#upload">Upload</a>)</td></tr>
+<tr><td class="addr">+$0D</td><td>UP_DATA</td><td>W</td><td>the byte to UP_ADDR, then UP_ADDR + 1; only while IDLE</td></tr>
+<tr><td class="addr">+$0E-$0F</td><td>SE_YMUL</td><td>R/W</td><td>the SceneEngine records' row scale: Y16 = PY16 &times; SE_YMUL &gt;&gt; 10 (reset 1024)</td></tr>
+<tr><td class="addr">+$10-$11</td><td>PROBE_ROW</td><td>R/W</td><td>b15 enable, b7:0 the row to watch</td></tr>
+<tr><td class="addr">+$12-$13</td><td>PROBE_DOT</td><td>R/W</td><td>the dot to watch (in the current mode's dots)</td></tr>
+<tr><td class="addr">+$14</td><td>PROBE_COLOR</td><td>R</td><td>the last color written at the watched dot</td></tr>
+<tr><td class="addr">+$15</td><td>HAZE_CTRL</td><td>R/W</td><td>b0 distance haze on (<a href="#haze">Haze</a>)</td></tr>
+<tr><td class="addr">+$16-$17</td><td>HAZE_START</td><td>R/W</td><td>the depth key where haze begins</td></tr>
+<tr><td class="addr">+$18-$19</td><td>HAZE_SCALE</td><td>R/W</td><td>how fast it thickens</td></tr>
+<tr><td class="addr">+$1A</td><td>HAZE_COLOR</td><td>R/W</td><td>the color index haze dots take</td></tr>
+<tr><td class="addr">+$1F</td><td>GPU_ID</td><td>R</td><td><code>$34</code></td></tr>
+<tr><td class="addr">+$40-$7F</td><td>RECORD</td><td>W</td><td>the record window (<a href="#records">Records</a>)</td></tr>
+</tbody></table></div>
+</section>
+
+<!-- ================================================================== records -->
+<section class="wrap report" id="records">
+<header><div class="eyebrow">03 &middot; Renderer</div><h2>Records: 8-byte units</h2></header>
+<figure class="diagram"><figcaption>One unit through the record window</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 170" role="img" aria-label="Bytes 0 to 6 are written to offsets $40 to $46 and latched; byte 7, the tag, written to $47 pushes the unit">
+<g>
+<rect x="10" y="40" width="112" height="50" class="rec"/><text x="66" y="62" text-anchor="middle" class="hd">byte 0</text><text x="66" y="80" text-anchor="middle" class="sm">$40</text>
+<rect x="124" y="40" width="112" height="50" class="rec"/><text x="180" y="62" text-anchor="middle" class="hd">byte 1</text><text x="180" y="80" text-anchor="middle" class="sm">$41</text>
+<rect x="238" y="40" width="112" height="50" class="rec"/><text x="294" y="62" text-anchor="middle" class="hd">byte 2</text><text x="294" y="80" text-anchor="middle" class="sm">$42</text>
+<rect x="352" y="40" width="112" height="50" class="rec"/><text x="408" y="62" text-anchor="middle" class="hd">byte 3</text><text x="408" y="80" text-anchor="middle" class="sm">$43</text>
+<rect x="466" y="40" width="112" height="50" class="rec"/><text x="522" y="62" text-anchor="middle" class="hd">byte 4</text><text x="522" y="80" text-anchor="middle" class="sm">$44</text>
+<rect x="580" y="40" width="112" height="50" class="rec"/><text x="636" y="62" text-anchor="middle" class="hd">byte 5</text><text x="636" y="80" text-anchor="middle" class="sm">$45</text>
+<rect x="694" y="40" width="112" height="50" class="rec"/><text x="750" y="62" text-anchor="middle" class="hd">byte 6</text><text x="750" y="80" text-anchor="middle" class="sm">$46</text>
+<rect x="808" y="40" width="180" height="50" class="ctl"/><text x="898" y="62" text-anchor="middle" class="hd">byte 7: TAG</text><text x="898" y="80" text-anchor="middle" class="sm">$47 pushes the unit</text>
+</g>
+<text x="10" y="26" class="hd">payload, latched</text>
+<text x="10" y="120" class="sm">The window repeats every 8 bytes ($40-$7F): any offset 0-6 sets that latch byte, any offset 7 pushes. STD to +$46 writes byte 6 then byte 7, so four STDs send a unit.</text>
+<text x="10" y="142" class="sm">TAG: $00-$7F an op (starts a record) &#183; $FE CONT (7 more payload bytes for the record) &#183; $F0 an upload (UP_DATA makes these) &#183; $FF NOP</text>
+<text x="10" y="162" class="sm">A multi-unit record's payload is the first unit's bytes 0-6, then each CONT's bytes 0-6, in order.</text>
+</svg>
+</div>
+</figure>
+<div class="tblwrap"><table>
+<thead><tr><th>Op</th><th>Name</th><th>Units</th><th>Payload (byte offsets; words big-endian)</th></tr></thead>
+<tbody>
+<tr><td class="addr">$00</td><td>LINE</td><td>1</td><td>0-1 x0, 2-3 x1 (640-space dots, 0-639), 4 y0, 5 y1 (view rows), 6 color</td></tr>
+<tr><td class="addr">$01</td><td>SPAN</td><td>1</td><td>0-1 x0, 2-3 x1, 4 row, 6 color: one row filled from x0 to x1</td></tr>
+<tr><td class="addr">$02</td><td>RECT</td><td>1</td><td>0-1 x0, 2-3 x1, 4 first row, 5 last row, 6 color</td></tr>
+<tr><td class="addr">$03</td><td>CLEAR</td><td>1</td><td>4 b0 = clear depth too, 6 color: the back buffer's view rows</td></tr>
+<tr><td class="addr">$04</td><td>HSPLIT</td><td>2</td><td>0-1 X0, 2-3 Y0, 4-5 X1, 7-8 Y1 (signed, 640-space), 9 color A, 10 color B: every dot right of the line X0,Y0&rarr;X1,Y1 takes A, the rest B (sky and ground in one record)</td></tr>
+<tr><td class="addr">$08</td><td>SWAP</td><td>1</td><td>no payload: finish everything ahead, flip front and back outside the view rows, AUTOCLEAR the new back buffer</td></tr>
+<tr><td class="addr">$09</td><td>FENCE</td><td>1</td><td>no payload: FENCE_COUNT + 1 when everything ahead is done</td></tr>
+<tr><td class="addr">$10</td><td>POLY</td><td>1 + n (+ n)</td><td>header 0 flags, 1 material, 2 texture id, 3 n (3-8 vertices); then one CONT per vertex: 0-1 X, 2-3 Y (signed sixteenths), 4-5 depth key, 6 shade (5.3); textured, one more CONT per vertex: 0-1 u, 2-3 v (8.8 texels). Drawn as a fan from vertex 0</td></tr>
+<tr><td class="addr">$20</td><td>SETMAT</td><td>5</td><td>0-17 the 3&times;3 matrix, rows, Q15; 18-29 translation x, y, z (32-bit); 30 b3:0 scale shift</td></tr>
+<tr><td class="addr">$21</td><td>SETLIGHT</td><td>2</td><td>0-5 light direction x, y, z (Q15, view space); 6 ambient; 7 diffuse</td></tr>
+<tr><td class="addr">$22</td><td>SETPROJ</td><td>2</td><td>0-1 FX, 2-3 FY (focal, unsigned), 4-5 CX, 6-7 CY (signed sixteenths), 8-11 NEAR (32-bit), 12 b3:0 clip shift (near plane = NEAR &gt;&gt; shift)</td></tr>
+<tr><td class="addr">$28</td><td>MESH</td><td>1</td><td>0-1 first face entry, 2-3 face count, 4-5 vertex base, 6 material override (0 = the faces' own)</td></tr>
+</tbody></table></div>
+<p>Polygon flags (POLY header byte 0, mesh face byte 8): <code>$01</code> ZTEST, <code>$02</code> ZWRITE, <code>$04</code> GOURAUD, <code>$08</code> TEXTURED, <code>$10</code> SCREENDOOR (every other dot), <code>$20</code> DIRECT (the material or texel is the color index; no shading), <code>$40</code> CULL. A decal is ZTEST without ZWRITE.</p>
+</section>
+
+<!-- ================================================================== coordinates -->
+<section class="wrap report" id="coords">
+<header><div class="eyebrow">04 &middot; Both</div><h2>Coordinates, projection and the depth key</h2></header>
+<div class="cs-grid">
+<figure class="diagram"><figcaption>One coordinate space for both modes</figcaption>
+<svg viewBox="0 0 520 300" role="img" aria-label="The view is 640 dots wide in sixteenths 0 to 10239 and up to 240 rows tall; CX and CY mark the projection center">
+<rect x="40" y="30" width="440" height="200" class="dim"/>
+<rect x="40" y="30" width="440" height="150" class="rec" opacity=".55"/>
+<text x="48" y="48" class="sm">VIEW_ROW0</text>
+<text x="48" y="172" class="sm">VIEW_ROWS rows drawn</text>
+<line x1="260" y1="30" x2="260" y2="230" stroke="#f1bf78" stroke-dasharray="4 4"/>
+<line x1="40" y1="110" x2="480" y2="110" stroke="#f1bf78" stroke-dasharray="4 4"/>
+<circle cx="260" cy="110" r="4" fill="#f1bf78"/>
+<text x="268" y="104" class="hd">CX, CY</text>
+<text x="40" y="250" class="sm">X 0</text>
+<text x="480" y="250" text-anchor="end" class="sm">10239 (639.94 dots)</text>
+<text x="20" y="34" text-anchor="end" class="sm">0</text>
+<text x="20" y="232" text-anchor="end" class="sm">239</text>
+<text x="40" y="276" class="sm">X in sixteenths of a 640 dot, Y in sixteenths of a row.</text>
+<text x="40" y="294" class="sm">320 mode halves X itself: the same records draw in both.</text>
+</svg>
+</figure>
+<div>
+<h3>Projection (meshes, SETPROJ)</h3>
+<pre><code>X16 = CX + FX &times; x / z        (sixteenths of a 640 dot)
+Y16 = CY - FY &times; y / z        (sixteenths of a row)
+key = f16( NEAR &times; 2^28 / z )  (16-bit depth key)
+z clipped at NEAR &gt;&gt; shift, x and y to a guard band
+(-16384 .. 26624 sixteenths) before the divide
+The SceneEngine projects with its own view registers
+(center, scale, largest: SceneEngine +$B/+$C).</code></pre>
+<h3>The depth key</h3>
+<p>A 16-bit float of 1/z: a 4-bit exponent and a 12-bit mantissa, so depth resolution is 1/4,096 of the distance at every range. Larger is nearer; the buffer clears to 0 (farthest); <code>$FFFF</code> is the near plane. A dot is drawn when its key is <b>at least</b> the stored key (equal passes).</p>
+<pre><code>q &lt; 2^14 :  key = q / 4
+otherwise:  p = bit length(q) - 1          (14..27)
+            key = (p - 13) &lt;&lt; 12  |  12 bits under q's top bit</code></pre>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== meshes -->
+<section class="wrap report" id="meshes">
+<header><div class="eyebrow">05 &middot; Renderer</div><h2>Resident meshes</h2></header>
+<figure class="diagram"><figcaption>Mesh RAM: 4,096 entries of 16 bytes (upload target 1, entry n at byte 16 n)</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 200" role="img" aria-label="A face entry holds three vertex indices, material, texture, flags, a spare byte and the face normal. A vertex entry holds x, y, z, the vertex normal and u, v">
+<text x="10" y="22" class="hd">face entry</text>
+<g>
+<rect x="10" y="32" width="120" height="50" class="mem"/><text x="70" y="54" text-anchor="middle" class="hd">i0</text><text x="70" y="72" text-anchor="middle" class="sm">0-1</text>
+<rect x="132" y="32" width="120" height="50" class="mem"/><text x="192" y="54" text-anchor="middle" class="hd">i1</text><text x="192" y="72" text-anchor="middle" class="sm">2-3</text>
+<rect x="254" y="32" width="120" height="50" class="mem"/><text x="314" y="54" text-anchor="middle" class="hd">i2</text><text x="314" y="72" text-anchor="middle" class="sm">4-5</text>
+<rect x="376" y="32" width="60" height="50" class="ctl"/><text x="406" y="54" text-anchor="middle" class="hd">mat</text><text x="406" y="72" text-anchor="middle" class="sm">6</text>
+<rect x="438" y="32" width="60" height="50" class="ctl"/><text x="468" y="54" text-anchor="middle" class="hd">tex</text><text x="468" y="72" text-anchor="middle" class="sm">7</text>
+<rect x="500" y="32" width="60" height="50" class="ctl"/><text x="530" y="54" text-anchor="middle" class="hd">flags</text><text x="530" y="72" text-anchor="middle" class="sm">8</text>
+<rect x="562" y="32" width="60" height="50" class="dim"/><text x="592" y="54" text-anchor="middle" class="hd">&#8211;</text><text x="592" y="72" text-anchor="middle" class="sm">9</text>
+<rect x="624" y="32" width="364" height="50" class="rec"/><text x="806" y="54" text-anchor="middle" class="hd">face normal nx ny nz (Q15)</text><text x="806" y="72" text-anchor="middle" class="sm">10-15</text>
+</g>
+<text x="10" y="118" class="hd">vertex entry</text>
+<g>
+<rect x="10" y="128" width="364" height="50" class="mem"/><text x="192" y="150" text-anchor="middle" class="hd">x  y  z (signed model units)</text><text x="192" y="168" text-anchor="middle" class="sm">0-5</text>
+<rect x="376" y="128" width="364" height="50" class="rec"/><text x="558" y="150" text-anchor="middle" class="hd">vertex normal nx ny nz (Q15)</text><text x="558" y="168" text-anchor="middle" class="sm">6-11</text>
+<rect x="742" y="128" width="246" height="50" class="ctl"/><text x="865" y="150" text-anchor="middle" class="hd">u  v (8.8 texels)</text><text x="865" y="168" text-anchor="middle" class="sm">12-15</text>
+</g>
+</svg>
+</div>
+</figure>
+<div class="cs-grid">
+<div>
+<h3>Drawing a mesh</h3>
+<ol>
+<li>Upload faces and vertices once (target 1). A face's indices count from the MESH record's vertex base.</li>
+<li>SETPROJ and SETLIGHT once (they stay until changed).</li>
+<li>Per object, per frame: SETMAT, then MESH (first face, count, vertex base, material override). The mesh unit transforms, lights, clips at the near plane and the guard band, projects and draws every face.</li>
+</ol>
+</div>
+<div>
+<h3>The arithmetic</h3>
+<pre><code>view   = ((M &times; p) &lt;&lt; scale) &gt;&gt; 7  +  T
+N_view = M &times; n                           (Q15)
+shade  = amb + dif &times; max(0, N_view &middot; L) &gt;&gt; 15
+         clamped 0-255; flat faces use the face
+         normal, GOURAUD the vertex normals</code></pre>
+<p>View space: x right, y up, z forward (in front of the eye is z &gt; 0). Faces are drawn whichever way they wind unless CULL is set.</p>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== shading -->
+<section class="wrap report" id="shading">
+<header><div class="eyebrow">06 &middot; Renderer</div><h2>Shading and the shade LUT</h2></header>
+<figure class="diagram"><figcaption>Shade LUT address (upload target 2, 16 KB)</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 120" role="img" aria-label="LUT address bit 13 is the mode, bits 12 to 5 the material, bits 4 to 0 the light level">
+<rect x="10" y="20" width="160" height="50" class="ctl"/><text x="90" y="42" text-anchor="middle" class="hd">mode</text><text x="90" y="60" text-anchor="middle" class="sm">b13: 0=640 1=320</text>
+<rect x="172" y="20" width="500" height="50" class="mem"/><text x="422" y="42" text-anchor="middle" class="hd">material 0-255</text><text x="422" y="60" text-anchor="middle" class="sm">b12-b5</text>
+<rect x="674" y="20" width="314" height="50" class="rec"/><text x="831" y="42" text-anchor="middle" class="hd">level 0-31</text><text x="831" y="60" text-anchor="middle" class="sm">b4-b0</text>
+<text x="10" y="96" class="sm">The byte there is the color index drawn. Two tiles: $0000-$1FFF for 640 &times; 16 colors, $2000-$3FFF for 320 &times; 256 colors.</text>
+<text x="10" y="114" class="sm">level = shade &gt;&gt; 3; with DITHER on, shade + (Bayer 4&times;4 / 2) first. Any palette layout works: ramps in the CLUT, the LUT points into them.</text>
+</svg>
+</div>
+</figure>
+<ul>
+<li><b>DIRECT</b> skips the LUT: the material (or texel) is the color index itself.</li>
+<li><b>SCREENDOOR</b> draws every other dot: see-through without blending (the colors are indexed, so there is no alpha).</li>
+<li>Switching MODE at run time needs both LUT tiles filled; MODE is latched at SWAP.</li>
+</ul>
+</section>
+
+<!-- ================================================================== textures -->
+<section class="wrap report" id="textures">
+<header><div class="eyebrow">07 &middot; Renderer</div><h2>Textures</h2></header>
+<figure class="diagram"><figcaption>Texture descriptor: 4 bytes per id (upload target 3, id n at byte 4 n; 256 ids)</figcaption>
+<div class="svgscroll">
+<svg viewBox="0 0 1000 200" role="img" aria-label="Descriptor bytes 0 to 2 hold the 18-bit base address; byte 3 holds log2 width minus 3, log2 height minus 3, clamp u and clamp v">
+<rect x="10" y="20" width="240" height="50" class="mem"/><text x="130" y="42" text-anchor="middle" class="hd">byte 0: base b17-16</text><text x="130" y="60" text-anchor="middle" class="sm">bits 1-0 used</text>
+<rect x="252" y="20" width="240" height="50" class="mem"/><text x="372" y="42" text-anchor="middle" class="hd">byte 1: base b15-8</text>
+<rect x="494" y="20" width="240" height="50" class="mem"/><text x="614" y="42" text-anchor="middle" class="hd">byte 2: base b7-0</text>
+<rect x="736" y="20" width="252" height="50" class="ctl"/><text x="862" y="42" text-anchor="middle" class="hd">byte 3: size, clamp</text>
+<path d="M862 70 L862 96" class="ar" marker-end="url(#ah)"/>
+<g>
+<rect x="290" y="100" width="170" height="46" class="ctl"/><text x="375" y="120" text-anchor="middle" class="hd">clamp v</text><text x="375" y="138" text-anchor="middle" class="sm">b7 (0 = wrap)</text>
+<rect x="462" y="100" width="170" height="46" class="ctl"/><text x="547" y="120" text-anchor="middle" class="hd">clamp u</text><text x="547" y="138" text-anchor="middle" class="sm">b6 (0 = wrap)</text>
+<rect x="634" y="100" width="170" height="46" class="rec"/><text x="719" y="120" text-anchor="middle" class="hd">log2 h - 3</text><text x="719" y="138" text-anchor="middle" class="sm">b5-b3</text>
+<rect x="806" y="100" width="182" height="46" class="rec"/><text x="897" y="120" text-anchor="middle" class="hd">log2 w - 3</text><text x="897" y="138" text-anchor="middle" class="sm">b2-b0</text>
+</g>
+<text x="10" y="180" class="sm">Sizes 8-256 per axis, powers of 2. Example: 64 &times; 32 clamped both ways, base 0 = $00 $00 $00 $D3.</text>
+</svg>
+</div>
+</figure>
+<div class="cs-grid">
+<div>
+<h3>What a texel is</h3>
+<ul>
+<li>Texture memory is 256 KB (upload target 0), 8-bit texels, row-major from the base: texel (u, v) is at <code>base + v &times; width + u</code>.</li>
+<li>A texel is a <b>material</b>: it goes through the shade LUT at the face's light level, so a texture shades with the surface. With DIRECT it is the color index.</li>
+<li><b>Texel 0 is transparent</b>: nothing is drawn there. A texture meant to cover its face holds no 0.</li>
+<li>Room for 64 textures of 64&times;64, 16 of 128&times;128 or 4 of 256&times;256.</li>
+</ul>
+</div>
+<div>
+<h3>Putting one on a face</h3>
+<ol>
+<li>Upload the texels (target 0) and the descriptor (target 3).</li>
+<li>Set TEXEN (GPU_CTRL b6).</li>
+<li>Mesh face: flags | <code>$08</code>, byte 7 = texture id. POLY: flags | <code>$08</code>, header byte 2 = id, then the UV units.</li>
+<li>Give each vertex u, v in texels, 8.8 (u = 64.0 is <code>$4000</code>).</li>
+</ol>
+<p>Sampling is nearest, perspective-correct at every 16th dot and linear between; each axis wraps or clamps per the descriptor. <b>TexConv</b> turns a PNG into texels of a material set, with the descriptor and upload chunks ready.</p>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== haze -->
+<section class="wrap report" id="haze">
+<header><div class="eyebrow">08 &middot; Renderer</div><h2>Distance haze</h2></header>
+<div class="cs-grid">
+<div>
+<pre><code>if HAZE_CTRL.b0 and 0 &lt; key &lt; HAZE_START:
+    h = min(16, (HAZE_START - key) &times; HAZE_SCALE &gt;&gt; 16)
+    the dot takes HAZE_COLOR when h &gt; Bayer4&times;4(dot)</code></pre>
+</div>
+<div>
+<p>Farther than HAZE_START (a smaller key) the haze color dissolves in through an ordered 4&times;4 pattern, completely at h = 16. Set HAZE_COLOR to the sky color each frame so the far scenery fades into the horizon.</p>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== upload -->
+<section class="wrap report" id="upload">
+<header><div class="eyebrow">09 &middot; Renderer</div><h2>The upload port</h2></header>
+<div class="tblwrap"><table>
+<thead><tr><th>UP_ADDR b23:22</th><th>+$0A first byte</th><th>Target</th><th>Size</th></tr></thead>
+<tbody>
+<tr><td class="addr">0</td><td class="addr">$00-$3F</td><td>textures</td><td>256 KB</td></tr>
+<tr><td class="addr">1</td><td class="addr">$40-$7F</td><td>mesh RAM (entry n at 16 n)</td><td>64 KB</td></tr>
+<tr><td class="addr">2</td><td class="addr">$80-$BF</td><td>shade LUT (640 tile at 0, 320 tile at $2000)</td><td>16 KB</td></tr>
+<tr><td class="addr">3</td><td class="addr">$C0-$FF</td><td>texture descriptors (id n at 4 n)</td><td>1 KB</td></tr>
+</tbody></table></div>
+<pre><code>* upload Y bytes from X to mesh entry 100 (byte $640): target 1 = $40 in UP_ADDR's top byte
+        lda   #$40
+        sta   GPU+$0A
+        ldd   #$0640
+        std   GPU+$0B          UP_ADDR = $400640
+up1@    lda   ,x+
+        sta   GPU+$0D          UP_DATA: the byte, then UP_ADDR + 1
+        leay  -1,y
+        bne   up1@</code></pre>
+<p>Upload only while the Renderer is IDLE (GPU_STATUS b3): between frames, or before the first one.</p>
+</section>
+
+<!-- ================================================================== frame -->
+<section class="wrap report" id="frame">
+<header><div class="eyebrow">10 &middot; Renderer</div><h2>A frame</h2></header>
+<div class="cs-grid">
+<pre><code>* setup, once
+        lda   #$10
+        sta   GPU+$00          RESET
+        lda   #164
+        sta   GPU+$07          VIEW_ROWS
+        ...                    uploads: LUT, meshes, textures
+        lda   #%01100111       TEXEN AUTOCLEAR ZEN MODE=320 EN
+        sta   GPU+$00
+
+* push the 8-byte unit at X (FIFO room checked first)
+Push    ldd   GPU+$02          FIFO_FREE (+$02 latches +$03)
+        beq   Push
+        ldd   ,x
+        std   GPU+$40
+        ldd   2,x
+        std   GPU+$42
+        ldd   4,x
+        std   GPU+$44
+        ldd   6,x
+        std   GPU+$46          byte 7 (the tag) pushes
+        leax  8,x
+        rts</code></pre>
+<div>
+<h3>Per frame</h3>
+<ol>
+<li>Background: HSPLIT for sky and ground, or let AUTOCLEAR clear to CLEAR_COLOR.</li>
+<li>Scenery: start a SceneEngine run (SEPORT on), or send POLY records.</li>
+<li>Objects: SETMAT + MESH each.</li>
+<li>SWAP. The flip waits for everything ahead and for the raster to leave the view rows.</li>
+<li>Stay at most one frame ahead: before the SWAP of frame n + 2, wait until SWAP_COUNT reaches n (or take the interrupt).</li>
+</ol>
+<p>MODE is latched at SWAP, so a program can change mode between frames.</p>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== SceneEngine -->
+<section class="wrap report" id="scene">
+<header><div class="eyebrow">11 &middot; SceneEngine</div><h2>Registers at $FC:$1780</h2></header>
+<div class="tblwrap"><table>
+<thead><tr><th>Offset</th><th>Read</th><th>Write</th></tr></thead>
+<tbody>
+<tr><td class="addr">+$0 / +$1</td><td>OUT word: +0 pops the head word (high byte), +1 its low byte</td><td>&ndash;</td></tr>
+<tr><td class="addr">+$2</td><td>STATUS: b7 OUT not empty, b6 busy, b5-3 state (0 idle, 1 run, 2 CPU op, 3 done, 4 fault)</td><td>command: <code>$01</code> GO (run the list at the list pointer in its RAM), <code>$02</code> GO-AT, <code>$03</code> RESUME at LP, <code>$04</code> ABORT</td></tr>
+<tr><td class="addr">+$3</td><td>COUNT of OUT words (saturates at 255)</td><td>control: b0 abort and flush OUT, b1 clear errors</td></tr>
+<tr><td class="addr">+$4 / +$5</td><td colspan="2">ADDR high / low: the RAM address for uploads and read-back</td></tr>
+<tr><td class="addr">+$6</td><td>the byte at ADDR, then ADDR + 1</td><td>upload a byte to ADDR, then ADDR + 1 (only while not busy)</td></tr>
+<tr><td class="addr">+$7 / +$8</td><td>LP: the op address of the last stop</td><td>LP: the list pointer RESUME uses</td></tr>
+<tr><td class="addr">+$9</td><td>the last stop's op byte (CPU op) or fault code</td><td>&ndash;</td></tr>
+<tr><td class="addr">+$A</td><td>errors: b0 access while busy, b1 OUT underflow</td><td>&ndash;</td></tr>
+<tr><td class="addr">+$B / +$C</td><td colspan="2">the view: +B the register index (0-11), +C its byte, the index then counts up. 0-1 center X, 2-3 center Y, 4-5 scale X, 6-7 scale Y, 8-9 largest X, 10-11 largest Y (sixteenths; reset 5120, 1176, 1280, 294, 10239, 2351). Written only while not busy</td></tr>
+<tr><td class="addr">+$D / +$E</td><td colspan="2">LW: a line's half width in 1/256 list units. 0 draws lines as one-dot lines; above 0 every 3D line becomes a ribbon of that width. Written only while not busy</td></tr>
+</tbody></table></div>
+<div class="cs-grid">
+<div>
+<h3>Memory</h3>
+<ul>
+<li><code>$0000-$1FFF</code> variable RAM (8 KB): the program's variables the list reads and writes; written-back changes come out of OUT.</li>
+<li><code>$4000-$7FFF</code> scene RAM (16 KB): display lists and their data.</li>
+<li>Upload and read back through ADDR / +6, only while the walker is not busy.</li>
+</ul>
+<h3>Display-list ops for textures</h3>
+<ul>
+<li><code>$36 tt</code> TEX: polygons from here on take texture tt.</li>
+<li><code>$37</code> NOTEX: untextured again.</li>
+<li><code>$38 uuuu vvvv</code> UV: the texture coordinates of the vertices that follow; clipped vertices get interpolated u, v.</li>
+<li>GO and GO-AT start untextured.</li>
+</ul>
+</div>
+<div>
+<h3>With SEPORT on (GPU_CTRL b7)</h3>
+<p>The walker's drawing goes straight to the Renderer, not to OUT:</p>
+<ul>
+<li><b>VTX</b>: a projected vertex (X16, Y16, depth key; u, v when textured); up to 32 make a polygon.</li>
+<li><b>FILL</b>: draws the vertices as one polygon in a DIRECT color. Buildings are depth-tested and written; ground decals (pavement, markings) are neither, in list order.</li>
+<li><b>LINE3</b>: a 3D line as a one-dot quad, depth-tested with its ends' keys.</li>
+<li><b>DOT</b>: a light, one 320-dot by one row, depth-tested.</li>
+<li><b>SLINE</b>: a screen line, no depth.</li>
+</ul>
+<p>Row positions are scaled by SE_YMUL on the way (Renderer +$0E).</p>
+</div>
+</div>
+</section>
+
+<!-- ================================================================== point port -->
+<section class="wrap report" id="points">
+<header><div class="eyebrow">12 &middot; SceneEngine</div><h2>The point port, $FED8-$FEDF</h2></header>
+<div class="tblwrap"><table>
+<thead><tr><th>Address</th><th>Write</th><th>Read</th></tr></thead>
+<tbody>
+<tr><td class="addr">$FED8</td><td>a ground point's words (x, z)</td><td>a result word (pops)</td></tr>
+<tr><td class="addr">$FEDA</td><td>a 3D point's words (x, y, z)</td><td>&ndash;</td></tr>
+<tr><td class="addr">$FEDC</td><td>a camera-space point's words, to project</td><td>&ndash;</td></tr>
+<tr><td class="addr">$FEDE</td><td>a command: <code>$01</code> LOADM (9 matrix words), <code>$02</code> LOADEYE (3 words), <code>$03</code> LOADBASE (5 words), <code>$11</code> SETMODE DELTA</td><td>STATUS</td></tr>
+<tr><td class="addr">$FEDF</td><td>control: <code>$01</code> flush, errors cleared</td><td>COUNT of result words</td></tr>
+</tbody></table></div>
+<p>The port runs on the SceneEngine's own transform and projection units, between list runs: a transformed point gives its camera words (and its exponent and flags), a projected one gives X16, Y16 and the view units. It answers within a few clocks of the point's last word.</p>
+</section>
+
+<!-- ================================================================== interrupt -->
+<section class="wrap report" id="irq">
+<header><div class="eyebrow">13 &middot; Both</div><h2>The GPU interrupt</h2></header>
+<p>A 64-clock pulse into VICKY's interrupt input bit 2, which is the interrupt controller's <b>bit 9</b> (group 1, bit 1), masked at reset. It fires when:</p>
+<ul>
+<li>a SceneEngine run stops (END, a CPU op, a fault), or</li>
+<li>the Renderer's SWAP_COUNT or FENCE_COUNT moves.</li>
+</ul>
+<p>Use it in place of polling STATUS or SWAP_COUNT. Read the counters in the handler to tell which event it was.</p>
+</section>
+
+<!-- ================================================================== limits -->
+<section class="wrap report" id="limits">
+<header><div class="eyebrow">14 &middot; Both</div><h2>Limits and gotchas</h2></header>
+<div class="cs-grid">
+<div class="callout">
+<h3>Sizes</h3>
+<ul>
+<li>Frame: 640&times;240 at 16 colors or 320&times;240 at 256, two buffers, 16-bit depth per 640 dot.</li>
+<li>Mesh RAM: 4,096 entries (faces and vertices share them).</li>
+<li>Textures: 256 KB; 256 descriptors; sizes 8-256.</li>
+<li>Shade LUT: 256 materials &times; 32 levels, one tile per mode.</li>
+<li>POLY: 3-8 vertices. Record FIFO: 512 units.</li>
+<li>SceneEngine: 8 KB variables, 16 KB scene, 32 vertices a polygon.</li>
+</ul>
+</div>
+<div class="warncall">
+<h3>Gotchas</h3>
+<ul>
+<li>Texel 0 is a hole, not black.</li>
+<li>Uploads only while the Renderer is IDLE; SceneEngine uploads only while it is not busy.</li>
+<li>A record cut short, or a CONT with no record open, sets BADREC; an index past entry 4,095 sets MESHERR. Both stay set until written 1.</li>
+<li>AUTOCLEAR clears only the view rows (VIEW_ROW0, VIEW_ROWS).</li>
+<li>Equal depth keys pass the test: draw a decal after its surface, with ZTEST and no ZWRITE.</li>
+<li>LINE and SPAN coordinates are whole 640 dots and rows; polygons are in sixteenths.</li>
+</ul>
+</div>
+</div>
+<p class="report-source">Values on this page are taken from the GPU's reference model, which its hardware matches bit for bit.</p>
+</section>
+
+</main>
+</body>
+</html>
