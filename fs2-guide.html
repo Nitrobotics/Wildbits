@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wildbits FS2 Guide</title>
+<style>
+  :root { --bg: #ffffff; --fg: #1d1d1f; --muted: #5f6368; --rule: #d9dce1; --head: #f2f4f7; --key: #eef1f5; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #16181c; --fg: #e8eaed; --muted: #9aa0a6; --rule: #33373e; --head: #1f2228; --key: #262a31; }
+  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 19px; margin: 32px 0 10px; border-bottom: 1px solid var(--rule); padding-bottom: 4px; }
+  h3 { font-size: 16px; margin: 22px 0 8px; }
+  p.sub { color: var(--muted); margin: 0 0 8px; }
+  kbd { background: var(--key); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 6px; font: 14px ui-monospace, Consolas, monospace; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { background: var(--head); font-weight: 600; }
+  td.f { font: 15px ui-monospace, Consolas, monospace; white-space: nowrap; width: 1%; }
+  td.fl { font: 15px ui-monospace, Consolas, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Wildbits FS2 Guide</h1>
+  <p class="sub">Flight Simulator II on the Wildbits K2 and Jr2</p>
+
+  <h2>Airport COM</h2>
+  <table>
+    <tr><th>To</th><th>Keys</th></tr>
+    <tr><td>Choose MHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td></tr>
+    <tr><td>Choose kHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>C</kbd> quickly</td></tr>
+    <tr><td>Adjust</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td></tr>
+  </table>
+
+  <h3>Chicago O'Hare COM1</h3>
+  <table>
+    <tr><th>MHz</th><th>Station</th></tr>
+    <tr><td class="f">135.40</td><td>ATIS</td></tr>
+    <tr><td class="f">120.75</td><td>Tower, runways 4R/22L and 10C/28C</td></tr>
+    <tr><td class="f">121.15</td><td>Tower, runway 9C/27C (the start runway)</td></tr>
+    <tr><td class="f">126.90</td><td>Tower, runways 9R/27L and 4L/22R</td></tr>
+    <tr><td class="f">128.15</td><td>Tower, runway 9L/27R</td></tr>
+    <tr><td class="f">132.70</td><td>Tower, runway 10L/28R; the only one where you hear the Learjet</td></tr>
+    <tr><td class="f">133.00</td><td>Tower, runway 10R/28L</td></tr>
+  </table>
+
+  <h2>Transponder codes</h2>
+  <table>
+    <tr><th>Code</th><th>Meaning</th></tr>
+    <tr><td class="f">1200</td><td>Flying by sight (VFR), not talking to anyone</td></tr>
+    <tr><td class="f">7700</td><td>Emergency</td></tr>
+    <tr><td class="f">7600</td><td>Radio failure</td></tr>
+    <tr><td class="f">7500</td><td>Hijack</td></tr>
+  </table>
+
+  <h2>Flying a VOR: O'Hare to JFK</h2>
+  <h3>1. Tune NAV1 to 115.90 (the Kennedy VOR at JFK)</h3>
+  <table>
+    <tr><th>To</th><th>Keys</th></tr>
+    <tr><td>Choose NAV MHz</td><td><kbd>Ctrl</kbd>+<kbd>N</kbd>, then <kbd>1</kbd> for NAV1 (<kbd>2</kbd> for NAV2)</td></tr>
+    <tr><td>Choose NAV kHz</td><td><kbd>Ctrl</kbd>+<kbd>N</kbd>, <kbd>Ctrl</kbd>+<kbd>N</kbd> quickly</td></tr>
+    <tr><td>Adjust</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td></tr>
+  </table>
+  <h3>2. Set the course (OBS) to 094</h3>
+  <table>
+    <tr><th>To</th><th>Keys</th></tr>
+    <tr><td>Choose the OBS</td><td><kbd>Ctrl</kbd>+<kbd>V</kbd>, then <kbd>1</kbd> for NAV1 (<kbd>2</kbd> for NAV2)</td></tr>
+    <tr><td>Turn the card</td><td><kbd>.</kbd> or <kbd>,</kbd>, 2 degrees a press, until 094 is under the top mark</td></tr>
+  </table>
+  <p>094 is the nearest card step to the straight line from O'Hare, 093.</p>
+  <h3>3. Fly the needle</h3>
+  <table>
+    <tr><th>NAV1 shows</th><th>Do</th></tr>
+    <tr><td>Needle centered, flag TO</td><td>You are on course</td></tr>
+    <tr><td>Needle left of center</td><td>Steer a little left</td></tr>
+    <tr><td>Needle right of center</td><td>Steer a little right</td></tr>
+  </table>
+  <p>DME counts down your distance to the station. The station works only once the New York scenery loads: until then the needle and DME stay dead, so fly heading 093 (about 1,150 km, 620 nm).</p>
+
+  <h2>VOR stations in sf.wildbits</h2>
+  <p class="sub">Tune them on NAV1 or NAV2. A station works only while its city's scenery is loaded; there are none between the cities. Frequencies are today's (FAA data, 2026-10-16).</p>
+  <h3>Chicago</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">108.20</td><td class="f">BMI</td><td>Bloomington</td></tr>
+    <tr><td class="f">108.40</td><td class="f">DPA</td><td>Du Page</td></tr>
+    <tr><td class="f">109.60</td><td class="f">PNT</td><td>Pontiac</td></tr>
+    <tr><td class="f">110.00</td><td class="f">CMI</td><td>Champaign</td></tr>
+    <tr><td class="f">111.00</td><td class="f">DNV</td><td>Danville</td></tr>
+    <tr><td class="f">111.60</td><td class="f">IKK</td><td>Kankakee</td></tr>
+    <tr><td class="f">112.30</td><td class="f">JOT</td><td>Joliet</td></tr>
+    <tr><td class="f">113.00</td><td class="f">OBK</td><td>Northbrook</td></tr>
+    <tr><td class="f">113.20</td><td class="f">EON</td><td>Peotone</td></tr>
+    <tr><td class="f">114.20</td><td class="f">CGT</td><td>Chicago Heights</td></tr>
+    <tr><td class="f">116.80</td><td class="f">RBS</td><td>Roberts</td></tr>
+  </table>
+  <h3>New York</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">108.40</td><td class="f">TEB</td><td>Teterboro</td></tr>
+    <tr><td class="f">108.80</td><td class="f">BDR</td><td>Bridgeport</td></tr>
+    <tr><td class="f">109.00</td><td class="f">BDL</td><td>Bradley</td></tr>
+    <tr><td class="f">109.40</td><td class="f">EEN</td><td>Keene</td></tr>
+    <tr><td class="f">109.80</td><td class="f">HVN</td><td>New Haven</td></tr>
+    <tr><td class="f">110.00</td><td class="f">ORW</td><td>Norwich</td></tr>
+    <tr><td class="f">110.40</td><td class="f">MAD</td><td>Madison</td></tr>
+    <tr><td class="f">110.60</td><td class="f">GDM</td><td>Gardner</td></tr>
+    <tr><td class="f">110.85</td><td class="f">GON</td><td>Groton</td></tr>
+    <tr><td class="f">112.30</td><td class="f">CRI</td><td>Canarsie</td></tr>
+    <tr><td class="f">112.50</td><td class="f">LWM</td><td>Lawrence</td></tr>
+    <tr><td class="f">112.70</td><td class="f">BOS</td><td>Boston</td></tr>
+    <tr><td class="f">113.00</td><td class="f">BAF</td><td>Barnes</td></tr>
+    <tr><td class="f">113.10</td><td class="f">LGA</td><td>La Guardia</td></tr>
+    <tr><td class="f">113.60</td><td class="f">HTO</td><td>Hampton</td></tr>
+    <tr><td class="f">114.00</td><td class="f">CEF</td><td>Westover</td></tr>
+    <tr><td class="f">114.30</td><td class="f">PWL</td><td>Pawling</td></tr>
+    <tr><td class="f">114.40</td><td class="f">MHT</td><td>Manchester</td></tr>
+    <tr><td class="f">114.50</td><td class="f">MVY</td><td>Martha&#x27;S Vineyard</td></tr>
+    <tr><td class="f">114.90</td><td class="f">HFD</td><td>Hartford</td></tr>
+    <tr><td class="f">115.10</td><td class="f">CTR</td><td>Chester</td></tr>
+    <tr><td class="f">115.30</td><td class="f">ALB</td><td>Albany</td></tr>
+    <tr><td class="f">115.60</td><td class="f">PVD</td><td>Providence</td></tr>
+    <tr><td class="f">115.90</td><td class="f">JFK</td><td>Kennedy</td></tr>
+    <tr><td class="f">116.60</td><td class="f">CMK</td><td>Carmel</td></tr>
+    <tr><td class="f">117.20</td><td class="f">CCC</td><td>Calverton</td></tr>
+    <tr><td class="f">117.40</td><td class="f">PUT</td><td>Putnam</td></tr>
+    <tr><td class="f">117.60</td><td class="f">IGN</td><td>Kingston</td></tr>
+    <tr><td class="f">117.70</td><td class="f">DPK</td><td>Deer Park</td></tr>
+    <tr><td class="f">117.80</td><td class="f">SEY</td><td>Sandy Point</td></tr>
+  </table>
+  <h3>Los Angeles</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">108.20</td><td class="f">VTU</td><td>Ventura</td></tr>
+    <tr><td class="f">108.40</td><td class="f">LHS</td><td>Lake Hughes</td></tr>
+    <tr><td class="f">109.20</td><td class="f">TTE</td><td>Tule</td></tr>
+    <tr><td class="f">109.40</td><td class="f">VCV</td><td>Victorville</td></tr>
+    <tr><td class="f">109.40</td><td class="f">VIS</td><td>Visalia</td></tr>
+    <tr><td class="f">109.60</td><td class="f">BIH</td><td>Bishop</td></tr>
+    <tr><td class="f">109.80</td><td class="f">PGY</td><td>Poggi</td></tr>
+    <tr><td class="f">110.40</td><td class="f">POM</td><td>Pomona</td></tr>
+    <tr><td class="f">110.80</td><td class="f">SMO</td><td>Santa Monica</td></tr>
+    <tr><td class="f">111.40</td><td class="f">SXC</td><td>Santa Catalina</td></tr>
+    <tr><td class="f">112.20</td><td class="f">PDZ</td><td>Paradise</td></tr>
+    <tr><td class="f">112.40</td><td class="f">RAL</td><td>Riverside</td></tr>
+    <tr><td class="f">112.50</td><td class="f">FIM</td><td>Fillmore</td></tr>
+    <tr><td class="f">113.10</td><td class="f">VNY</td><td>Van Nuys</td></tr>
+    <tr><td class="f">113.40</td><td class="f">HDF</td><td>Homeland</td></tr>
+    <tr><td class="f">113.60</td><td class="f">LAX</td><td>Los Angeles</td></tr>
+    <tr><td class="f">114.50</td><td class="f">PMD</td><td>Palmdale</td></tr>
+    <tr><td class="f">115.30</td><td class="f">OCN</td><td>Oceanside</td></tr>
+    <tr><td class="f">115.70</td><td class="f">SLI</td><td>Seal Beach</td></tr>
+    <tr><td class="f">116.10</td><td class="f">GMN</td><td>Gorman</td></tr>
+    <tr><td class="f">116.40</td><td class="f">EDW</td><td>Edwards</td></tr>
+    <tr><td class="f">117.10</td><td class="f">AVE</td><td>Avenal</td></tr>
+    <tr><td class="f">117.20</td><td class="f">ELB</td><td>El Toro</td></tr>
+    <tr><td class="f">117.70</td><td class="f">OAL</td><td>Coaldale</td></tr>
+    <tr><td class="f">117.80</td><td class="f">MZB</td><td>Mission Bay</td></tr>
+  </table>
+  <h3>San Francisco Bay</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">109.20</td><td class="f">MCC</td><td>Mc Clellan</td></tr>
+    <tr><td class="f">109.80</td><td class="f">CIC</td><td>Chico</td></tr>
+    <tr><td class="f">110.00</td><td class="f">MXW</td><td>Maxwell</td></tr>
+    <tr><td class="f">110.00</td><td class="f">ROM</td><td>Priest</td></tr>
+    <tr><td class="f">110.80</td><td class="f">MYV</td><td>Marysville</td></tr>
+    <tr><td class="f">112.10</td><td class="f">SGD</td><td>Scaggs Island</td></tr>
+    <tr><td class="f">112.30</td><td class="f">ENI</td><td>Mendocino</td></tr>
+    <tr><td class="f">112.60</td><td class="f">PXN</td><td>Panoche</td></tr>
+    <tr><td class="f">112.90</td><td class="f">CZQ</td><td>Clovis</td></tr>
+    <tr><td class="f">113.00</td><td class="f">STS</td><td>Santa Rosa</td></tr>
+    <tr><td class="f">113.20</td><td class="f">SWR</td><td>Squaw Valley</td></tr>
+    <tr><td class="f">113.70</td><td class="f">PYE</td><td>Point Reyes</td></tr>
+    <tr><td class="f">113.90</td><td class="f">OSI</td><td>Woodside</td></tr>
+    <tr><td class="f">114.00</td><td class="f">BSR</td><td>Big Sur</td></tr>
+    <tr><td class="f">114.10</td><td class="f">HZN</td><td>Hazen</td></tr>
+    <tr><td class="f">114.10</td><td class="f">SJC</td><td>San Jose</td></tr>
+    <tr><td class="f">114.20</td><td class="f">HYP</td><td>El Nido</td></tr>
+    <tr><td class="f">114.30</td><td class="f">PRB</td><td>Paso Robles</td></tr>
+    <tr><td class="f">114.40</td><td class="f">ILA</td><td>Williams</td></tr>
+    <tr><td class="f">114.60</td><td class="f">MOD</td><td>Modesto</td></tr>
+    <tr><td class="f">114.80</td><td class="f">LIN</td><td>Linden</td></tr>
+    <tr><td class="f">115.10</td><td class="f">MVA</td><td>Mina</td></tr>
+    <tr><td class="f">115.20</td><td class="f">SAC</td><td>Sacramento</td></tr>
+    <tr><td class="f">115.50</td><td class="f">HNW</td><td>Hangtown</td></tr>
+    <tr><td class="f">115.60</td><td class="f">FRA</td><td>Friant</td></tr>
+    <tr><td class="f">115.70</td><td class="f">RBL</td><td>Red Bluff</td></tr>
+    <tr><td class="f">115.80</td><td class="f">SFO</td><td>San Francisco</td></tr>
+    <tr><td class="f">116.00</td><td class="f">ECA</td><td>Manteca</td></tr>
+    <tr><td class="f">116.20</td><td class="f">SAU</td><td>Sausalito</td></tr>
+    <tr><td class="f">116.40</td><td class="f">TZZ</td><td>Travis</td></tr>
+    <tr><td class="f">116.50</td><td class="f">LLC</td><td>Lovelock</td></tr>
+    <tr><td class="f">116.80</td><td class="f">OAK</td><td>Oakland</td></tr>
+    <tr><td class="f">117.00</td><td class="f">CCR</td><td>Concord</td></tr>
+    <tr><td class="f">117.30</td><td class="f">SNS</td><td>Salinas</td></tr>
+    <tr><td class="f">117.90</td><td class="f">FMG</td><td>Mustang</td></tr>
+  </table>
+  <h3>Seattle</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">109.60</td><td class="f">TCM</td><td>Mcchord</td></tr>
+    <tr><td class="f">110.60</td><td class="f">PAE</td><td>Paine</td></tr>
+    <tr><td class="f">112.20</td><td class="f">TOU</td><td>Tatoosh</td></tr>
+    <tr><td class="f">113.00</td><td class="f">HUH</td><td>Whatcom</td></tr>
+    <tr><td class="f">113.40</td><td class="f">OLM</td><td>Olympia</td></tr>
+    <tr><td class="f">116.80</td><td class="f">SEA</td><td>Seattle</td></tr>
+    <tr><td class="f">117.20</td><td class="f">CVV</td><td>Penn Cove</td></tr>
+    <tr><td class="f">117.70</td><td class="f">HQM</td><td>Hoquiam</td></tr>
+  </table>
+</main>
+</body>
+</html>
