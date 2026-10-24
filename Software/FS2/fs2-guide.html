@@ -28,18 +28,36 @@
   <h1>Wildbits FS2 Guide</h1>
   <p class="sub">Flight Simulator II on the Wildbits K2 and Jr2</p>
 
-  <h2>Airport COM</h2>
+  <h2>Maps</h2>
   <table>
-    <tr><th>To</th><th>Keys</th></tr>
-    <tr><td>Choose MHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td></tr>
-    <tr><td>Choose kHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>C</kbd> quickly</td></tr>
-    <tr><td>Adjust</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td></tr>
+    <tr><th>Map</th><th>Shows</th></tr>
+    <tr><td><a href="vor_stations.png">vor_stations.png</a></td><td>Every VOR and airport in sf.wildbits, with each VOR's frequency</td></tr>
+    <tr><td><a href="com_radio.png">com_radio.png</a></td><td>Every airport with today's ATIS, tower and CTAF frequencies</td></tr>
   </table>
 
-  <h3>Chicago O'Hare COM1</h3>
+  <h2>Airport COM</h2>
+  <p>Two COM radios. At the start COM1 is on 121.15, the tower of the start runway (9C), and COM2 on 135.40, O'Hare's ATIS.</p>
+  <table>
+    <tr><th>To</th><th>COM1</th><th>COM2</th></tr>
+    <tr><td>Choose MHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd></td><td><kbd>Ctrl</kbd>+<kbd>K</kbd></td></tr>
+    <tr><td>Choose kHz</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>C</kbd> quickly</td><td><kbd>Ctrl</kbd>+<kbd>K</kbd>, <kbd>Ctrl</kbd>+<kbd>K</kbd></td></tr>
+    <tr><td>Adjust (kHz: 0.01 a step)</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td><td><kbd>.</kbd> up, <kbd>,</kbd> down (any other key ends COM2's tuning)</td></tr>
+  </table>
+  <p>With one radio on a tower frequency and the other on the ATIS, the tower comes first: the ATIS plays only while the tower is quiet, and the tower cuts it off when it talks. Talking (<kbd>F5</kbd> on the K2, <kbd>O</kbd> on the Jr2) goes to the radio on the tower or ground frequency. The ATIS (a female voice) repeats a minute after each broadcast; nothing talks for 5 seconds after the start or a crash. In the air near O'Hare the tower calls the Learjet when it is within 5 miles ("traffic, Learjet, two o'clock, three miles"), every 30 seconds; it holds a takeoff while the Learjet flies through that runway's departure path.</p>
+  <h3>Departing O'Hare</h3>
+  <table>
+    <tr><th>Step</th><th>Do</th></tr>
+    <tr><td>1</td><td>Listen to the ATIS (COM2, 135.40) for the information letter.</td></tr>
+    <tr><td>2</td><td>Tune a radio to ground, 121.68, and press talk: "taxi to runway …, hold short, contact tower … when ready".</td></tr>
+    <tr><td>3</td><td>Taxi to the runway, tune the tower frequency ground gave you, press talk: cleared for takeoff (or hold short while traffic is on the runway or final).</td></tr>
+    <tr><td>4</td><td>After landing the tower says "turn off at the next taxiway, contact ground 121.68".</td></tr>
+  </table>
+
+  <h3>Chicago O'Hare frequencies</h3>
   <table>
     <tr><th>MHz</th><th>Station</th></tr>
     <tr><td class="f">135.40</td><td>ATIS</td></tr>
+    <tr><td class="f">121.68</td><td>Ground (today's 121.675, to the hundredth)</td></tr>
     <tr><td class="f">120.75</td><td>Tower, runways 4R/22L and 10C/28C</td></tr>
     <tr><td class="f">121.15</td><td>Tower, runway 9C/27C (the start runway)</td></tr>
     <tr><td class="f">126.90</td><td>Tower, runways 9R/27L and 4L/22R</td></tr>
@@ -47,6 +65,23 @@
     <tr><td class="f">132.70</td><td>Tower, runway 10L/28R; the only one where you hear the Learjet</td></tr>
     <tr><td class="f">133.00</td><td>Tower, runway 10R/28L</td></tr>
   </table>
+
+  <h2>Audio panel</h2>
+  <p>The six buttons at the right end of the dash's top strip choose which radios you hear. A lit (amber) button is on.</p>
+  <table>
+    <tr><th>To</th><th>Keys</th></tr>
+    <tr><td>Turn a button on or off</td><td><kbd>Ctrl</kbd>+<kbd>R</kbd>, then <kbd>1</kbd>–<kbd>6</kbd></td></tr>
+  </table>
+  <table>
+    <tr><th>Key</th><th>Button</th><th>You hear</th></tr>
+    <tr><td class="f">1</td><td>COM1</td><td>The tower or ATIS COM1 is tuned to. On when FS2 starts.</td></tr>
+    <tr><td class="f">2</td><td>COM2</td><td>The tower or ATIS COM2 is tuned to. On when FS2 starts.</td></tr>
+    <tr><td class="f">3</td><td>NAV1</td><td>The VOR tuned on NAV1 sending its 3-letter ID in Morse code, while NAV1 receives it.</td></tr>
+    <tr><td class="f">4</td><td>NAV2</td><td>The same for NAV2 (not while the ADF is shown).</td></tr>
+    <tr><td class="f">5</td><td>ADF</td><td>Nothing yet: the lamp only.</td></tr>
+    <tr><td class="f">6</td><td>MKR</td><td>Nothing yet: the lamp only (marker beacons).</td></tr>
+  </table>
+  <p>Identifying a VOR: tune it, turn its NAV button on, and compare the Morse with the ID in the station list below (DPA is <code>-.. .--. .-</code>). The ID repeats every few seconds. With NAV1 and NAV2 both on, you hear NAV1's. A dead station (centered needle, blank flag) sends nothing. Speech comes first: the Morse stops while the tower or ATIS talks and starts the ID over afterwards.</p>
 
   <h2>Transponder codes</h2>
   <table>
@@ -63,7 +98,7 @@
     <tr><th>To</th><th>Keys</th></tr>
     <tr><td>Choose NAV MHz</td><td><kbd>Ctrl</kbd>+<kbd>N</kbd>, then <kbd>1</kbd> for NAV1 (<kbd>2</kbd> for NAV2)</td></tr>
     <tr><td>Choose NAV kHz</td><td><kbd>Ctrl</kbd>+<kbd>N</kbd>, <kbd>Ctrl</kbd>+<kbd>N</kbd> quickly</td></tr>
-    <tr><td>Adjust</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td></tr>
+    <tr><td>Adjust (kHz: 0.01 a step)</td><td><kbd>.</kbd> up, <kbd>,</kbd> down</td></tr>
   </table>
   <h3>2. Set the course (OBS) to 094</h3>
   <table>
@@ -82,7 +117,12 @@
   <p>DME counts down your distance to the station. The station works only once the New York scenery loads: until then the needle and DME stay dead, so fly heading 093 (about 1,150 km, 620 nm).</p>
 
   <h2>VOR stations in sf.wildbits</h2>
-  <p class="sub">Tune them on NAV1 or NAV2. A station works only while its city's scenery is loaded; there are none between the cities. Frequencies are today's (FAA data, 2026-10-16).</p>
+  <p class="sub">Tune them on NAV1 or NAV2. A city's stations work while its scenery is loaded; en-route stations work within about 128 km of them. At the start NAV1 is on Franklin (109.60) and NAV2 on Kennedy (115.90). Frequencies are today's (FAA data, 2026-10-16).</p>
+  <h3>En route (heard within about 128 km)</h3>
+  <table>
+    <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
+    <tr><td class="f">109.60</td><td class="f">FKL</td><td>Franklin, Pennsylvania: on the O'Hare to JFK line, about halfway (NAV1 at the start)</td></tr>
+  </table>
   <h3>Chicago</h3>
   <table>
     <tr><th>MHz</th><th>ID</th><th>Station</th></tr>
