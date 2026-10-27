@@ -1,0 +1,1112 @@
+--- wildbits-cores/k2_Longview_rc27/inputs/source/gpu3/gpu3_core.v	2026-10-21 03:09:23.060799500 -0500
++++ fpga-6809-cores-staging/source/gpu3/gpu3_core.v	2026-10-25 21:25:05.436996600 -0500
+@@ -18,7 +18,6 @@
+ 	input wire [8:0] bus_view_rows,
+ 	input wire bus_mode480,
+ 	input  wire [15:0] bus_probe_row, bus_probe_dot,
+-	input  wire [47:0] bus_haze,         // rc27 (item 7): the haze registers, reloaded after a RESET
+ 	// display-side registers (synchronized by the caller)
+ 	input  wire        disp_en,
+ 	input  wire [8:0]  view_row0,
+@@ -55,7 +54,6 @@
+ reg [8:0] view_rows;
+ reg mode480;
+ reg  [15:0] probe_row, probe_dot;
+-reg  [47:0] haze;                        // rc27 (item 7): {CTRL, START, SCALE, COLOR}
+ wire        mode320 = ctrl[1], zen = ctrl[2], dither = ctrl[3], autoclear = ctrl[5], texen = ctrl[6];
+ wire [8:0] max_rows = mode320 && mode480 ? 9'd480 : 9'd240;
+ wire [8:0] H = (view_rows == 0 || view_rows > max_rows) ? max_rows : view_rows;
+@@ -67,8 +65,10 @@
+ reg  [23:0] up_a;
+ reg  [7:0]  up_d;
+ wire [1:0]  up_t = up_a[23:22];
+-wire [17:0] tex_ra;
++wire [17:0] tex_ra, t_tex_ra, pf_tex_ra;   // the texel address: the scanline polygon fill's while it runs, else TRI's
+ wire [13:0] lut_ra;
++wire        pf_idle;
++assign tex_ra = pf_idle ? t_tex_ra : pf_tex_ra;
+ // The upload writes, a clock after the upload unit's: one register set for each memory, so each sits by its tiles
+ // (the upload is many clocks ahead of any read of what it wrote: the next record's parse and setup come first)
+ (* max_fanout = 16 *) reg [17:0] tw_a;
+@@ -130,8 +130,9 @@
+ 	if (lw_we) lutm[lw_a] <= lw_d;
+ 	lut_q0 <= lutm[lut_ra]; lut_q1 <= lut_q0; lut_q2 <= lut_q1;
+ end
+-wire [7:0]  desc_ra;
++wire [7:0]  desc_ra, t_desc_ra, pf_desc_ra;
+ wire [31:0] desc_rd;
++assign desc_ra = pf_idle ? t_desc_ra : pf_desc_ra;
+ genvar gl;
+ generate for (gl = 0; gl < 4; gl = gl + 1) begin : DESC
+ 	reg [7:0] dm [0:255];
+@@ -211,11 +212,28 @@
+ 	.flags(tri_from_mesh ? m_flags : t_flags), .mat(tri_from_mesh ? m_mat : t_mat),
+ 	.tex(tri_from_mesh ? m_tex : t_tex), .flat(tri_from_mesh ? m_flat : t_flat),
+ 	.mode320(mode320), .zen(zen), .dither(dither), .texen(texen), .view_rows(H),
+-	.hz_on(haze[40]), .hz_start(haze[39:24]), .hz_scale(haze[23:8]), .hz_color(haze[7:0]),
+-	.desc_ra(desc_ra), .desc_rd(desc_rd), .tex_ra(tex_ra), .tex_rd(tex_q2), .lut_ra(lut_ra), .lut_rd(lut_q2),
++	.desc_ra(t_desc_ra), .desc_rd(desc_rd), .tex_ra(t_tex_ra), .tex_rd(tex_q2), .lut_ra(lut_ra), .lut_rd(lut_q2),
+ 	.wr_valid(tw_valid), .wr_row(tw_row), .wr_dlo(tw_dlo), .wr_dhi(tw_dhi), .wr_color(tw_color),
+ 	.wr_ztest(tw_zt), .wr_zwrite(tw_zw), .wr_q(tw_q));
+ 
++// ---------------------------------------------------------------------------------------------------------------
++// The scanline polygon fill (gpu3_pfill): the SceneEngine port's corner ($F2, $F4) and end ($F3) units
++// ---------------------------------------------------------------------------------------------------------------
++reg         pf_go;
++reg  [63:0] pf_unit;
++wire        pf_ln, pw_valid, pw_zt, pw_zw;
++wire [9:0]  pf_lx0, pf_lx1, pw_d;
++wire [8:0]  pf_ly0, pf_ly1, pw_row;
++wire [7:0]  pf_lcol, pw_color;
++wire [15:0] pw_q;
++gpu3_pfill PF (
++	.clk(clk), .rst(erst), .go(pf_go), .unit(pf_unit), .idle(pf_idle),
++	.mode320(mode320), .view_rows(H), .zen(zen), .texen(texen),
++	.ln_req(pf_ln), .ln_x0(pf_lx0), .ln_x1(pf_lx1), .ln_y0(pf_ly0), .ln_y1(pf_ly1), .ln_col(pf_lcol),
++	.desc_ra(pf_desc_ra), .desc_rd(desc_rd), .tex_ra(pf_tex_ra), .tex_rd(tex_q2),
++	.wr_valid(pw_valid), .wr_row(pw_row), .wr_d(pw_d), .wr_color(pw_color), .wr_ztest(pw_zt), .wr_zwrite(pw_zw),
++	.wr_q(pw_q));
++
+ // mesh engine registers
+ reg  [7:0]  pay [0:34];                  // the payload of a fixed multi-unit record
+ reg         m_go;
+@@ -249,7 +267,8 @@
+ // ---------------------------------------------------------------------------------------------------------------
+ localparam [4:0] P_IDLE = 0, P_COLLECT = 1, P_EXEC = 2, P_LINE = 3, P_SPAN = 4, P_CLEARW = 5, P_HSINIT = 6,
+ 	P_HSROW = 7, P_HSDIV = 8, P_HSSPAN = 9, P_SWAPW = 10, P_SWAPC = 11, P_FENCEW = 12, P_FAN = 13, P_FANW = 14,
+-	P_MESHW = 15, P_FLUSH = 16, P_HSWAIT = 17, P_HSINIT2 = 18;
++	P_MESHW = 15, P_FLUSH = 16, P_HSWAIT = 17, P_HSINIT2 = 18, P_PFW = 19;
++localparam T_PFV = 8'hF2, T_PFE = 8'hF3, T_PFT = 8'hF4;
+ reg  [4:0]  ps;
+ reg  [7:0]  op;
+ reg  [4:0]  conts;                       // continuation units still to come
+@@ -277,7 +296,7 @@
+ wire [7:0]  ut = ureg[7:0];
+ wire [7:0]  ub0 = ureg[63:56], ub1 = ureg[55:48], ub2 = ureg[47:40], ub3 = ureg[39:32],
+             ub4 = ureg[31:24], ub5 = ureg[23:16], ub6 = ureg[15:8];
+-assign active = (ps != P_IDLE) || !t_idle || fb_busy || urv || rdp || uw_any;
++assign active = (ps != P_IDLE) || !t_idle || !pf_idle || fb_busy || urv || rdp || uw_any;
+ 
+ // 2D state
+ reg signed [11:0] lx, ly, lx1, ly1, ldx, ldy;
+@@ -314,6 +333,7 @@
+ always @(posedge clk) begin
+ 	take <= 1'b0;
+ 	t_go <= 1'b0;
++	pf_go <= 1'b0;
+ 	m_go <= 1'b0;
+ 	clr_go <= 1'b0;
+ 	swap_go <= 1'b0;
+@@ -323,7 +343,7 @@
+ 	w_valid <= 1'b0;
+ 	if (rst) begin
+ 		ps <= P_IDLE;
+-		ctrl <= 8'd0; view_rows <= 9'd240; mode480 <= 1'b0; clear_color <= 8'd0; probe_row <= 16'd0; probe_dot <= 16'd0; haze <= 48'd0;
++		ctrl <= 8'd0; view_rows <= 9'd240; mode480 <= 1'b0; clear_color <= 8'd0; probe_row <= 16'd0; probe_dot <= 16'd0;
+ 		swap_count <= 8'd0; fence_count <= 8'd0; swap_pending <= 1'b0; mesh_on <= 1'b0;
+ 		NEARr <= 32'd256;
+ 		CLIPr <= 32'd256;
+@@ -335,16 +355,20 @@
+ 			w_valid <= 1'b1; w_row <= tw_row; w_dlo <= tw_dlo; w_dhi <= tw_dhi; w_color <= tw_color;
+ 			w_zt <= tw_zt; w_zw <= tw_zw; w_q <= tw_q;
+ 		end
++		// and the scanline polygon fill's (never both at once: each runs only while the parser waits on it)
++		if (pw_valid) begin
++			w_valid <= 1'b1; w_row <= pw_row; w_dlo <= pw_d; w_dhi <= pw_d; w_color <= pw_color;
++			w_zt <= pw_zt; w_zw <= pw_zw; w_q <= pw_q;
++		end
+ 		case (ps)
+ 		P_FLUSH: if (urv && !take) take <= 1'b1;
+ 		         else if (u_empty && !urv && !rdp) begin
+ 			ctrl <= bus_ctrl & 8'hEF; view_rows <= bus_view_rows; mode480 <= bus_mode480; clear_color <= bus_clear_color;
+ 			probe_row <= bus_probe_row; probe_dot <= bus_probe_dot;
+-			haze <= bus_haze;
+ 			ps <= P_IDLE;
+ 		end
+ 		// a unit is taken only with the write path empty: a register or mode change never meets writes in flight
+-		P_IDLE: if (urv && !take && !w_valid && !fb_busy) begin
++		P_IDLE: if (urv && !take && !w_valid && !fb_busy && pf_idle) begin
+ 			take <= 1'b1;
+ 			op <= ut;
+ 			hdr[0] <= ub0; hdr[1] <= ub1; hdr[2] <= ub2; hdr[3] <= ub3; hdr[4] <= ub4; hdr[5] <= ub5; hdr[6] <= ub6;
+@@ -352,6 +376,7 @@
+ 			ci <= 5'd0;
+ 			case (ut)
+ 			T_NOP: ;
++			T_PFV, T_PFE, T_PFT: begin pf_go <= 1'b1; pf_unit <= ureg; ps <= P_PFW; end
+ 			T_CONT: ev_badrec <= 1'b1;
+ 			T_UPLOAD: begin up_we <= 1'b1; up_a <= {ub0, ub1, ub2}; up_d <= ub3; end
+ 			T_SETREG: case (ub0)
+@@ -364,12 +389,6 @@
+ 				8'h11: probe_row[7:0] <= ub1;
+ 				8'h12: probe_dot[15:8] <= ub1;
+ 				8'h13: probe_dot[7:0] <= ub1;
+-				8'h15: haze[47:40] <= ub1;
+-				8'h16: haze[39:32] <= ub1;
+-				8'h17: haze[31:24] <= ub1;
+-				8'h18: haze[23:16] <= ub1;
+-				8'h19: haze[15:8] <= ub1;
+-				8'h1A: haze[7:0] <= ub1;
+ 				default: ;
+ 				endcase
+ 			OP_POLY: begin
+@@ -632,6 +651,23 @@
+ 		end
+ 		P_FANW: if (t_done) ps <= P_FAN;
+ 		P_MESHW: if (m_done) begin mesh_on <= 1'b0; ps <= P_IDLE; end
++		// ---- the scanline polygon fill: its unit taken; a LINE it asks for (two corners, or no row center crossed:
++		// 640-space dots, view rows, in range) runs as OP_LINE's
++		P_PFW: if (pf_ln) begin
++			lx <= mode320 ? {3'd0, pf_lx0[9:1]} : {2'd0, pf_lx0}; ly <= {3'd0, pf_ly0};
++			lx1 <= mode320 ? {3'd0, pf_lx1[9:1]} : {2'd0, pf_lx1}; ly1 <= {3'd0, pf_ly1};
++			begin : pfl
++				reg signed [11:0] a0, a1;
++				a0 = mode320 ? {3'd0, pf_lx0[9:1]} : {2'd0, pf_lx0};
++				a1 = mode320 ? {3'd0, pf_lx1[9:1]} : {2'd0, pf_lx1};
++				ldx <= (a1 >= a0) ? a1 - a0 : a0 - a1;
++				ldy <= (pf_ly1 >= pf_ly0) ? -$signed({3'd0, pf_ly1 - pf_ly0}) : -$signed({3'd0, pf_ly0 - pf_ly1});
++				lerr <= ((a1 >= a0) ? a1 - a0 : a0 - a1) - ((pf_ly1 >= pf_ly0) ? {3'd0, pf_ly1 - pf_ly0} : {3'd0, pf_ly0 - pf_ly1});
++				lsx <= a1 >= a0; lsy <= pf_ly1 >= pf_ly0;
++			end
++			scol <= pf_lcol;
++			ps <= P_LINE;
++		end else if (!pf_go && pf_idle) ps <= P_IDLE;
+ 		default: ps <= P_IDLE;
+ 		endcase
+ 	end
+--- wildbits-cores/k2_Longview_rc27/inputs/source/gpu3/gpu3_tri.v	2026-10-21 03:09:23.059294400 -0500
++++ fpga-6809-cores-staging/source/gpu3/gpu3_tri.v	2026-10-25 14:38:29.042912000 -0500
+@@ -20,10 +20,6 @@
+ 	input  wire [7:0]  flags, mat, tex, flat,
+ 	input  wire        mode320, zen, dither, texen,
+ 	input  wire [8:0]  view_rows,
+-	// rc27 (item 7): distance haze (gpu3_top HAZE_*), steady while a triangle draws
+-	input  wire        hz_on,
+-	input  wire [15:0] hz_start, hz_scale,
+-	input  wire [7:0]  hz_color,
+ 	// memories: desc_rd = {byte 0, 1, 2, 3} of the descriptor
+ 	output wire [7:0]  desc_ra,  input wire [31:0] desc_rd,
+ 	output wire [17:0] tex_ra,   input wire [7:0]  tex_rd,
+@@ -306,12 +302,6 @@
+ reg  [15:0] f_u, f_vv;
+ reg  [7:0]  f_m [5:7];
+ reg         f_x [5:7];
+-// rc27 (item 7): the haze: the key's distance past START (stage 3), times SCALE (4), the level against the dot's
+-// dither threshold (5)
+-reg  [15:0] h_d3;
+-reg  [31:0] h_p4;
+-reg         f_h [5:7];
+-wire [4:0]  h_lvl4 = (h_p4[31:16] > 16'd16) ? 5'd16 : h_p4[20:16];
+ wire [7:0]  ui0 = f_u[15:8], vi0 = f_vv[15:8];
+ wire [9:0]  umax = (10'd1 << lw) - 10'd1, vmax = (10'd1 << lh) - 10'd1;
+ wire [9:0]  ui = clu ? (({2'd0, ui0} > umax) ? umax : {2'd0, ui0}) : ({2'd0, ui0} & umax);
+@@ -341,15 +331,10 @@
+ 		f_m[5] <= mat4; f_x[5] <= disc4;
+ 		f_m[6] <= f_m[5]; f_x[6] <= f_x[5];
+ 		f_m[7] <= f_m[6]; f_x[7] <= f_x[6];
+-		h_d3 <= (f_q[2] != 16'd0 && f_q[2] < hz_start) ? hz_start - f_q[2] : 16'd0;
+-		h_p4 <= h_d3 * hz_scale;
+-		f_h[5] <= hz_on && (h_lvl4 > {1'b0, bay});
+-		f_h[6] <= f_h[5];
+-		f_h[7] <= f_h[6];
+ 		wr_valid  <= f_v[7] && !f_x[7];
+ 		wr_row    <= f_y[7];
+ 		wr_dlo    <= f_d[7];
+-		wr_color  <= f_h[7] ? hz_color : fl[F_DIRECT] ? f_m[7] : lut_rd;
++		wr_color  <= fl[F_DIRECT] ? f_m[7] : lut_rd;
+ 		wr_ztest  <= zon && fl[F_ZTEST];
+ 		wr_zwrite <= zon && fl[F_ZWRITE];
+ 		wr_q      <= f_q[7];
+--- wildbits-cores/k2_Longview_rc27/inputs/source/gpu3/gpu3_top.v	2026-10-21 03:10:17.241144700 -0500
++++ fpga-6809-cores-staging/source/gpu3/gpu3_top.v	2026-10-25 14:43:48.634532500 -0500
+@@ -10,10 +10,6 @@
+ //   $1806 VIEW_ROW0   $1807 VIEW_ROWS   $1808 GPU_LUT (b2:0 LUT, b6:4 group)   $1809 CLEAR_COLOR
+ //   $180A-$180C UP_ADDR   $180D UP_DATA (W)   $180E/0F SE_YMUL   $1810/11 PROBE_ROW   $1812/13 PROBE_DOT
+ //   $1814 PROBE_COLOR (R)   $181F GPU_ID ($34)   $1840-$187F RECORD (offset mod 8: 0-6 latch, 7 push)
+-//   rc27 (item 7) distance haze, in order with the records: $1815 HAZE_CTRL (b0 on)   $1816/17 HAZE_START (a depth
+-//   key)   $1818/19 HAZE_SCALE   $181A HAZE_COLOR. A dot with a key q, 0 < q < START, has the haze level
+-//   h = min(16, (START - q) SCALE >> 16) and takes HAZE_COLOR where h is above its 4 x 4 dither threshold (0-15):
+-//   none at START, all from START - 2^20 / SCALE on. Both modes; a key of 0 (no depth: screen lines) never hazes.
+ `timescale 1ns / 1ps
+ 
+ module gpu3_top (
+@@ -54,7 +50,6 @@
+ reg mode480;
+ reg  [23:0] up_addr;
+ reg  [15:0] se_ymul, probe_row, probe_dot;
+-reg  [47:0] haze;                        // rc27 (item 7): {CTRL, START, SCALE, COLOR}
+ reg  [7:0]  latch [0:6];
+ reg  [2:0]  sticky;
+ reg  [7:0]  free_lo;
+@@ -113,7 +108,7 @@
+ 	b_push <= 1'b0;
+ 	if (brst) begin
+ 		ctrl <= 8'd0; view_row0 <= 9'd0; view_rows <= 9'd240; mode480 <= 1'b0; lutr <= 8'd0; clear_color <= 8'd0;
+-		up_addr <= 24'd0; se_ymul <= 16'd1024; probe_row <= 16'd0; probe_dot <= 16'd0; haze <= 48'd0;
++		up_addr <= 24'd0; se_ymul <= 16'd1024; probe_row <= 16'd0; probe_dot <= 16'd0;
+ 		sticky <= 3'd0; greset_t <= 1'b0; s_ev <= 2'd0;
+ 	end else begin
+ 		// the core's events
+@@ -143,15 +138,9 @@
+ 			8'h11: begin probe_row[7:0] <= din;  b_push <= 1'b1; b_unit <= {8'h11, din, 40'd0, 8'hF1}; end
+ 			8'h12: begin probe_dot[15:8] <= din; b_push <= 1'b1; b_unit <= {8'h12, din, 40'd0, 8'hF1}; end
+ 			8'h13: begin probe_dot[7:0] <= din;  b_push <= 1'b1; b_unit <= {8'h13, din, 40'd0, 8'hF1}; end
+-			8'h15: begin haze[47:40] <= din & 8'h01; b_push <= 1'b1; b_unit <= {8'h15, din & 8'h01, 40'd0, 8'hF1}; end
+-			8'h16: begin haze[39:32] <= din; b_push <= 1'b1; b_unit <= {8'h16, din, 40'd0, 8'hF1}; end
+-			8'h17: begin haze[31:24] <= din; b_push <= 1'b1; b_unit <= {8'h17, din, 40'd0, 8'hF1}; end
+-			8'h18: begin haze[23:16] <= din; b_push <= 1'b1; b_unit <= {8'h18, din, 40'd0, 8'hF1}; end
+-			8'h19: begin haze[15:8] <= din;  b_push <= 1'b1; b_unit <= {8'h19, din, 40'd0, 8'hF1}; end
+ 			8'h1B: begin mode480 <= din[0]; b_push <= 1'b1; b_unit <= {8'h1B, 7'd0, din[0], 40'd0, 8'hF1}; end
+ 			8'h1C: view_row0[8] <= din[0];
+ 			8'h1D: begin view_rows[8] <= din[0]; b_push <= 1'b1; b_unit <= {8'h1D, 7'd0, din[0], 40'd0, 8'hF1}; end
+-			8'h1A: begin haze[7:0] <= din;   b_push <= 1'b1; b_unit <= {8'h1A, din, 40'd0, 8'hF1}; end
+ 			default:
+ 				if (a[7:6] == 2'b01) begin
+ 					if (a[2:0] != 3'd7) latch[a[2:0]] <= din;
+@@ -188,12 +177,6 @@
+ 	8'h12: dout = probe_dot[15:8];
+ 	8'h13: dout = probe_dot[7:0];
+ 	8'h14: dout = s_probe2;
+-	8'h15: dout = haze[47:40];
+-	8'h16: dout = haze[39:32];
+-	8'h17: dout = haze[31:24];
+-	8'h18: dout = haze[23:16];
+-	8'h19: dout = haze[15:8];
+-	8'h1A: dout = haze[7:0];
+ 	8'h1B: dout = {7'd0, mode480};
+ 	8'h1C: dout = {7'd0, view_row0[8]};
+ 	8'h1D: dout = {7'd0, view_rows[8]};
+@@ -211,12 +194,10 @@
+ (* ASYNC_REG = "TRUE" *) reg d_4801, d_4802;
+ (* ASYNC_REG = "TRUE" *) reg [7:0] d_cc1, d_cc2;
+ (* ASYNC_REG = "TRUE" *) reg [15:0] d_pr1, d_pr2, d_pd1, d_pd2;
+-(* ASYNC_REG = "TRUE" *) reg [47:0] d_hz1, d_hz2;
+ always @(posedge clk) begin
+ 	d_4801 <= mode480; d_4802 <= d_4801;
+ 	d_vr1 <= view_rows; d_vr2 <= d_vr1; d_cc1 <= clear_color; d_cc2 <= d_cc1;
+ 	d_pr1 <= probe_row; d_pr2 <= d_pr1; d_pd1 <= probe_dot; d_pd2 <= d_pd1;
+-	d_hz1 <= haze; d_hz2 <= d_hz1;
+ 	g_t <= {g_t[1:0], greset_t};
+ 	d_ctrl1 <= ctrl; d_ctrl2 <= d_ctrl1;
+ 	d_r01 <= view_row0; d_r02 <= d_r01;
+@@ -244,7 +225,6 @@
+ 	.clk(clk), .rst(rst), .greset(greset),
+ 	.u_data(u_data), .u_empty(f_empty), .u_rd(u_rd),
+ 	.bus_mode480(d_4802), .bus_ctrl(d_ctrl2), .bus_view_rows(d_vr2), .bus_clear_color(d_cc2), .bus_probe_row(d_pr2), .bus_probe_dot(d_pd2),
+-	.bus_haze(d_hz2),
+ 	.disp_en(d_ctrl2[0]), .view_row0(d_r02),
+ 	.vblank(vblank), .disp_start(disp_start), .disp_row(disp_row),
+ 	.disp_valid(disp_valid), .disp_word(disp_word), .disp_done(disp_done), .front_mode(front_mode), .front_480(gpu_480),
+--- wildbits-cores/k2_Longview_rc27/inputs/source/gpu3/gpu3_seport.v	2026-10-18 22:46:15.900042000 -0500
++++ fpga-6809-cores-staging/source/gpu3/gpu3_seport.v	2026-10-25 15:13:10.431560500 -0500
+@@ -1,13 +1,13 @@
+ // gpu3_seport: the SceneEngine port (K2_GPU3 with K2_SCENE; model fpga/sim/gpu3/gpu3_ref.py SePort). With
+ // GPU_CTRL.SEPORT the SceneEngine hands its drawing records (VTX, FILL, LINE3, DOT, SLINE) here instead of to its OUT
+ // FIFO; this turns them into GPU units on the 25 Mhz IO clock:
+-//   VTX ($01ff PX16 PY16 Q16 [U V]): a polygon vertex (ff = 1 starts a polygon; at most 32); Y16 = PY16 x SE_YMUL >> 10;
+-//        Q16 its depth key (rc26: the engine's projection unit, as the mesh path's Q); rc27 (item 6) ff bit 2: its
+-//        texture coordinates follow.
+-//   FILL ($02cc [T]): rc27 (item 6) cc bit 4: textured with texture T (the POLY records TEXTURED, their u, v units).
+-//   FILL ($02cc): the polygon as DIRECT, z-WRITTEN (not tested: FS's painter order stands among the scenery, whose
+-//        16-bit z is too coarse to test coplanar faces and markings; the meshes test against it) POLY records of
+-//        at most 8 vertices sharing vertex 0.
++//   VTX ($01ff PX16 PY16 Q16 [U V]): a polygon corner (ff = 1 starts a polygon; ff bit 1 a ground point); Y16 = PY16 x
++//        SE_YMUL >> 10; Q16 its depth key (rc26: the engine's projection unit, as the mesh path's Q); rc27 (item 6) ff
++//        bit 2: its texture coordinates follow. Out at once as the unit $F2 {X16, Y16, Q16, ff bits 2:0} for
++//        gpu3_pfill (the scanline polygon fill), then $F4 {U, V} when they follow: no corner is kept here.
++//   FILL ($02cc [T]): the polygon's end, out as the unit $F3 {cc bits 3:0, cc bit 4 (textured), T}: gpu3_pfill colors
++//        the dots inside its corners, DIRECT, a building z-tested and z-written, a decal (any ground point) neither;
++//        rc27 (item 6) cc bit 4: textured with texture T.
+ //   LINE3 ($03cc PXa PYa PXb PYb Qa Qb): rc27 (item 4) a one-dot quad through the ends at their sub-dot positions,
+ //        DIRECT, z-TESTED with the ends' depth keys and not z-written: a line behind a building is hidden by it, a
+ //        line never hides anything. Thick across the axis it crosses least: one row down (|dx| >= |dy|), else one
+@@ -33,22 +33,14 @@
+ 	input  wire        u_ready
+ );
+ 
+-localparam T_CONT = 8'hFE;
+-reg  [15:0] vx [0:31], vy [0:31], vq [0:31];
+-reg  [15:0] vu [0:31], vv [0:31];        // rc27 (item 6): the vertices' texture coordinates
+-reg         ftx, fuv;                    // the fill is textured / its POLY's u, v units are going out
+-reg  [7:0]  ftid;
+-reg  [5:0]  nv;
++localparam T_CONT = 8'hFE, T_PFV = 8'hF2, T_PFE = 8'hF3, T_PFT = 8'hF4;
+ reg  [7:0]  rtype, rparm;
+ reg  [2:0]  nw, wi;                      // operand words the record has / has taken
+ reg  [15:0] wd [0:5];
+-localparam [3:0] W_HEAD = 0, W_OPS = 1, W_EXEC = 2, W_FILL = 3, W_FILLV = 4, W_DOT = 5, W_OUT = 6, W_LINEV = 7;
++localparam [3:0] W_HEAD = 0, W_OPS = 1, W_EXEC = 2, W_PFT = 3, W_DOT = 5, W_OUT = 6, W_LINEV = 7;
+ reg  [1:0]  lk;                          // rc27: the line quad's vertex
+ reg  [15:0] lax, lay, laq, lbx, lby, lbq, lox, loy;   // rc27: the quad's ends and the offset of its far side
+ reg  [3:0]  st, ret;
+-reg  [5:0]  fb;                          // the fill's first vertex of the current POLY (after vertex 0)
+-reg         vg;                          // the polygon has a ground point: a decal (no depth test, no write)
+-reg  [3:0]  fk, fn;                      // vertices sent / in this POLY
+ reg  [7:0]  dy, dy1;
+ reg  [10:0] dx0, dx1;
+ 
+@@ -69,7 +61,7 @@
+ 
+ always @(posedge clk) begin
+ 	if (rst) begin
+-		st <= W_HEAD; u_valid <= 1'b0; nv <= 6'd0;
++		st <= W_HEAD; u_valid <= 1'b0;
+ 	end else begin
+ 		if (u_valid && u_ready) u_valid <= 1'b0;
+ 		case (st)
+@@ -91,21 +83,17 @@
+ 			if (wi + 3'd1 == nw) st <= W_EXEC;
+ 		end
+ 		W_EXEC: case (rtype)
+-			8'h01: begin
++			8'h01: if (!u_valid) begin
+ 				// flags: bit 0 starts a polygon; bit 1 marks a ground point (the engine, routed): a polygon with any
+-				// ground point is a decal (pavement, markings), drawn in list order without depth
+-				if (rparm[0]) begin
+-					vx[0] <= wd[0]; vy[0] <= wy[1]; vq[0] <= wd[2]; nv <= 6'd1; vg <= rparm[1];
+-					vu[0] <= rparm[2] ? wd[3] : 16'd0; vv[0] <= rparm[2] ? wd[4] : 16'd0;
+-				end else if (nv < 6'd32) begin
+-					vx[nv[4:0]] <= wd[0]; vy[nv[4:0]] <= wy[1]; vq[nv[4:0]] <= wd[2]; nv <= nv + 6'd1; vg <= vg | rparm[1];
+-					vu[nv[4:0]] <= rparm[2] ? wd[3] : 16'd0; vv[nv[4:0]] <= rparm[2] ? wd[4] : 16'd0;
+-				end
+-				st <= W_HEAD;
++				// ground point is a decal (pavement, markings), drawn in list order without depth; bit 2: U V follow
++				u_data <= {wd[0], wy[1], wd[2], 5'd0, rparm[2:0], T_PFV};
++				u_valid <= 1'b1;
++				st <= rparm[2] ? W_PFT : W_HEAD;
+ 			end
+-			8'h02: begin
+-				if (nv >= 6'd3) begin fb <= 6'd1; ftx <= rparm[4]; ftid <= wd[0][7:0]; st <= W_FILL; end
+-				else begin nv <= 6'd0; st <= W_HEAD; end
++			8'h02: if (!u_valid) begin
++				u_data <= {4'd0, rparm[3:0], 3'd0, rparm[4], 4'd0, rparm[4] ? wd[0][7:0] : 8'd0, 32'd0, T_PFE};
++				u_valid <= 1'b1;
++				st <= W_HEAD;
+ 			end
+ 			8'h03, 8'h05: if (!u_valid) begin
+ 				// rc27 (items 4, 5): POLY header, DIRECT (LINE3: | ZTEST), four vertices
+@@ -142,36 +130,11 @@
+ 			lk <= lk + 2'd1;
+ 			if (lk == 2'd3) st <= W_HEAD;
+ 		end
+-		// FILL: POLY (DIRECT, material = the color) of vertex 0 and vertices fb .. fb + fn - 2: a building (3D points)
+-		// z-tested and z-written, a decal (any ground point) neither
+-		W_FILL: if (!u_valid) begin
+-			if (fb + 6'd1 >= nv) begin nv <= 6'd0; st <= W_HEAD; end
+-			else begin
+-				fn <= ((nv - fb) > 6'd7) ? 4'd8 : (nv - fb + 6'd1);
+-				u_data <= {((vg ? 8'h20 : 8'h23) | (ftx ? 8'h08 : 8'h00)), {4'd0, rparm[3:0]}, (ftx ? ftid : 8'h00), 4'd0,
+-				           (((nv - fb) > 6'd7) ? 4'd8 : (nv[3:0] - fb[3:0] + 4'd1)), 24'd0, 8'h10};
+-				u_valid <= 1'b1;
+-				fk <= 4'd0;
+-				fuv <= 1'b0;
+-				st <= W_FILLV;
+-			end
+-		end
+-		W_FILLV: if (!u_valid) begin
+-			// vertex fk of this POLY: 0 = the polygon's vertex 0, k > 0 = fb + k - 1; textured, then their u, v units
+-			if (fuv) u_data <= {vu[(fk == 4'd0) ? 5'd0 : fb[4:0] + fk - 4'd1], vv[(fk == 4'd0) ? 5'd0 : fb[4:0] + fk - 4'd1],
+-			                    24'd0, T_CONT};
+-			else u_data <= {vx[(fk == 4'd0) ? 5'd0 : fb[4:0] + fk - 4'd1], vy[(fk == 4'd0) ? 5'd0 : fb[4:0] + fk - 4'd1],
+-			                vq[(fk == 4'd0) ? 5'd0 : fb[4:0] + fk - 4'd1], 8'd0, T_CONT};
++		// the corner's U V after its $F2
++		W_PFT: if (!u_valid) begin
++			u_data <= {wd[3], wd[4], 24'd0, T_PFT};
+ 			u_valid <= 1'b1;
+-			if (fk + 4'd1 == fn) begin
+-				if (ftx && !fuv) begin fuv <= 1'b1; fk <= 4'd0; end
+-				else begin
+-					fb <= fb + {2'd0, fn} - 6'd2;     // the next POLY starts at this one's last vertex
+-					st <= W_FILL;
+-					fk <= fk + 4'd1;
+-				end
+-			end
+-			else fk <= fk + 4'd1;
++			st <= W_HEAD;
+ 		end
+ 		default: st <= W_HEAD;
+ 		endcase
+--- /dev/null	2026-10-26 00:45:17.000000000 -0500
++++ fpga-6809-cores-staging/source/gpu3/gpu3_pfill.v	2026-10-25 15:12:23.399174500 -0500
+@@ -0,0 +1,681 @@
++// gpu3_pfill: the scanline polygon fill (K2_GPU3; model fpga/sim/gpu3/gpu3_ref.py GPU.pf_vertex / pf_end, bit for bit).
++// The SceneEngine port's polygons (gpu3_seport.v units: $F2 a corner, $F4 its U V, $F3 the end), any shape, any number
++// of corners. Each corner's side from the previous corner (the closing side at the end) marks every view row whose
++// center it crosses: at the crossing dot c = floor(X / P) (the first row's quotient and remainder by division, then a
++// quotient / remainder step a row) the crossing bit flips and the edge bit sets (c < 0: dot 0's crossing bit only;
++// c >= W: nothing). The marks: 2,400 words of 64 dots (crossing bits 63:0, edge bits 127:64), a view row 10 words at
++// 640, 5 at 320. At the end each marked row is scanned a word at a time: inside flips at each crossing bit, a dot inside
++// or with its edge bit is colored (fsw.asm's PFill rule), the word written back 0. Every dot takes the polygon's planes
++// (the depth key; U x Q, V x Q when textured) from three corners: v0, the first corner off v0 (v1), the corner farthest
++// off their line (vb, by |cross|), computed as gpu3_tri's planes; texture segments end at the next 16-dot boundary.
++// Two corners, or sides crossing no row center: a LINE request to the core (no depth). A dot a clock; the fragments as
++// gpu3_tri's: the key encoded, the texel (3 clocks), one write to gpu3_fb.
++`timescale 1ns / 1ps
++
++module gpu3_pfill (
++	input  wire        clk,
++	input  wire        rst,              // also a GPU RESET: every mark cleared before the next unit
++	input  wire        go,               // a unit for the fill: $F2, $F4 or $F3
++	input  wire [63:0] unit,
++	output wire        idle,
++	input  wire        mode320,
++	input  wire [8:0]  view_rows,        // H, the core's
++	input  wire        zen, texen,
++	// a LINE for the core: 640-space dots, view rows
++	output reg         ln_req,
++	output reg  [9:0]  ln_x0, ln_x1,
++	output reg  [8:0]  ln_y0, ln_y1,
++	output reg  [7:0]  ln_col,
++	// memories (read latency 3)
++	output wire [7:0]  desc_ra,  input wire [31:0] desc_rd,
++	output wire [17:0] tex_ra,   input wire [7:0]  tex_rd,
++	// gpu3_fb writes, a dot each
++	output reg         wr_valid,
++	output reg  [8:0]  wr_row,
++	output reg  [9:0]  wr_d,
++	output reg  [7:0]  wr_color,
++	output reg         wr_ztest,
++	output reg         wr_zwrite,
++	output reg  [15:0] wr_q
++);
++
++localparam G = 24;
++localparam [5:0] S_RCLR = 0, S_IDLE = 1, S_NEWP = 2, S_CLR = 3, S_VX = 4, S_VXW = 5, S_E0 = 6, S_EN = 7, S_ENW = 8,
++	S_EDV = 9, S_EROW = 10, S_MK1 = 11, S_MK2 = 12, S_MK3 = 13, S_END = 14, S_END2 = 15, S_P0 = 16, S_PA = 17,
++	S_PAW = 18, S_PN = 19, S_PNW = 20, S_PRC = 21, S_PG = 22, S_PGW = 23, S_SC0 = 24, S_ROW = 25, S_RY = 26,
++	S_RYW = 27, S_W0 = 28, S_W1 = 29, S_W2 = 30, S_W3 = 31, S_DOT = 32, S_RX = 33, S_RXW = 34, S_TS0 = 35,
++	S_TS0W = 36, S_TK = 37, S_TKW = 38, S_TKDW = 39, S_TD = 40, S_TDW = 41, S_DRAIN = 42;
++reg  [5:0]  st, e_ret, c_ret;
++assign idle = st == S_IDLE;
++
++// ---------------------------------------------------------------------------------------------------------------
++// The multiplier (gpu3_tri's scheme): a pair a clock in the issuing states, the products written back by index
++// ---------------------------------------------------------------------------------------------------------------
++reg  signed [65:0]  mul_a;
++reg  signed [35:0]  mul_b;
++wire signed [101:0] mul_p;
++gpu3_mul MUL (.clk(clk), .a(mul_a), .b(mul_b), .p(mul_p));
++reg  [3:0]  mi;
++wire        issuing = (st == S_VX) || (st == S_EN) || (st == S_PA) || (st == S_PN) || (st == S_PG) || (st == S_RY) ||
++                      (st == S_RX) || (st == S_TK) || (st == S_TD);
++reg  [3:0]  t_v;
++reg  [3:0]  t_i [0:3];
++reg  signed [101:0] res [0:15];
++always @(posedge clk) begin
++	t_v <= rst ? 4'd0 : {t_v[2:0], issuing};
++	t_i[0] <= mi; t_i[1] <= t_i[0]; t_i[2] <= t_i[1]; t_i[3] <= t_i[2];
++	if (t_v[3]) res[t_i[3]] <= mul_p;
++end
++wire        mul_empty = (t_v == 4'd0);
++
++// ---------------------------------------------------------------------------------------------------------------
++// Dividers: the reciprocal, a side's first row and its step, u and v
++// ---------------------------------------------------------------------------------------------------------------
++reg         rc_go;
++reg  [31:0] rc_m;
++wire [32:0] rc_q;
++wire [63:0] rc_r;
++wire        rc_done;
++gpu3_div #(.NW(64), .DW(32), .QW(33)) DRC (.clk(clk), .start(rc_go), .n(64'h8000_0000_0000_0000), .d(rc_m),
++	.qbits(7'd33), .q(rc_q), .r(rc_r), .done(rc_done));
++reg         ed_go;
++reg  [39:0] e0_n, e1_n;
++reg  [22:0] epd;
++wire [31:0] e0_q, e1_q;
++wire [39:0] e0_r, e1_r;
++wire        e0_done, e1_done;
++gpu3_div #(.NW(40), .DW(23), .QW(32)) DE0 (.clk(clk), .start(ed_go), .n(e0_n), .d(epd), .qbits(7'd32),
++	.q(e0_q), .r(e0_r), .done(e0_done));
++gpu3_div #(.NW(40), .DW(23), .QW(32)) DE1 (.clk(clk), .start(ed_go), .n(e1_n), .d(epd), .qbits(7'd32),
++	.q(e1_q), .r(e1_r), .done(e1_done));
++reg         uv_go;
++reg  [31:0] du_n, dv_n;
++reg  [15:0] duv_d;
++wire [15:0] du_q, dv_q;
++wire [31:0] du_r, dv_r;
++wire        du_done, dv_done;
++gpu3_div #(.NW(32), .DW(16), .QW(16)) DDU (.clk(clk), .start(uv_go), .n(du_n), .d(duv_d), .qbits(7'd16),
++	.q(du_q), .r(du_r), .done(du_done));
++gpu3_div #(.NW(32), .DW(16), .QW(16)) DDV (.clk(clk), .start(uv_go), .n(dv_n), .d(duv_d), .qbits(7'd16),
++	.q(dv_q), .r(dv_r), .done(dv_done));
++
++// ---------------------------------------------------------------------------------------------------------------
++// The marks: crossing bits 63:0, edge bits 127:64; read two clocks after the address
++// ---------------------------------------------------------------------------------------------------------------
++(* ram_style = "block" *) reg [127:0] mk [0:2399];
++reg  [11:0] mk_ra, mk_wa;
++reg         mk_we;
++reg  [127:0] mk_wd, mk_q0, mk_q;
++integer mj;
++initial for (mj = 0; mj < 2400; mj = mj + 1) mk[mj] = 128'd0;
++always @(posedge clk) begin
++	if (mk_we) mk[mk_wa] <= mk_wd;
++	mk_q0 <= mk[mk_ra];
++	mk_q <= mk_q0;
++end
++// word w of view row y: y x 10 + w at 640, y x 5 + w at 320
++function [11:0] maddr; input [8:0] yy; input [3:0] ww; input m3;
++	maddr = m3 ? ({3'd0, yy} << 2) + {3'd0, yy} + {8'd0, ww} : ({3'd0, yy} << 3) + ({3'd0, yy} << 1) + {8'd0, ww};
++endfunction
++
++// ---------------------------------------------------------------------------------------------------------------
++// The polygon
++// ---------------------------------------------------------------------------------------------------------------
++reg         popen, pground, pcovers, pm320, ptex;
++reg  [1:0]  pn;                          // corners so far: 1, 2, 3 (3 or more)
++reg  [3:0]  pcol;
++reg  [7:0]  ptid;
++reg signed [15:0] v0x, v0y, v1x, v1y, vbx, vby, pvx, pvy;
++reg  [15:0] v0q, v1q, vbq, v0u, v0v, v1u, v1v, vbu, vbv;
++reg         v1ok, vbok, l0, l1, lb;      // l0 / l1 / lb: the last corner is v0 / v1 / vb (its U V go there)
++reg  [36:0] cb;                          // vb's |cross|
++reg signed [15:0] xa_x, xa_y, xb_x, xb_y, xc_x, xc_y, xd_x, xd_y;   // least x, most x, least y, most y
++reg  [8:0]  rmin, rmax;
++reg         rany;
++// the current corner
++reg signed [15:0] cx_, cy_;
++reg  [15:0] cq_;
++reg         cgr;
++
++wire [10:0] W = pm320 ? 11'd320 : 11'd640;
++wire [3:0]  stride = pm320 ? 4'd5 : 4'd10;
++wire [2:0]  psh = pm320 ? 3'd5 : 3'd4;
++wire [4:0]  phalf = pm320 ? 5'd16 : 5'd8;
++wire [8:0]  H = view_rows;
++
++// ---------------------------------------------------------------------------------------------------------------
++// A side: a to b
++// ---------------------------------------------------------------------------------------------------------------
++reg signed [15:0] ea_x, ea_y, eb_x, eb_y;
++wire        a_top = ea_y < eb_y;
++wire signed [15:0] et_xw = a_top ? ea_x : eb_x, et_yw = a_top ? ea_y : eb_y;
++wire signed [15:0] eu_xw = a_top ? eb_x : ea_x, eu_yw = a_top ? eb_y : ea_y;
++// rows: ceil((y - 8) / 16) = (y + 7) >> 4
++wire signed [12:0] y0u = ($signed({et_yw[15], et_yw}) + 17'sd7) >>> 4;
++wire signed [12:0] y1u = ($signed({eu_yw[15], eu_yw}) + 17'sd7) >>> 4;
++wire signed [12:0] ys_w = (y0u < 13'sd0) ? 13'sd0 : y0u;
++wire signed [12:0] ye_w = (y1u > $signed({4'd0, H})) ? $signed({4'd0, H}) : y1u;
++reg signed [15:0] et_x, et_y;
++reg  [16:0] eD;
++reg signed [16:0] edx;
++reg  [8:0]  ey, eye;
++reg signed [33:0] eq, eqs;
++reg  [22:0] er, ers;
++reg  [5:0]  mbit;
++reg         medge;
++wire [23:0] rn = {1'b0, er} + {1'b0, ers};
++wire        rcar = rn >= {1'b0, epd};
++wire signed [39:0] n0 = $signed(res[0][39:0]) + $signed(res[1][39:0]);
++wire signed [39:0] stp = $signed({{19{edx[16]}}, edx, 4'd0});
++wire        e0nz = e0_r[22:0] != 23'd0, e1nz = e1_r[22:0] != 23'd0;
++
++// ---------------------------------------------------------------------------------------------------------------
++// The planes (gpu3_tri's): attribute a of t / m / b at A[3a], A[3a + 1], A[3a + 2] (the key, U x Q, V x Q)
++// ---------------------------------------------------------------------------------------------------------------
++function [27:0] f16dec; input [15:0] c;
++	begin
++		if (c[15:12] == 4'd0) f16dec = {14'd0, c[11:0], 2'd0};
++		else if (c[15:12] == 4'd15) f16dec = 28'hFFFFFFF;
++		else f16dec = {15'd0, 1'b1, c[11:0]} << (c[15:12] + 4'd1);
++	end
++endfunction
++function [27:0] clampq28; input signed [63:0] e;
++	reg signed [39:0] s;
++	begin s = e >>> G; clampq28 = (s < 0) ? 28'd0 : ((s > 40'sd268435455) ? 28'hFFFFFFF : s[27:0]); end
++endfunction
++function [4:0] msb28; input [27:0] q;
++	integer b;
++	begin msb28 = 5'd0; for (b = 0; b < 28; b = b + 1) if (q[b]) msb28 = b; end
++endfunction
++function [15:0] f16pack; input [27:0] q; input [4:0] p;
++	reg [27:0] m;
++	begin
++		if (q == 28'hFFFFFFF) f16pack = 16'hFFFF;
++		else if (p < 5'd14) f16pack = {4'd0, q[13:2]};
++		else begin m = q >> (p - 5'd12); f16pack = {p[3:0] - 4'd13, m[11:0]}; end
++	end
++endfunction
++function [15:0] clampq; input signed [63:0] e;
++	reg [27:0] q;
++	begin q = clampq28(e); clampq = q[27:12]; end
++endfunction
++function [31:0] clampuq; input signed [63:0] e;
++	reg signed [39:0] s;
++	begin s = e >>> G; clampuq = (s < 0) ? 32'd0 : s[31:0]; end
++endfunction
++function [16:0] rtab; input [4:0] k;
++	case (k)
++		5'd1: rtab = 17'd65536; 5'd2: rtab = 17'd32768; 5'd3: rtab = 17'd21845; 5'd4: rtab = 17'd16384;
++		5'd5: rtab = 17'd13107; 5'd6: rtab = 17'd10923; 5'd7: rtab = 17'd9362;  5'd8: rtab = 17'd8192;
++		5'd9: rtab = 17'd7282;  5'd10: rtab = 17'd6554; 5'd11: rtab = 17'd5958; 5'd12: rtab = 17'd5461;
++		5'd13: rtab = 17'd5041; 5'd14: rtab = 17'd4681; 5'd15: rtab = 17'd4369; 5'd16: rtab = 17'd4096;
++		default: rtab = 17'd0;
++	endcase
++endfunction
++function [5:0] lsb64; input [63:0] m;
++	integer b;
++	begin lsb64 = 6'd0; for (b = 63; b >= 0; b = b - 1) if (m[b]) lsb64 = b; end
++endfunction
++// 63:0 inclusive prefix XOR (bit i = m[0] ^ ... ^ m[i])
++function [63:0] pxor; input [63:0] m;
++	integer b;
++	reg acc;
++	begin acc = 1'b0; for (b = 0; b < 64; b = b + 1) begin acc = acc ^ m[b]; pxor[b] = acc; end end
++endfunction
++function [9:0] clx; input signed [15:0] x;
++	reg signed [15:0] s;
++	begin s = x >>> 4; clx = (s < 16'sd0) ? 10'd0 : ((s > 16'sd639) ? 10'd639 : s[9:0]); end
++endfunction
++function [8:0] cly; input signed [15:0] y; input [8:0] h;
++	reg signed [15:0] s;
++	begin s = y >>> 4; cly = (s < 16'sd0) ? 9'd0 : ((s > $signed({7'd0, h}) - 16'sd1) ? h - 9'd1 : s[8:0]); end
++endfunction
++
++reg signed [15:0] ttx, tty, mmx, mmy, bbx, bby;
++reg  [15:0] tq, mq, bq, tu, mu, bu, tv, mv, bv;
++reg signed [33:0] A [0:8];
++reg  [1:0]  na;
++reg         texon, zt;
++reg signed [35:0] a2;
++reg  [5:0]  L;
++reg signed [51:0] nx [0:2], ny [0:2];
++reg signed [63:0] gx [0:2], gy [0:2], gyt [0:2], ev [0:2];
++reg  [32:0] R;
++reg  [17:0] tbase;
++reg  [3:0]  lw, lh;
++reg         clu, clv;
++wire [15:0] tq16 = f16dec(tq) >> 12, mq16 = f16dec(mq) >> 12, bq16 = f16dec(bq) >> 12;
++
++// the reciprocal's normalization
++wire [35:0] a2abs = a2[35] ? -a2 : a2;
++integer bi;
++reg  [5:0]  Lc;
++always @(*) begin
++	Lc = 6'd0;
++	for (bi = 0; bi < 36; bi = bi + 1) if (a2abs[bi]) Lc = bi + 1;
++end
++wire [35:0] a2norm = (Lc <= 6'd32) ? (a2abs << (6'd32 - Lc)) : (a2abs >> (Lc - 6'd32));
++
++// ---------------------------------------------------------------------------------------------------------------
++// The scan
++// ---------------------------------------------------------------------------------------------------------------
++reg  [8:0]  ry;
++reg  [3:0]  rw;
++reg         par;
++reg  [63:0] mask;
++reg         lastv;                       // nxt: the dot after the last colored one (a run goes on there)
++reg  [10:0] nxt, cur_d, segend;
++reg  [15:0] ua, va, ub, vb_;
++reg signed [33:0] du, dv;
++reg signed [38:0] acc_u, acc_v;
++reg  [4:0]  segk;                        // the texture segment's dots, e1 - s0
++reg         s0pt;                        // the division in flight is the run's first dot's (else a segment end's)
++reg signed [63:0] pq, pu, pv;
++wire [5:0]  lb6 = lsb64(mask);
++wire [10:0] dlow = {1'b0, rw, lb6};
++wire [15:0] ptq0 = clampq(pq);
++wire [15:0] ptq = (ptq0 == 16'd0) ? 16'd1 : ptq0;
++wire [31:0] ptu = clampuq(pu);
++wire [31:0] ptv = clampuq(pv);
++
++// ---------------------------------------------------------------------------------------------------------------
++// Multiplier operands
++// ---------------------------------------------------------------------------------------------------------------
++wire signed [17:0] cxrun = $signed({2'b00, cur_d, 5'd0} >> (pm320 ? 0 : 1)) + $signed({13'd0, phalf}) - ttx;
++wire signed [17:0] cyrow = $signed({5'd0, ry, 4'd8}) - tty;
++reg signed [34:0] nd1, nd2;
++reg [1:0] ma;
++always @(*) begin
++	mul_a = 66'sd0; mul_b = 36'sd0;
++	ma = mi[3:2];
++	nd1 = A[ma * 3 + 1] - A[ma * 3];
++	nd2 = A[ma * 3 + 2] - A[ma * 3];
++	case (st)
++	S_VX: if (mi == 4'd0) begin mul_a = v1x - v0x; mul_b = cy_ - v0y; end
++	      else begin mul_a = cx_ - v0x; mul_b = v1y - v0y; end
++	S_EN: if (mi == 4'd0) begin mul_a = et_x; mul_b = {19'd0, eD}; end
++	      else begin mul_a = $signed({5'd0, ey, 4'd8}) - et_y; mul_b = edx; end
++	S_PA: case (mi)
++	      4'd0: begin mul_a = mmx - ttx; mul_b = bby - tty; end
++	      4'd1: begin mul_a = bbx - ttx; mul_b = mmy - tty; end
++	      4'd2: begin mul_a = {50'd0, tu}; mul_b = {20'd0, tq16}; end
++	      4'd3: begin mul_a = {50'd0, mu}; mul_b = {20'd0, mq16}; end
++	      4'd4: begin mul_a = {50'd0, bu}; mul_b = {20'd0, bq16}; end
++	      4'd5: begin mul_a = {50'd0, tv}; mul_b = {20'd0, tq16}; end
++	      4'd6: begin mul_a = {50'd0, mv}; mul_b = {20'd0, mq16}; end
++	      default: begin mul_a = {50'd0, bv}; mul_b = {20'd0, bq16}; end
++	      endcase
++	S_PN: case (mi[1:0])
++	      2'd0: begin mul_a = nd1; mul_b = bby - tty; end
++	      2'd1: begin mul_a = nd2; mul_b = mmy - tty; end
++	      2'd2: begin mul_a = nd2; mul_b = mmx - ttx; end
++	      default: begin mul_a = nd1; mul_b = bbx - ttx; end
++	      endcase
++	S_PG: begin mul_a = mi[0] ? ny[mi[2:1]] : nx[mi[2:1]]; mul_b = {3'd0, R}; end
++	S_RY: begin mul_a = gy[mi[1:0]]; mul_b = cyrow; end
++	S_RX: begin mul_a = gx[mi[1:0]]; mul_b = cxrun; end
++	S_TK: begin mul_a = gx[mi[1:0]] <<< psh; mul_b = {31'd0, segk}; end
++	S_TD: begin mul_a = mi[0] ? ($signed({1'b0, vb_}) - $signed({1'b0, va})) : ($signed({1'b0, ub}) - $signed({1'b0, ua}));
++	            mul_b = {19'd0, rtab(segk)}; end
++	default: ;
++	endcase
++end
++
++// ---------------------------------------------------------------------------------------------------------------
++// Fragments: E (the scan's register) -> F1 the key's leading one, the texel address -> F2 the key -> F4 the texel ->
++// the write
++// ---------------------------------------------------------------------------------------------------------------
++reg         emit;
++reg  [8:0]  e_y;
++reg  [9:0]  e_d;
++reg  [27:0] e_q;
++reg  [15:0] e_u, e_v;
++reg         f_v [1:4];
++reg  [8:0]  f_y [1:4];
++reg  [9:0]  f_d [1:4];
++reg  [27:0] f1_q28;
++reg  [4:0]  f1_p;
++reg  [15:0] f_q [2:4];
++reg  [15:0] f1_u, f1_vv;
++wire [7:0]  ui0 = f1_u[15:8], vi0 = f1_vv[15:8];
++wire [9:0]  umax = (10'd1 << lw) - 10'd1, vmax = (10'd1 << lh) - 10'd1;
++wire [9:0]  ui = clu ? (({2'd0, ui0} > umax) ? umax : {2'd0, ui0}) : ({2'd0, ui0} & umax);
++wire [9:0]  vi = clv ? (({2'd0, vi0} > vmax) ? vmax : {2'd0, vi0}) : ({2'd0, vi0} & vmax);
++assign tex_ra = tbase + ({8'd0, vi} << lw) + {8'd0, ui};
++assign desc_ra = ptid;
++integer fk;
++always @(posedge clk) begin
++	if (rst) begin
++		for (fk = 1; fk <= 4; fk = fk + 1) f_v[fk] <= 1'b0;
++		wr_valid <= 1'b0;
++	end else begin
++		f_v[1] <= emit; f_y[1] <= e_y; f_d[1] <= e_d;
++		f1_q28 <= e_q; f1_p <= msb28(e_q);
++		f1_u <= e_u; f1_vv <= e_v;
++		f_q[2] <= f16pack(f1_q28, f1_p);
++		for (fk = 2; fk <= 4; fk = fk + 1) begin
++			f_v[fk] <= f_v[fk - 1]; f_y[fk] <= f_y[fk - 1]; f_d[fk] <= f_d[fk - 1];
++			if (fk > 2) f_q[fk] <= f_q[fk - 1];
++		end
++		wr_valid  <= f_v[4] && !(texon && tex_rd == 8'd0);
++		wr_row    <= f_y[4];
++		wr_d      <= f_d[4];
++		wr_color  <= texon ? tex_rd : {4'd0, pcol};
++		wr_ztest  <= zen && zt;
++		wr_zwrite <= zen && zt;
++		wr_q      <= f_q[4];
++	end
++end
++wire frag_busy = emit || f_v[1] || f_v[2] || f_v[3] || f_v[4] || wr_valid;
++
++// ---------------------------------------------------------------------------------------------------------------
++// The sequencer
++// ---------------------------------------------------------------------------------------------------------------
++wire [7:0]  utag = unit[7:0];
++wire signed [15:0] ux = unit[63:48], uy = unit[47:32];
++wire [15:0] uq = unit[31:16];
++wire [7:0]  ufl = unit[15:8];
++reg  [11:0] ca;                          // the reset clear's word
++reg  [8:0]  cy2;                         // a clear's row and word
++reg  [3:0]  cw;
++wire signed [36:0] crs = $signed(res[0][36:0]) - $signed(res[1][36:0]);
++wire [36:0] acr = crs[36] ? -crs : crs;
++integer ai;
++always @(posedge clk) begin
++	rc_go <= 1'b0; ed_go <= 1'b0; uv_go <= 1'b0;
++	mk_we <= 1'b0;
++	ln_req <= 1'b0;
++	emit <= 1'b0;
++	if (rst) begin
++		st <= S_RCLR; ca <= 12'd0; popen <= 1'b0; rany <= 1'b0; mi <= 4'd0; texon <= 1'b0;
++	end else case (st)
++	// ---- every mark 0 (after a reset)
++	S_RCLR: begin
++		mk_we <= 1'b1; mk_wa <= ca; mk_wd <= 128'd0;
++		if (ca == 12'd2399) st <= S_IDLE;
++		ca <= ca + 12'd1;
++	end
++	// ---- a unit
++	S_IDLE: if (go) case (utag)
++		8'hF2: begin
++			cx_ <= ux; cy_ <= uy; cq_ <= uq; cgr <= ufl[1];
++			if (ufl[0]) begin
++				if (rany) begin cy2 <= rmin; cw <= 4'd0; c_ret <= S_NEWP; st <= S_CLR; end
++				else st <= S_NEWP;
++			end else if (popen) begin
++				ea_x <= pvx; ea_y <= pvy; eb_x <= ux; eb_y <= uy; e_ret <= S_VX; st <= S_E0;
++			end
++		end
++		8'hF4: begin
++			if (l0) begin v0u <= ux; v0v <= uy; end
++			if (l1) begin v1u <= ux; v1v <= uy; end
++			if (lb) begin vbu <= ux; vbv <= uy; end
++		end
++		8'hF3: if (popen) begin
++			pcol <= unit[59:56]; ptex <= unit[52]; ptid <= unit[47:40];
++			popen <= 1'b0;
++			st <= S_END;
++		end
++		default: ;
++		endcase
++	// ---- clear the marked rows rmin..rmax, then c_ret
++	S_CLR: begin
++		mk_we <= 1'b1; mk_wa <= maddr(cy2, cw, pm320); mk_wd <= 128'd0;
++		if (cw == stride - 4'd1) begin
++			cw <= 4'd0;
++			if (cy2 == rmax) begin rany <= 1'b0; st <= c_ret; end
++			else cy2 <= cy2 + 9'd1;
++		end else cw <= cw + 4'd1;
++	end
++	// ---- a polygon's first corner
++	S_NEWP: begin
++		v0x <= cx_; v0y <= cy_; v0q <= cq_; v0u <= 16'd0; v0v <= 16'd0;
++		pvx <= cx_; pvy <= cy_;
++		pn <= 2'd1; pground <= cgr; pcovers <= 1'b0; pm320 <= mode320;
++		v1ok <= 1'b0; vbok <= 1'b0; cb <= 37'd0;
++		xa_x <= cx_; xa_y <= cy_; xb_x <= cx_; xb_y <= cy_; xc_x <= cx_; xc_y <= cy_; xd_x <= cx_; xd_y <= cy_;
++		l0 <= 1'b1; l1 <= 1'b0; lb <= 1'b0;
++		popen <= 1'b1;
++		st <= S_IDLE;
++	end
++	// ---- a further corner (its side marked): v1 or vb, the extremes
++	S_VX: if (mi == 4'd1) begin mi <= 4'd0; st <= S_VXW; end else mi <= mi + 4'd1;
++	S_VXW: if (mul_empty) begin
++		l0 <= 1'b0; l1 <= 1'b0; lb <= 1'b0;
++		if (!v1ok) begin
++			if (cx_ != v0x || cy_ != v0y) begin
++				v1x <= cx_; v1y <= cy_; v1q <= cq_; v1u <= 16'd0; v1v <= 16'd0; v1ok <= 1'b1; l1 <= 1'b1;
++			end
++		end else if (acr > cb) begin
++			cb <= acr;
++			vbx <= cx_; vby <= cy_; vbq <= cq_; vbu <= 16'd0; vbv <= 16'd0; vbok <= 1'b1; lb <= 1'b1;
++		end
++		if (cx_ < xa_x) begin xa_x <= cx_; xa_y <= cy_; end
++		if (cx_ > xb_x) begin xb_x <= cx_; xb_y <= cy_; end
++		if (cy_ < xc_y) begin xc_x <= cx_; xc_y <= cy_; end
++		if (cy_ > xd_y) begin xd_x <= cx_; xd_y <= cy_; end
++		pvx <= cx_; pvy <= cy_;
++		if (pn != 2'd3) pn <= pn + 2'd1;
++		pground <= pground | cgr;
++		st <= S_IDLE;
++	end
++	// ---- a side: its rows, the first crossing and the step by division, then a mark a row
++	S_E0: if (ea_y == eb_y) st <= e_ret;
++	else begin
++		if (y0u < y1u) pcovers <= 1'b1;
++		if (ys_w >= ye_w) st <= e_ret;
++		else begin
++			et_x <= et_xw; et_y <= et_yw;
++			eD <= $signed({eu_yw[15], eu_yw}) - $signed({et_yw[15], et_yw});
++			edx <= $signed({eu_xw[15], eu_xw}) - $signed({et_xw[15], et_xw});
++			ey <= ys_w[8:0]; eye <= ye_w[8:0];
++			mi <= 4'd0;
++			st <= S_EN;
++		end
++	end
++	S_EN: if (mi == 4'd1) begin mi <= 4'd0; st <= S_ENW; end else mi <= mi + 4'd1;
++	S_ENW: if (mul_empty) begin
++		e0_n <= n0[39] ? -n0 : n0;
++		e1_n <= stp[39] ? -stp : stp;
++		epd <= {6'd0, eD} << psh;
++		ed_go <= 1'b1;
++		st <= S_EDV;
++	end
++	S_EDV: if (e0_done && e1_done && !ed_go) begin
++		eq <= n0[39] ? -$signed({2'b00, e0_q}) - (e0nz ? 34'sd1 : 34'sd0) : $signed({2'b00, e0_q});
++		er <= (n0[39] && e0nz) ? epd - e0_r[22:0] : (n0[39] ? 23'd0 : e0_r[22:0]);
++		eqs <= stp[39] ? -$signed({2'b00, e1_q}) - (e1nz ? 34'sd1 : 34'sd0) : $signed({2'b00, e1_q});
++		ers <= (stp[39] && e1nz) ? epd - e1_r[22:0] : (stp[39] ? 23'd0 : e1_r[22:0]);
++		st <= S_EROW;
++	end
++	S_EROW: if (ey == eye) st <= e_ret;
++	else if (eq >= $signed({23'd0, W})) begin
++		er <= rcar ? rn[22:0] - epd : rn[22:0];
++		eq <= eq + eqs + (rcar ? 34'sd1 : 34'sd0);
++		ey <= ey + 9'd1;
++	end else begin
++		mk_ra <= maddr(ey, eq[33] ? 4'd0 : eq[9:6], pm320);
++		mbit <= eq[33] ? 6'd0 : eq[5:0];
++		medge <= !eq[33];
++		st <= S_MK1;
++	end
++	S_MK1: st <= S_MK2;
++	S_MK2: st <= S_MK3;
++	S_MK3: begin
++		mk_we <= 1'b1; mk_wa <= mk_ra;
++		mk_wd <= {mk_q[127:64] | (medge ? (64'd1 << mbit) : 64'd0), mk_q[63:0] ^ (64'd1 << mbit)};
++		if (!rany || ey < rmin) rmin <= ey;
++		if (!rany || ey > rmax) rmax <= ey;
++		rany <= 1'b1;
++		er <= rcar ? rn[22:0] - epd : rn[22:0];
++		eq <= eq + eqs + (rcar ? 34'sd1 : 34'sd0);
++		ey <= ey + 9'd1;
++		st <= S_EROW;
++	end
++	// ---- the end: the closing side, then a LINE, nothing, or the planes and the scan
++	S_END: if (pn == 2'd3) begin
++		ea_x <= pvx; ea_y <= pvy; eb_x <= v0x; eb_y <= v0y; e_ret <= S_END2; st <= S_E0;
++	end else st <= S_END2;
++	S_END2: if (pn == 2'd1) begin
++		if (rany) begin cy2 <= rmin; cw <= 4'd0; c_ret <= S_IDLE; st <= S_CLR; end
++		else st <= S_IDLE;
++	end else if (pn == 2'd2 || !pcovers) begin
++		if (pn == 2'd2) begin
++			ln_x0 <= clx(v0x); ln_y0 <= cly(v0y, H); ln_x1 <= clx(pvx); ln_y1 <= cly(pvy, H);
++		end else if ($signed({xb_x[15], xb_x}) - $signed({xa_x[15], xa_x}) >= $signed({xd_y[15], xd_y}) - $signed({xc_y[15], xc_y})) begin
++			ln_x0 <= clx(xa_x); ln_y0 <= cly(xa_y, H); ln_x1 <= clx(xb_x); ln_y1 <= cly(xb_y, H);
++		end else begin
++			ln_x0 <= clx(xc_x); ln_y0 <= cly(xc_y, H); ln_x1 <= clx(xd_x); ln_y1 <= cly(xd_y, H);
++		end
++		ln_col <= {4'd0, pcol};
++		ln_req <= 1'b1;
++		if (rany) begin cy2 <= rmin; cw <= 4'd0; c_ret <= S_IDLE; st <= S_CLR; end
++		else st <= S_IDLE;
++	end else st <= S_P0;
++	S_P0: begin
++		ttx <= v0x; tty <= v0y; tq <= v0q; tu <= v0u; tv <= v0v;
++		if (v1ok) begin mmx <= v1x; mmy <= v1y; mq <= v1q; mu <= v1u; mv <= v1v; end
++		else begin mmx <= v0x; mmy <= v0y; mq <= v0q; mu <= v0u; mv <= v0v; end
++		if (vbok) begin bbx <= vbx; bby <= vby; bq <= vbq; bu <= vbu; bv <= vbv; end
++		else begin bbx <= v0x; bby <= v0y; bq <= v0q; bu <= v0u; bv <= v0v; end
++		texon <= ptex && texen;
++		na <= (ptex && texen) ? 2'd3 : 2'd1;
++		zt <= !pground;
++		mi <= 4'd0;
++		st <= S_PA;
++	end
++	S_PA: if (mi == ((na == 2'd3) ? 4'd7 : 4'd1)) begin mi <= 4'd0; st <= S_PAW; end else mi <= mi + 4'd1;
++	S_PAW: if (mul_empty) begin
++		a2 <= $signed(res[0][35:0]) - $signed(res[1][35:0]);
++		A[0] <= {6'd0, f16dec(tq)}; A[1] <= {6'd0, f16dec(mq)}; A[2] <= {6'd0, f16dec(bq)};
++		A[3] <= res[2][33:0]; A[4] <= res[3][33:0]; A[5] <= res[4][33:0];
++		A[6] <= res[5][33:0]; A[7] <= res[6][33:0]; A[8] <= res[7][33:0];
++		st <= S_PN;
++		mi <= 4'd0;
++	end
++	S_PN: if (a2 == 36'sd0) begin
++		for (ai = 0; ai < 3; ai = ai + 1) begin gx[ai] <= 64'sd0; gy[ai] <= 64'sd0; end
++		st <= S_SC0;
++	end else if (mi == {na, 2'b00} - 4'd1) begin
++		mi <= 4'd0;
++		L <= Lc; rc_m <= a2norm[31:0]; rc_go <= 1'b1;
++		st <= S_PNW;
++	end else mi <= mi + 4'd1;
++	S_PNW: if (mul_empty) begin
++		for (ai = 0; ai < 3; ai = ai + 1) begin
++			nx[ai] <= $signed(res[4 * ai][51:0]) - $signed(res[4 * ai + 1][51:0]);
++			ny[ai] <= $signed(res[4 * ai + 2][51:0]) - $signed(res[4 * ai + 3][51:0]);
++		end
++		st <= S_PRC;
++	end
++	S_PRC: if (rc_done && !rc_go) begin R <= rc_q; mi <= 4'd0; st <= S_PG; end
++	S_PG: if (mi == {1'b0, na, 1'b0} - 4'd1) begin mi <= 4'd0; st <= S_PGW; end else mi <= mi + 4'd1;
++	S_PGW: if (mul_empty) begin
++		for (ai = 0; ai < 3; ai = ai + 1) begin
++			gx[ai] <= a2[35] ? -(res[2 * ai] >>> (L + 6'd7)) : (res[2 * ai] >>> (L + 6'd7));
++			gy[ai] <= a2[35] ? -(res[2 * ai + 1] >>> (L + 6'd7)) : (res[2 * ai + 1] >>> (L + 6'd7));
++		end
++		st <= S_SC0;
++	end
++	// ---- the scan: rows rmin..rmax, a word at a time
++	S_SC0: begin
++		tbase <= {desc_rd[25:24], desc_rd[23:16], desc_rd[15:8]};
++		lw <= 4'd3 + {1'b0, desc_rd[2:0]};
++		lh <= 4'd3 + {1'b0, desc_rd[5:3]};
++		clu <= desc_rd[6]; clv <= desc_rd[7];
++		ry <= rmin;
++		st <= rany ? S_ROW : S_IDLE;
++	end
++	S_ROW: if (ry > rmax) begin rany <= 1'b0; st <= S_DRAIN; end
++	else begin mi <= 4'd0; st <= S_RY; end
++	S_RY: if (mi == {2'b00, na} - 4'd1) begin mi <= 4'd0; st <= S_RYW; end else mi <= mi + 4'd1;
++	S_RYW: if (mul_empty) begin
++		for (ai = 0; ai < 3; ai = ai + 1) gyt[ai] <= res[ai][63:0];
++		rw <= 4'd0; par <= 1'b0; lastv <= 1'b0;
++		st <= S_W0;
++	end
++	S_W0: begin mk_ra <= maddr(ry, rw, pm320); st <= S_W1; end
++	S_W1: st <= S_W2;
++	S_W2: st <= S_W3;
++	S_W3: begin
++		mask <= (pxor(mk_q[63:0]) ^ {64{par}}) | mk_q[127:64];
++		par <= par ^ (^mk_q[63:0]);
++		mk_we <= 1'b1; mk_wa <= mk_ra; mk_wd <= 128'd0;
++		st <= S_DOT;
++	end
++	S_DOT: if (mask == 64'd0) begin
++		if (rw == stride - 4'd1) begin ry <= ry + 9'd1; st <= S_ROW; end
++		else begin rw <= rw + 4'd1; st <= S_W0; end
++	end else if (lastv && dlow == nxt && (!texon || dlow <= segend)) begin
++		emit <= 1'b1;
++		e_y <= ry; e_d <= dlow[9:0];
++		e_q <= clampq28(ev[0]);
++		e_u <= ua + acc_u[31:16];
++		e_v <= va + acc_v[31:16];
++		for (ai = 0; ai < 3; ai = ai + 1) ev[ai] <= ev[ai] + (gx[ai] <<< psh);
++		acc_u <= acc_u + du; acc_v <= acc_v + dv;
++		mask <= mask & (mask - 64'd1);
++		nxt <= dlow + 11'd1;
++	end else if (lastv && dlow == nxt) begin
++		// the run goes on into the next texture segment: its start is the last segment's end
++		cur_d <= dlow; ua <= ub; va <= vb_;
++		segk <= 5'd16 - {1'b0, dlow[3:0]};
++		mi <= 4'd0;
++		st <= S_TK;
++	end else begin
++		cur_d <= dlow;
++		mi <= 4'd0;
++		st <= S_RX;
++	end
++	// a run's first dot: the planes there
++	S_RX: if (mi == {2'b00, na} - 4'd1) begin mi <= 4'd0; st <= S_RXW; end else mi <= mi + 4'd1;
++	S_RXW: if (mul_empty) begin
++		for (ai = 0; ai < 3; ai = ai + 1) ev[ai] <= ($signed(A[3 * ai]) <<< G) + res[ai][63:0] + gyt[ai];
++		if (texon) st <= S_TS0;
++		else begin lastv <= 1'b1; nxt <= cur_d; st <= S_DOT; end
++	end
++	// texture: u, v at the run's first dot, then at each segment's end (the next 16-dot boundary)
++	S_TS0: begin
++		pq <= ev[0]; pu <= ev[1]; pv <= ev[2];
++		s0pt <= 1'b1;
++		st <= S_TS0W;
++	end
++	S_TS0W: begin
++		du_n <= ptu; dv_n <= ptv; duv_d <= ptq;
++		uv_go <= 1'b1;
++		st <= S_TKDW;
++	end
++	S_TK: if (mi == 4'd2) begin mi <= 4'd0; st <= S_TKW; end else mi <= mi + 4'd1;
++	S_TKW: if (mul_empty) begin
++		pq <= ev[0] + res[0][63:0]; pu <= ev[1] + res[1][63:0]; pv <= ev[2] + res[2][63:0];
++		s0pt <= 1'b0;
++		st <= S_TS0W;
++	end
++	S_TKDW: if (du_done && dv_done && !uv_go) begin
++		if (s0pt) begin
++			ua <= (ptu >= {ptq, 16'd0}) ? 16'hFFFF : du_q;
++			va <= (ptv >= {ptq, 16'd0}) ? 16'hFFFF : dv_q;
++			segk <= 5'd16 - {1'b0, cur_d[3:0]};
++			mi <= 4'd0;
++			st <= S_TK;
++		end else begin
++			ub <= (ptu >= {ptq, 16'd0}) ? 16'hFFFF : du_q;
++			vb_ <= (ptv >= {ptq, 16'd0}) ? 16'hFFFF : dv_q;
++			mi <= 4'd0;
++			st <= S_TD;
++		end
++	end
++	S_TD: if (mi == 4'd1) begin mi <= 4'd0; st <= S_TDW; end else mi <= mi + 4'd1;
++	S_TDW: if (mul_empty) begin
++		du <= res[0][33:0]; dv <= res[1][33:0];
++		acc_u <= 39'sd0; acc_v <= 39'sd0;
++		segend <= cur_d | 11'd15;
++		lastv <= 1'b1; nxt <= cur_d;
++		st <= S_DOT;
++	end
++	S_DRAIN: if (!frag_busy) st <= S_IDLE;
++	default: st <= S_IDLE;
++	endcase
++end
++
++endmodule
