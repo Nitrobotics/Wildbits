@@ -67,3 +67,6 @@ body{font-family:var(--sans);font-size:var(--type-body);line-height:1.65}
 .parity td > .feature-unavailable{color:#6b7280!important}
 p,li{max-width:none!important}
 .hero h1 a,.hero h1 a:hover{color:inherit;text-decoration:underline;background:transparent}
+
+/* Resource links share the title area typography and wrap between links. */
+.hero .resource-links a{white-space:nowrap}
